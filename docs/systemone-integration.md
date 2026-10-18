@@ -4,9 +4,35 @@
 Nimbang. This document is the contract a coding agent must follow when building
 against it.
 
-Status: **assessed and viable**, not yet implemented. See
+Status: **implemented for suggestions**, behind `POST /api/suggest`. See
 [`../docs/eval-systemone.md`](../docs/eval-systemone.md) for the measurements
 this rests on.
+
+## What is built
+
+`server/suggest.ts` is the only server-side code in the project. It exists for
+one reason: the key cannot live in a browser. It relays a `state` and a question
+set to System One, passes 429 through so the client retries, and never returns
+the upstream body or the key.
+
+`src/suggestions/` is the client side:
+
+| File | Role |
+|---|---|
+| `catalog.ts` | every word a suggestion can show — the model never writes text |
+| `questions.ts` | the versioned question set (`suggest-v1`) |
+| `client.ts` | one fetch to `/api/suggest`, retry on 429, distinct failures |
+| `map.ts` | model answer → labelled, overridable suggestions |
+
+Two features use it: an option archetype the user has not written down, and the
+bias checks most likely to matter here.
+
+`choice` returns a class label and a probability, not prose, so the catalog is
+the only source of user-facing text. An unknown label is dropped rather than
+rendered — there is no code path in which model-authored text reaches the UI.
+
+Bias suggestions are `noul` questions ("how likely is this bias to matter"), and
+the result is a *prompt* the user can insert, never a filled answer.
 
 ## What it is
 

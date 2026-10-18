@@ -120,6 +120,20 @@ git config core.hooksPath .githooks   # one time per clone; blocks page photos
 New to it? [`docs/how-to-use.md`](docs/how-to-use.md) walks through a worked
 example with a share link you can paste in.
 
+### AI suggestions (optional)
+
+The app works fully without this. To enable the suggestion panel, the server
+needs a Kenari key, because a browser cannot hold one:
+
+```bash
+export KENARI_API_KEY=...     # or have ~/.local/bin/kenari-key on PATH
+pnpm dev
+```
+
+Without a key the endpoint returns `503 not_configured` and the panel says so —
+it does not silently do nothing. See
+[`docs/systemone-integration.md`](docs/systemone-integration.md).
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).

@@ -8,6 +8,12 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- **AI suggestions for options and bias checks.** The two places a user gets
+  stuck now offer a proposal on request. Built to the System One contract: the
+  model classifies, the app owns every word, nothing applies until the user
+  clicks, and each failure mode says what it is. `server/suggest.ts` is the
+  project's only server-side code, and exists solely because the key cannot live
+  in a browser.
 - **Dashboard shell.** The app was one vertical run of seven sections. It is now
   a rail of decisions beside a workspace for the open one, with the verdict
   above the inputs so the answer stays visible while they change.
@@ -75,6 +81,8 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- The share and export section is removed. It had no effect on the decision, and
+  the URL-import path stays so a link that was already shared still opens.
 - `docs/framework.md` — the Stress procedure was "vary each value by ±0.5 and
   record the delta". That is not a break-even and cannot flip the plan's own
   worked example, so the section now specifies the closed-form break-even and
