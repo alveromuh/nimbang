@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
+import { serializeDecision } from '../core';
 
 /**
  * The dashboard starts empty and asks for a decision before it shows a form.
@@ -161,6 +162,45 @@ describe('App', () => {
     // Option 1 is the baseline, and three options are the floor.
     expect(screen.getByRole('button', { name: /remove option 1/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /remove option 2/i })).toBeDisabled();
+  });
+
+  it('opens a shared link and imports the decision', async () => {
+    const shared = {
+      id: 'shared-1',
+      title: 'Dari tautan',
+      objectives: [{ id: 'o1', statement: 'Penghasilan', kind: 'motivation' as const }],
+      options: [
+        { id: 'a', label: 'Tetap', isBaseline: true },
+        { id: 'b', label: 'Pindah', isBaseline: false },
+        { id: 'c', label: 'Negosiasi', isBaseline: false },
+      ],
+      items: [
+        { id: 'a--o1', optionId: 'a', objectiveId: 'o1', kind: 'benefit' as const, value: 2, probability: 1, risk: 'ordinary' as const },
+        { id: 'b--o1', optionId: 'b', objectiveId: 'o1', kind: 'benefit' as const, value: 5, probability: 1, risk: 'ordinary' as const },
+        { id: 'c--o1', optionId: 'c', objectiveId: 'o1', kind: 'benefit' as const, value: 3, probability: 1, risk: 'ordinary' as const },
+      ],
+      claims: [],
+      swingPoints: { o1: 100 },
+    };
+
+    // The app could always *produce* a share link; it could not read one back,
+    // because the dashboard rewrite dropped the decode path and the old test
+    // only checked the encoder. This asserts the round trip through the URL.
+    window.history.replaceState(null, '', `/#d=${serializeDecision(shared)}`);
+
+    render(<App />);
+
+    expect(screen.getByLabelText(/decision title/i)).toHaveValue('Dari tautan');
+    expect(screen.getAllByText('Pindah').length).toBeGreaterThan(0);
+    // The fragment is cleared so a reload does not re-import a stale copy.
+    expect(window.location.hash).toBe('');
+  });
+
+  it('falls back to the library when the shared link is malformed', () => {
+    window.history.replaceState(null, '', '/#d=not-a-decision');
+    render(<App />);
+    // Not a crash and not a blank page: the normal empty state.
+    expect(screen.getByRole('heading', { name: /start with the objective/i })).toBeInTheDocument();
   });
 
   it('deletes a decision and returns to the empty dashboard', async () => {

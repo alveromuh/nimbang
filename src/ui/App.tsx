@@ -1,7 +1,30 @@
 import { useMemo, useState } from 'react';
-import type { Decision } from '../core';
+import { deserializeDecision, type Decision } from '../core';
 import { createDecision, deleteDecision, listDecisions, saveDecision } from './library';
 import { DecisionWorkspace } from './DecisionWorkspace';
+
+/**
+ * Reads a shared decision out of the URL fragment, if there is one.
+ *
+ * The fragment is used rather than the query string because it is never sent to
+ * a server, so a decision stays in the browser even when the link is opened from
+ * a hosted copy.
+ */
+function sharedDecisionFromUrl(): Decision | null {
+  if (typeof location === 'undefined') {
+    return null;
+  }
+  if (!location.hash.startsWith('#d=')) {
+    return null;
+  }
+  try {
+    return deserializeDecision(location.hash.slice(3));
+  } catch {
+    // A malformed link falls through to the library rather than blanking the
+    // page: the user still has their own work.
+    return null;
+  }
+}
 
 /**
  * The dashboard.
@@ -12,7 +35,21 @@ import { DecisionWorkspace } from './DecisionWorkspace';
  * one decision and needs to see them.
  */
 export function App() {
-  const [decisions, setDecisions] = useState<Decision[]>(() => listDecisions());
+  // A shared link is imported once, on first render, and becomes a normal entry
+  // in the library. It is not special afterwards: the user can edit it, delete
+  // it, and it persists like anything else.
+  const [decisions, setDecisions] = useState<Decision[]>(() => {
+    const shared = sharedDecisionFromUrl();
+    if (shared !== null) {
+      saveDecision(shared);
+      // Drop the fragment so a reload does not re-import a stale copy over edits.
+      if (typeof history !== 'undefined') {
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+      return listDecisions();
+    }
+    return listDecisions();
+  });
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const active = useMemo(

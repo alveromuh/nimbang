@@ -111,11 +111,14 @@ tools/eval/                 System One eval cases, runner, raw results
 
 ```bash
 pnpm install
-pnpm test        # 117 tests: core engine, UI, integration
+pnpm test        # 125 tests: core engine, UI, integration
 pnpm build       # tsc --noEmit, then a production bundle
-pnpm dev         # the form, in a browser
+pnpm dev         # the app, at http://localhost:5199
 git config core.hooksPath .githooks   # one time per clone; blocks page photos
 ```
+
+New to it? [`docs/how-to-use.md`](docs/how-to-use.md) walks through a worked
+example with a share link you can paste in.
 
 ## License
 
