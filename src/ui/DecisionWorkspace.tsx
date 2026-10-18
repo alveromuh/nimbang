@@ -16,7 +16,6 @@ import { CommitPanel } from './CommitPanel';
 import { GatePanel } from './GatePanel';
 import { ItemGrid } from './ItemGrid';
 import { Result } from './Result';
-import { ShareBar } from './ShareBar';
 
 interface DecisionWorkspaceProps {
   decision: Decision;
@@ -276,8 +275,6 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
         onChangePredictions={setPredictions}
         onChangeOutcomes={setOutcomes}
       />
-
-      <ShareBar decision={draft} />
     </>
   );
 }

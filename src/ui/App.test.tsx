@@ -121,18 +121,6 @@ describe('App', () => {
     expect(screen.getByText(/no resolved predictions/i)).toBeInTheDocument();
   });
 
-  it('offers a share link and a JSON export', async () => {
-    render(<App />);
-    const user = await startDecision();
-    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
-
-    const json = screen.getByLabelText(/json/i) as HTMLTextAreaElement;
-    expect(JSON.parse(json.value).objectives[0].statement).toBe('Penghasilan');
-
-    const link = screen.getByLabelText(/share link/i) as HTMLInputElement;
-    expect(link.value).toContain('#d=');
-  });
-
   it('adds a second objective with its own swing weight', async () => {
     render(<App />);
     const user = await startDecision();
