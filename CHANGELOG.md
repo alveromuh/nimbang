@@ -8,6 +8,22 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- **M4: the app reaches every stage.** Previously the form could only express a
+  benefit with probability 1 and no fatal risk, which made four of the engine's
+  five distinguishing features unreachable. Now:
+  - `ItemEditor` — per item: value, benefit/cost, probability, reference class,
+    and a fatal flag that blocks the recommendation.
+  - `GatePanel` — the six required bias fields, with sunk cost labelled
+    **excluded from the arithmetic**.
+  - `CommitPanel` — predictions, outcomes, and a Brier score that is absent
+    rather than zero until something is resolved.
+  - `ShareBar` — a share link and a JSON export. The payload goes in the URL
+    **fragment**, so a decision is never sent to a server.
+  - Add and remove objectives and options. The last objective and the baseline
+    cannot be removed; removing either takes its items and swing weight with it.
+  - `persistence.ts` — the draft saves on every edit and reloads on the next
+    visit. Storage is injected, not reached for through the global.
+  - The first stylesheet: light and dark schemes, plus a print rule.
 - **Core engine** (`src/core/`), pure functions with no React, DOM, or storage
   imports, one module per stage of the pipeline:
   - `frame.ts` — objective gate: no scoring until an objective exists.
@@ -57,6 +73,14 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- `DecisionSchema` carried no `swingPoints`, so a shared URL restored the
+  options and items but silently lost the weights: the recipient would open a
+  decision that scores differently from the one shared. Review Focus 5 asks for
+  a round-trip without loss, and this was the loss. `outcomes` joined it for the
+  same reason.
+- Testing Library was not cleaning up between tests. It only auto-cleans when
+  its own globals are enabled, which this suite does not, so renders leaked and
+  `getByLabelText` could resolve to a previous test's element.
 - `pnpm-workspace.yaml` contained pnpm's own generated placeholder
   (`esbuild: set this to true or false`) as the value of `allowBuilds`, so
   `pnpm install` failed with `ERR_PNPM_IGNORED_BUILDS`. Set to `true`.

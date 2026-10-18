@@ -77,10 +77,12 @@ and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
       citations.
 - [x] **M2 — Spec.** Design document, approved before any code.
 - [x] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
-      calibration. 71 tests across 13 files.
-- [ ] **M4 — App.** Guided pipeline, end to end, with print and share. *The form
-      and the result view exist; localStorage persistence, print, and the gate /
-      commit screens do not.*
+      calibration. 117 tests across 18 files.
+- [x] **M4 — App.** Guided pipeline, end to end, with print and share. *All nine
+      stages are reachable from the form: items carry benefit/cost, probability,
+      reference class and a fatal flag; the bias gate and commit screens exist;
+      the draft persists to localStorage; decisions share as a URL fragment and
+      export as JSON; a print stylesheet hides the share controls.*
 - [ ] **M5 — Release.** Public repo, live demo, docs.
 - [ ] **M6 — Structured input.** System One endpoint, question set under version
       control, 100-case regression suite in CI.
@@ -107,7 +109,7 @@ tools/eval/                 System One eval cases, runner, raw results
 
 ```bash
 pnpm install
-pnpm test        # 71 tests: core engine, UI, integration
+pnpm test        # 117 tests: core engine, UI, integration
 pnpm build       # tsc --noEmit, then a production bundle
 pnpm dev         # the form, in a browser
 git config core.hooksPath .githooks   # one time per clone; blocks page photos
