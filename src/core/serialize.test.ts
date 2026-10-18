@@ -44,6 +44,39 @@ describe('URL round-trip', () => {
     expect(() => deserializeDecision(serializeDecision(decision).slice(0, 10))).toThrow();
   });
 
+  it('round-trips swing points, which decide the weights', () => {
+    // Without swingPoints in the schema the document round-trips but the
+    // weights vanish, so a shared URL re-weights every objective to nothing.
+    const withWeights = { ...decision, swingPoints: { o1: 100, o2: 40 } };
+    const back = deserializeDecision(serializeDecision(withWeights));
+    expect(back.swingPoints).toEqual({ o1: 100, o2: 40 });
+    expect(back).toEqual(withWeights);
+  });
+
+  it('round-trips gate answers, predictions and resolved outcomes', () => {
+    const committed = {
+      ...decision,
+      gate: {
+        sunkCost: { amount: 5000000, note: 'biaya kursus' },
+        survivorship: 'x',
+        ostrich: 'x',
+        hastyGeneralisation: 'x',
+        causation: 'x',
+        falseComparison: 'x',
+      },
+      reviewAt: '2027-01-01T00:00:00.000Z',
+      predictions: [{ claimId: 'c1', probability: 0.7 }],
+      outcomes: { c1: true },
+    };
+    const back = deserializeDecision(serializeDecision(committed));
+    expect(back).toEqual(committed);
+  });
+
+  it('rejects negative swing points', () => {
+    const invalid = { ...decision, swingPoints: { o1: -10 } };
+    expect(() => deserializeDecision(serializeDecision(invalid))).toThrow();
+  });
+
   it('rejects a payload whose JSON is valid but is not a decision', () => {
     const notADecision = referenceBase64Url(JSON.stringify({ hello: 'world' }));
     expect(() => deserializeDecision(notADecision)).toThrow();

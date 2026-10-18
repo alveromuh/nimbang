@@ -62,6 +62,14 @@ export const DecisionSchema = z.object({
   gate: GateSchema.optional(),
   /** Present once the decision is committed. */
   reviewAt: z.string().optional(),
+  /**
+   * Swing points per objective. Required for the decision to be scored, and part
+   * of the document rather than UI state: without it a shared URL would restore
+   * the options and items but silently re-weight the objectives to nothing.
+   */
+  swingPoints: z.record(z.string(), z.number().min(0)).optional(),
+  /** Resolved outcomes, keyed by claim id. Present once the user records them. */
+  outcomes: z.record(z.string(), z.boolean()).optional(),
 });
 
 export type Objective = z.infer<typeof ObjectiveSchema>;
