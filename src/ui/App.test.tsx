@@ -30,13 +30,59 @@ describe('App', () => {
     await user.type(screen.getByLabelText(/^option 2$/i), 'Tetap');
     await user.type(screen.getByLabelText(/^option 3$/i), 'Pindah');
 
-    // The score fields are the only number inputs labelled "... on ...".
-    const scores = screen.getAllByRole('spinbutton', { name: /on penghasilan/i });
-    await user.type(scores[0], '2');
-    await user.type(scores[1], '5');
-    await user.type(scores[2], '3');
+    // Each score row is a fieldset whose value field is labelled "Value (1-5)".
+    // Order follows options then objectives.
+    const values = screen.getAllByLabelText(/^value \(1-5\)$/i);
+    expect(values).toHaveLength(3);
+    await user.type(values[0], '2');
+    await user.type(values[1], '5');
+    await user.type(values[2], '3');
 
     expect(screen.getByRole('heading', { name: /^result$/i })).toBeInTheDocument();
     expect(screen.getByText(/recommendation: tetap/i)).toBeInTheDocument();
+  });
+
+  it('lets a cost subtract, so the app can express more than a benefit sum', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
+    await user.type(screen.getByLabelText(/^option 2$/i), 'Tetap');
+    await user.type(screen.getByLabelText(/^option 3$/i), 'Pindah');
+
+    const values = screen.getAllByLabelText(/^value \(1-5\)$/i);
+    await user.type(values[0], '1');
+    await user.type(values[1], '5');
+    await user.type(values[2], '3');
+
+    // Make option 2's item a cost. Before ItemEditor existed, every item was
+    // hardcoded to 'benefit', so this was unreachable from the app.
+    const kinds = screen.getAllByLabelText(/^kind$/i);
+    await user.selectOptions(kinds[1], 'cost');
+
+    // Option 2 now contributes negatively and must not lead.
+    expect(screen.getByText(/recommendation: negosiasi|recommendation: pindah/i)).toBeInTheDocument();
+    expect(screen.queryByText(/recommendation: tetap/i)).not.toBeInTheDocument();
+  });
+
+  it('blocks the recommendation when the leader carries fatal risk', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
+    await user.type(screen.getByLabelText(/^option 2$/i), 'Tetap');
+    await user.type(screen.getByLabelText(/^option 3$/i), 'Pindah');
+
+    const values = screen.getAllByLabelText(/^value \(1-5\)$/i);
+    await user.type(values[0], '1');
+    await user.type(values[1], '5');
+    await user.type(values[2], '3');
+
+    // Mark the leading option's item fatal: the ranking stays, the
+    // recommendation does not. This is Review Focus 2, previously unreachable.
+    const fatals = screen.getAllByLabelText(/fatal/i);
+    await user.click(fatals[1]);
+
+    expect(screen.getByText(/no recommendation/i)).toBeInTheDocument();
   });
 });

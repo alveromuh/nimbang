@@ -10,6 +10,7 @@ import {
   type Objective,
   type Option,
 } from '../core';
+import { ItemEditor } from './ItemEditor';
 import { Result } from './Result';
 
 /**
@@ -133,40 +134,28 @@ export function DecisionForm() {
 
       <section aria-labelledby="score-heading">
         <h2 id="score-heading">Scores</h2>
-        <p>Rate each option against each objective, from 1 to 5.</p>
+        <p>
+          For each option and objective: a value from 1 to 5, whether it is a benefit or a cost,
+          how likely it is, and what similar cases usually do.
+        </p>
 
         {options.map((option, optionIndex) =>
           objectives.map((objective, objectiveIndex) => {
-            const id = `score-${option.id}-${objective.id}`;
+            const itemId = `${option.id}--${objective.id}`;
             const item = items.find(
               (candidate) =>
                 candidate.optionId === option.id && candidate.objectiveId === objective.id,
             );
             return (
-              <div key={id}>
-                <label htmlFor={id}>
-                  {option.label || `Option ${optionIndex + 1}`} on{' '}
-                  {objective.statement || `objective ${objectiveIndex + 1}`}
-                </label>
-                <input
-                  id={id}
-                  type="number"
-                  min={1}
-                  max={5}
-                  value={item?.value ?? ''}
-                  onChange={(event) => {
-                    if (event.target.value === '') {
-                      setItems(items.filter((candidate) => candidate !== item));
-                      return;
-                    }
-                    const value = Number(event.target.value);
-                    if (Number.isNaN(value)) {
-                      return;
-                    }
-                    setItems(upsertItem(items, option.id, objective.id, value));
-                  }}
-                />
-              </div>
+              <ItemEditor
+                key={itemId}
+                idPrefix={itemId}
+                label={`${option.label || `Option ${optionIndex + 1}`} on ${
+                  objective.statement || `objective ${objectiveIndex + 1}`
+                }`}
+                item={item}
+                onChange={(next) => setItems(upsertItem(items, itemId, next))}
+              />
             );
           }),
         )}
@@ -181,17 +170,17 @@ function replaceAt<T>(list: T[], index: number, value: T): T[] {
   return list.map((entry, position) => (position === index ? value : entry));
 }
 
-function upsertItem(items: Item[], optionId: string, objectiveId: string, value: number): Item[] {
-  const id = `${optionId}-${objectiveId}`;
-  const next: Item = {
-    id,
-    optionId,
-    objectiveId,
-    kind: 'benefit',
-    value,
-    probability: 1,
-    risk: 'ordinary',
-  };
-  const existing = items.some((item) => item.id === id);
-  return existing ? items.map((item) => (item.id === id ? next : item)) : [...items, next];
+/**
+ * Replaces or removes the item with this id. `null` from the editor means the
+ * value was cleared, which is the user's way of saying the item does not apply.
+ */
+function upsertItem(items: Item[], itemId: string, next: Item | null): Item[] {
+  if (next === null) {
+    return items.filter((item) => item.id !== itemId);
+  }
+
+  const exists = items.some((item) => item.id === itemId);
+  return exists
+    ? items.map((item) => (item.id === itemId ? next : item))
+    : [...items, next];
 }
