@@ -10,7 +10,9 @@ export default defineConfig({
         test: {
           name: 'core',
           environment: 'node',
-          include: ['src/core/**/*.test.ts'],
+          // src/*.test.ts is the integration test. Without it here, the file
+          // matches no project and silently never runs.
+          include: ['src/core/**/*.test.ts', 'src/*.test.ts'],
         },
       },
       {
