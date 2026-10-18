@@ -77,7 +77,7 @@ and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
       citations.
 - [x] **M2 — Spec.** Design document, approved before any code.
 - [x] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
-      calibration. 68 tests across 13 files.
+      calibration. 71 tests across 13 files.
 - [ ] **M4 — App.** Guided pipeline, end to end, with print and share. *The form
       and the result view exist; localStorage persistence, print, and the gate /
       commit screens do not.*
