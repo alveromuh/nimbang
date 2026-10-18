@@ -21,37 +21,52 @@ export function ShareBar({ decision }: ShareBarProps) {
   const json = JSON.stringify(decision, null, 2);
 
   return (
-    <section aria-labelledby="share-heading">
-      <h2 id="share-heading">Share and export</h2>
+    <section className="panel" aria-labelledby="share-heading">
+      <div className="panel__head">
+        <h2 className="panel__title" id="share-heading">
+          Share and export
+        </h2>
+        <p className="panel__hint">The link carries the decision in the URL fragment.</p>
+      </div>
 
-      <label htmlFor="share-link">Share link</label>
-      <input id="share-link" readOnly value={link} onFocus={(event) => event.target.select()} />
+      <div className="field">
+        <label htmlFor="share-link">Share link</label>
+        <div className="row-actions">
+          <input
+            id="share-link"
+            readOnly
+            value={link}
+            onFocus={(event) => event.target.select()}
+          />
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(link);
+                setCopied(true);
+              } catch {
+                // Clipboard access can be refused. The link is selectable above,
+                // so the user is not stuck.
+              }
+            }}
+          >
+            Copy link
+          </button>
+        </div>
+        {copied && (
+          <p className="note" role="status">
+            Copied.
+          </p>
+        )}
+      </div>
 
-      <button
-        type="button"
-        onClick={async () => {
-          try {
-            await navigator.clipboard.writeText(link);
-            setCopied(true);
-          } catch {
-            // Clipboard access can be refused. The link is selectable above, so
-            // the user is not stuck; saying nothing is better than an alert.
-          }
-        }}
-      >
-        Copy link
-      </button>
-      {copied && <span role="status">Copied.</span>}
-
-      <label htmlFor="share-json">Decision as JSON</label>
-      <textarea id="share-json" readOnly rows={12} value={json} />
-
-      <button
-        type="button"
-        onClick={() => download(`${slug(decision.title)}.json`, json)}
-      >
-        Download JSON
-      </button>
+      <div className="field">
+        <label htmlFor="share-json">Decision as JSON</label>
+        <textarea id="share-json" readOnly rows={8} value={json} />
+        <button type="button" onClick={() => download(`${slug(decision.title)}.json`, json)}>
+          Download JSON
+        </button>
+      </div>
     </section>
   );
 }

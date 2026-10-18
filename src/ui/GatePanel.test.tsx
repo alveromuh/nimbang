@@ -48,9 +48,10 @@ describe('GatePanel', () => {
     expect(amount).toHaveValue(0);
 
     // A recorded zero must not be reported as missing. The other five fields are
-    // still empty here, so the only field that may be named is not sunkCost.
+    // still empty here, so sunk cost must not appear among the unanswered ones.
     const status = screen.getByRole('status');
-    expect(status.textContent).not.toMatch(/sunkCost/);
+    expect(status.textContent).not.toMatch(/sunk cost/i);
+    expect(status.textContent).toMatch(/who tried and failed/i);
   });
 
   it('reports the gate as incomplete until every field is answered', async () => {

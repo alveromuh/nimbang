@@ -62,6 +62,8 @@ export const DecisionSchema = z.object({
   gate: GateSchema.optional(),
   /** Present once the decision is committed. */
   reviewAt: z.string().optional(),
+  /** ISO timestamp of the last edit. Used to order the dashboard. */
+  updatedAt: z.string().optional(),
   /**
    * Swing points per objective. Required for the decision to be scored, and part
    * of the document rather than UI state: without it a shared URL would restore

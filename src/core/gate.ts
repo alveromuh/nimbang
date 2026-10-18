@@ -46,6 +46,15 @@ const REQUIRED_TEXT: Exclude<keyof GateInputs, 'sunkCost'>[] = [
   'falseComparison',
 ];
 
+const FIELD_LABELS: Record<keyof GateInputs, string> = {
+  sunkCost: 'sunk cost',
+  survivorship: 'who tried and failed',
+  ostrich: 'evidence you are avoiding',
+  hastyGeneralisation: 'how many cases',
+  causation: 'cause or coincidence',
+  falseComparison: 'what differs',
+};
+
 /**
  * False dichotomy and miscalibrated probability are enforced elsewhere, by the
  * option floor and the reference-class rule. They are not repeated here: one
@@ -69,10 +78,16 @@ export function validateGate(inputs: GateInputs): GateResult {
   }
 
   if (missing.length > 0) {
+    // Field names are for the developer, not the user: "hastyGeneralisation" is
+    // not a sentence anyone should have to read.
+    const named = missing.map((field) => FIELD_LABELS[field]).join(', ');
     return {
       ok: false,
       missing,
-      reason: `${missing.length} bias check(s) unanswered: ${missing.join(', ')}.`,
+      reason:
+        missing.length === 1
+          ? `One bias check is unanswered: ${named}.`
+          : `${missing.length} bias checks are unanswered: ${named}.`,
     };
   }
 

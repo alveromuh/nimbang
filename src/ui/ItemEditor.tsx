@@ -25,6 +25,7 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
   const value = item?.value;
   const kind = item?.kind ?? 'benefit';
   const risk = item?.risk ?? 'ordinary';
+  const probability = item?.probability ?? 1;
   const referenceClass = item?.referenceClass ?? '';
 
   // The probability field needs its own draft. It is a controlled number input,
@@ -45,84 +46,105 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
   };
 
   return (
-    <fieldset>
-      <legend>{label}</legend>
+    <div className="item">
+      {/* The label is an accessible name only. The matrix already prints the
+          option name in its row and the objective in its column, so showing it
+          again in every cell would be the same sentence nine times. */}
+      <span className="sr-only">{label}</span>
 
-      <label htmlFor={`${idPrefix}-value`}>Value (1-5)</label>
-      <input
-        id={`${idPrefix}-value`}
-        type="number"
-        min={1}
-        max={5}
-        step={0.5}
-        value={value ?? ''}
-        onChange={(event) => {
-          if (event.target.value === '') {
-            onChange(null);
-            return;
-          }
-          const parsed = Number(event.target.value);
-          if (!Number.isFinite(parsed) || parsed < 1 || parsed > 5) {
-            return;
-          }
-          emit({ value: parsed });
-        }}
-      />
+      <div className="item__meta">
+        <div>
+          <label htmlFor={`${idPrefix}-value`}>Value</label>
+          <input
+            id={`${idPrefix}-value`}
+            type="number"
+            min={1}
+            max={5}
+            step={0.5}
+            placeholder="1-5"
+            value={value ?? ''}
+            onChange={(event) => {
+              if (event.target.value === '') {
+                onChange(null);
+                return;
+              }
+              const parsed = Number(event.target.value);
+              if (!Number.isFinite(parsed) || parsed < 1 || parsed > 5) {
+                return;
+              }
+              emit({ value: parsed });
+            }}
+          />
+        </div>
 
-      <label htmlFor={`${idPrefix}-kind`}>Kind</label>
-      <select
-        id={`${idPrefix}-kind`}
-        value={kind}
-        onChange={(event) => emit({ kind: event.target.value === 'cost' ? 'cost' : 'benefit' })}
-      >
-        <option value="benefit">Benefit</option>
-        <option value="cost">Cost</option>
-      </select>
+        <div>
+          <label htmlFor={`${idPrefix}-kind`}>Kind</label>
+          <select
+            id={`${idPrefix}-kind`}
+            value={kind}
+            onChange={(event) => emit({ kind: event.target.value === 'cost' ? 'cost' : 'benefit' })}
+          >
+            <option value="benefit">Benefit</option>
+            <option value="cost">Cost</option>
+          </select>
+        </div>
+      </div>
 
-      <label htmlFor={`${idPrefix}-probability`}>Probability (0-1)</label>
-      <input
-        id={`${idPrefix}-probability`}
-        type="number"
-        min={0}
-        max={1}
-        step={0.05}
-        value={probabilityText}
-        onChange={(event) => {
-          const text = event.target.value;
-          setProbabilityDraft(text);
+      {/* The three refinements live behind a disclosure. In the matrix the job is
+          scanning values across options; five stacked fields per cell turns a
+          comparison into a wall of inputs. <details> keeps them one click away
+          and needs no JavaScript. */}
+      <details className="item__more">
+        <summary>
+          {probability !== 1 ? `P ${probability}` : 'Likelihood'}
+          {risk === 'fatal' ? ' · fatal' : ''}
+        </summary>
 
-          if (text === '') {
-            return;
-          }
-          const parsed = Number(text);
-          if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
-            // Keep the typed text visible so the user can correct it, but do not
-            // commit an out-of-range probability to the engine.
-            return;
-          }
-          emit({ probability: parsed });
-        }}
-        onBlur={() => setProbabilityDraft(null)}
-      />
-
-      <label htmlFor={`${idPrefix}-reference`}>Reference class</label>
-      <input
-        id={`${idPrefix}-reference`}
-        value={referenceClass}
-        placeholder="How do similar cases usually turn out?"
-        onChange={(event) => emit({ referenceClass: event.target.value })}
-      />
-
-      <label htmlFor={`${idPrefix}-fatal`}>
+        <label htmlFor={`${idPrefix}-probability`}>Probability</label>
         <input
-          id={`${idPrefix}-fatal`}
-          type="checkbox"
-          checked={risk === 'fatal'}
-          onChange={(event) => emit({ risk: event.target.checked ? 'fatal' : 'ordinary' })}
+          id={`${idPrefix}-probability`}
+          type="number"
+          min={0}
+          max={1}
+          step={0.05}
+          value={probabilityText}
+          onChange={(event) => {
+            const text = event.target.value;
+            setProbabilityDraft(text);
+
+            if (text === '') {
+              return;
+            }
+            const parsed = Number(text);
+            if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+              // Keep the typed text visible so the user can correct it, but do not
+              // commit an out-of-range probability to the engine.
+              return;
+            }
+            emit({ probability: parsed });
+          }}
+          onBlur={() => setProbabilityDraft(null)}
         />
-        Fatal risk (blocks the recommendation)
-      </label>
-    </fieldset>
+
+        <label htmlFor={`${idPrefix}-reference`}>Reference class</label>
+        <input
+          id={`${idPrefix}-reference`}
+          value={referenceClass}
+          placeholder="similar cases?"
+          onChange={(event) => emit({ referenceClass: event.target.value })}
+        />
+
+        <label className="check" htmlFor={`${idPrefix}-fatal`}>
+          <input
+            id={`${idPrefix}-fatal`}
+            type="checkbox"
+            checked={risk === 'fatal'}
+            onChange={(event) => emit({ risk: event.target.checked ? 'fatal' : 'ordinary' })}
+          />
+          Fatal risk
+        </label>
+      </details>
+    </div>
   );
 }
 

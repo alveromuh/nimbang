@@ -58,58 +58,74 @@ export function GatePanel({ value, onChange }: GatePanelProps) {
   const patch = (next: Partial<GateInputs>) => onChange({ ...value, ...next });
 
   return (
-    <section aria-labelledby="gate-heading">
-      <h2 id="gate-heading">Bias checks</h2>
-      <p>Each question targets a specific way this decision could be wrong.</p>
+    <section className="panel" aria-labelledby="gate-heading">
+      <div className="panel__head">
+        <h2 className="panel__title" id="gate-heading">
+          Bias checks
+        </h2>
+        <p className="panel__hint">Each question targets a way this decision could be wrong.</p>
+      </div>
 
-      <div>
-        <label htmlFor="gate-sunk-amount">Sunk cost already spent</label>
-        <input
-          id="gate-sunk-amount"
-          type="number"
-          min={0}
-          value={value.sunkCost?.amount ?? ''}
-          onChange={(event) => {
-            if (event.target.value === '') {
-              patch({ sunkCost: null });
-              return;
-            }
-            const amount = Number(event.target.value);
-            if (!Number.isFinite(amount) || amount < 0) {
-              return;
-            }
-            patch({ sunkCost: { amount, note: value.sunkCost?.note ?? '' } });
-          }}
-        />
+      <div className="field">
+        <div className="field-row">
+          <div>
+            <label htmlFor="gate-sunk-amount">Sunk cost already spent</label>
+            <input
+              id="gate-sunk-amount"
+              type="number"
+              min={0}
+              value={value.sunkCost?.amount ?? ''}
+              onChange={(event) => {
+                if (event.target.value === '') {
+                  patch({ sunkCost: null });
+                  return;
+                }
+                const amount = Number(event.target.value);
+                if (!Number.isFinite(amount) || amount < 0) {
+                  return;
+                }
+                patch({ sunkCost: { amount, note: value.sunkCost?.note ?? '' } });
+              }}
+            />
+          </div>
+          <div>
+            <label htmlFor="gate-sunk-note">What it was for</label>
+            <input
+              id="gate-sunk-note"
+              value={value.sunkCost?.note ?? ''}
+              onChange={(event) =>
+                patch({
+                  sunkCost: { amount: value.sunkCost?.amount ?? 0, note: event.target.value },
+                })
+              }
+            />
+          </div>
+        </div>
 
-        <label htmlFor="gate-sunk-note">What it was for</label>
-        <input
-          id="gate-sunk-note"
-          value={value.sunkCost?.note ?? ''}
-          onChange={(event) =>
-            patch({ sunkCost: { amount: value.sunkCost?.amount ?? 0, note: event.target.value } })
-          }
-        />
-
-        <p>
-          <strong>Excluded from the arithmetic.</strong> Money and time already spent are the same
-          whether you continue or stop, so they cannot make one option better than another.
+        <p className="note">
+          <span className="badge badge--excluded">Excluded from the arithmetic</span>{' '}
+          Money and time already spent are the same whether you continue or stop, so they cannot
+          make one option better than another.
         </p>
       </div>
 
       {QUESTIONS.map((entry) => (
-        <div key={entry.field}>
+        <div className="field" key={entry.field}>
           <label htmlFor={entry.id}>{entry.question}</label>
-          <p>{entry.hint}</p>
           <textarea
             id={entry.id}
+            placeholder={entry.hint}
             value={value[entry.field]}
             onChange={(event) => patch({ [entry.field]: event.target.value } as Partial<GateInputs>)}
           />
         </div>
       ))}
 
-      {!result.ok && <p role="status">{result.reason}</p>}
+      {!result.ok && (
+        <p className="note note--warn" role="status">
+          {result.reason}
+        </p>
+      )}
     </section>
   );
 }

@@ -28,7 +28,7 @@ export interface StorageLike {
  * this environment. Injecting it also keeps the adapter honest: it has no
  * opinion about where the bytes live.
  */
-function resolveStorage(): StorageLike | null {
+export function resolveStorage(): StorageLike | null {
   try {
     const candidate = (globalThis as { localStorage?: StorageLike }).localStorage;
     return candidate ?? null;
