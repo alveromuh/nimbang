@@ -53,6 +53,23 @@ scaffolding.
 - Never invoke bare `python3` — it is macOS 3.9.6. The vision helper is
   stdlib-only and runs on it fine, but any real Python work needs `uv run`.
 
+## Structured input: System One
+
+`POST /v1/systemone` (Kenari.id) is the assessed, intended way to turn a user's
+free-text situation into the fields the engine needs. **Read
+[`docs/systemone-integration.md`](docs/systemone-integration.md) before writing
+any code that calls a model.** It is short and it is binding.
+
+The rule in one line: **the model fills fields, the engine computes.** No model
+output ever becomes a ranking, a winner, or a number without a source label.
+
+Two traps already paid for:
+
+- `GET /v1/models` does **not** list System One models. Use
+  `GET /v1/models?modality=systemone`.
+- Question wording changes accuracy by tens of percentage points. Question text
+  is versioned data, not a string literal inline in a fetch call.
+
 ## Conventions once code starts
 
 - TypeScript strict. No `any` without a comment justifying it.

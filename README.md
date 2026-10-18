@@ -42,6 +42,31 @@ Derived from the decision-analysis literature, not from any single popular book.
 The framework document, with formal definitions and citations, is
 [`docs/framework.md`](docs/framework.md) *(written after source extraction)*.
 
+## Design constraints
+
+- **Deterministic core, thin optional backend.** All scoring, sensitivity, and
+  calibration run in the browser on plain data — `src/core/` is pure and needs
+  no server. A backend exists for exactly one reason: a model API key cannot
+  live in a browser. That backend is one endpoint, not a service.
+- **The engine is pure.** `src/core/` holds functions with no framework imports,
+  so the mathematics is testable on its own and reusable outside the UI.
+- **Every number is traceable.** The app must always be able to say where a
+  score came from and what would change it. A model-derived number is labelled
+  with its source and confidence, and is overridable.
+
+## Structured input
+
+Turning a messy human description into the fields the engine needs is handled by
+a **decision model**, not a chatbot: `POST /v1/systemone` on Kenari.id returns
+typed answers with probabilities, keyed by question id — no free text, no output
+to parse.
+
+The dividing line is absolute: **the model fills fields, the engine computes.**
+No model output ever becomes a ranking or a winner. Assessed against 20 cases
+with ground truth — see
+[`docs/systemone-integration.md`](docs/systemone-integration.md) for the contract
+and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
+
 ## Roadmap
 
 - [ ] **M0 — Sources.** Photograph and extract the secondary source; verify the
@@ -53,27 +78,22 @@ The framework document, with formal definitions and citations, is
       calibration.
 - [ ] **M4 — App.** Guided pipeline, end to end, with print and share.
 - [ ] **M5 — Release.** Public repo, live demo, docs.
-
-## Design constraints
-
-- **Client-only.** No backend, no accounts, no database. State lives in the
-  browser; sharing is a compressed URL or a file. Nothing to operate, nothing to
-  breach.
-- **The engine is pure.** `src/core/` holds functions with no framework imports,
-  so the mathematics is testable on its own and reusable outside the UI.
-- **Every number is traceable.** The app must always be able to say where a
-  score came from and what would change it.
+- [ ] **M6 — Structured input.** System One endpoint, question set under version
+      control, 100-case regression suite in CI.
 
 ## Repository layout
 
 ```
 docs/
-  framework.md            the framework itself: stages, formulas, citations
-  sources/                extracted notes (page photos are never committed)
-  superpowers/specs/      design documents
-  superpowers/plans/      implementation plans
-src/core/                 pure decision engine, no UI imports
-tools/vision/             research tooling: page photo -> text
+  framework.md              the framework itself: stages, formulas, citations
+  systemone-integration.md  contract for the model-backed input layer
+  eval-systemone.md         measurements behind that decision
+  sources/                  extracted notes (page photos are never committed)
+  superpowers/specs/        design documents
+  superpowers/plans/        implementation plans
+src/core/                   pure decision engine, no UI imports
+tools/vision/               research tooling: page photo -> text
+tools/eval/                 System One eval cases, runner, raw results
 ```
 
 ## Local setup
