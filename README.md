@@ -41,6 +41,7 @@ Derived from the decision-analysis literature, not from any single popular book.
 
 The framework document, with formal definitions and citations, is
 [`docs/framework.md`](docs/framework.md) *(written after source extraction)*.
+Every citation behind the pipeline is in [`docs/references.md`](docs/references.md).
 
 ## Design constraints
 
@@ -86,6 +87,8 @@ and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
 ```
 docs/
   framework.md              the framework itself: stages, formulas, citations
+  references.md             verified sources for every method the engine uses
+  core-engine-scope.md      what ships, what is excluded, and why
   systemone-integration.md  contract for the model-backed input layer
   eval-systemone.md         measurements behind that decision
   sources/                  extracted notes (page photos are never committed)

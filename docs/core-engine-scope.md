@@ -4,7 +4,11 @@ Filtered from the source extraction in [`sources/notes/`](sources/notes/).
 This is the decision record: what the engine implements, what it deliberately
 does not, and why.
 
-Status: **proposal, awaiting approval.** Nothing here is built yet.
+Status: **approved 2026-10-18.** Decisions taken: normalisation replaces the raw
+1–5 sum; fatal risk is a flag, not a quantified utility; bab 7 ships in v2 as the
+`prioritas` decision shape. Nothing here is built yet.
+
+Every component below cites its source in [`references.md`](references.md).
 
 ## The test each item had to pass
 
@@ -122,6 +126,12 @@ output:
 If the winner's margin is inside the noise of the user's own uncertainty, the
 correct output is **"go find out X"**, not a winner.
 
+One-at-a-time sensitivity is defensible **here specifically** because the
+aggregation is additive: with no interaction terms, OAT and variance-based
+decomposition agree. If a future version adds non-additive terms, this
+justification collapses and the method must change with it. See
+[`references.md`](references.md#sensitivity-analysis).
+
 ### E9. Bias mechanisms (Bab 6)
 
 Each bias becomes one required input, not one paragraph:
@@ -156,11 +166,11 @@ that gets used once.
 | Item | Source | Why not |
 |---|---|---|
 | Pola pikir ilmiah as a stage | Bab 3 | A disposition, not a tool. Reduces to one field: "what would change your mind?" Fold into E9's Ostrich mechanism. |
-| Eisenhower quadrant | Bab 7 | Better on paper. The software-shaped part is subset selection under capacity — a different decision *shape*, deferred. |
+| Eisenhower quadrant | Bab 7 | The quadrant is better on paper; it ships in v2 as the `prioritas` shape instead (subset selection under capacity), per the 2026-10-18 decision. |
 | "Automate" lever | Bab 7 | Useful advice, zero computable content. |
 | Cipolla matrix | Bab 8 | Satire. Cannot be scored honestly and should not be. |
 | Integrated CBA (benefit to others) | Bab 8 | Would require the app to price other people's welfare and then pronounce. Different product, different burden. |
-| Raw sum of 1–5 values | Bab 4 | Wins by item count. Replaced by E5 normalisation. |
+| Raw sum of 1–5 values | Bab 4 | Wins by item count. Replaced by E5 normalisation (approved). |
 | Cost-per-benefit ratio | Bab 4 | Contradicts the subtraction used everywhere else. One rule only. |
 | Herzberg as a scoring model | Bab 1 | Kept only as the hygiene/motivation question in E1; the two-factor theory is not a measurement model. |
 
@@ -172,10 +182,10 @@ ships in v1:
 | Shape | Status | Input |
 |---|---|---|
 | `pilih_opsi` — choose one of several | **v1** | objectives, options, items, V, P |
-| `ya_tidak` — one proposal vs baseline | v2 | same, with the baseline implied |
-| `prioritas` — subset under capacity | v2 | items + capacity, no scoring |
+| `prioritas` — subset under capacity | **v2 (confirmed)** | items + capacity, no scoring |
+| `ya_tidak` — one proposal vs baseline | v2 | same as v1, with the baseline implied |
 | `alokasi` — divide a fixed resource | v3 | shares, not choices |
-| `beli_info` — is more information worth it? | v3 | value of information |
+| `beli_info` — is more information worth it? | v3 | value of information (Howard 1966) |
 
 The `beli_info` shape is the most interesting thing this framework could do that
 nothing else does, and it is also the one that answers "I don't know where to
