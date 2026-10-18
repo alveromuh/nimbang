@@ -1,0 +1,31 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# node
+node_modules/
+dist/
+build/
+.next/
+*.log
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+
+# book scans: never commit photographs of the source book
+docs/sources/*
+!docs/sources/README.md
+!docs/sources/*.md
