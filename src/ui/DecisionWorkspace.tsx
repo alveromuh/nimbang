@@ -16,6 +16,11 @@ import { CommitPanel } from './CommitPanel';
 import { GatePanel } from './GatePanel';
 import { ItemGrid } from './ItemGrid';
 import { Result } from './Result';
+import { SuggestionPanel } from './SuggestionPanel';
+import { requestSuggestions } from '../suggestions/client';
+import { toSuggestions } from '../suggestions/map';
+import { buildState } from '../suggestions/questions';
+import type { BiasKey } from '../suggestions/catalog';
 
 interface DecisionWorkspaceProps {
   decision: Decision;
@@ -106,6 +111,36 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
 
   function addOption(): void {
     setOptions([...options, { id: nextId('x', options), label: '', isBaseline: false }]);
+  }
+
+  /**
+   * Accepts a suggested option. It arrives as a normal, editable option: the
+   * suggestion is a starting point, and once added it is the user's text to
+   * change or delete.
+   */
+  function addSuggestedOption(label: string): void {
+    setOptions([...options, { id: nextId('x', options), label, isBaseline: false }]);
+  }
+
+  /**
+   * Inserts a bias prompt as a starting point for the user's own answer. The
+   * model never supplies the answer itself; this writes a question to think
+   * about, which the user then replaces.
+   */
+  function useBiasPrompt(key: BiasKey, starter: string): void {
+    const field = key as keyof GateInputs;
+    setGate((current) => ({ ...current, [field]: starter }));
+  }
+
+  function requestSuggestionSet() {
+    const state = buildState({
+      title,
+      objectives: objectives.map((objective) => objective.statement),
+      options: options.map((option) => option.label),
+    });
+    return requestSuggestions({ state }).then((response) =>
+      toSuggestions(response, options.map((option) => option.label)),
+    );
   }
 
   function removeOption(id: string): void {
@@ -228,6 +263,12 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
         <button type="button" onClick={addOption}>
           Add option
         </button>
+
+        <SuggestionPanel
+          onRequest={requestSuggestionSet}
+          onAddOption={addSuggestedOption}
+          onUseBias={useBiasPrompt}
+        />
       </section>
 
       <section className="panel" aria-labelledby="weigh-heading">

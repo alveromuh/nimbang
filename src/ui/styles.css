@@ -696,6 +696,78 @@ button:disabled {
   color: var(--ink);
 }
 
+/* ---------- suggestions ---------- */
+
+.suggest {
+  margin-top: var(--s-md);
+  padding-top: var(--s-md);
+  border-top: 1px dashed var(--line-strong);
+}
+
+.suggest--open {
+  border-top-style: solid;
+  background: var(--accent-soft);
+  border-radius: var(--r-md);
+  padding: var(--s-md);
+  margin-top: var(--s-md);
+}
+
+.suggest__trigger {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-sm);
+}
+
+.suggest__hint {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.suggest__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-sm);
+  margin-bottom: var(--s-sm);
+}
+
+.suggest__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: var(--s-md) 0 var(--s-xs);
+}
+
+.suggest__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-sm);
+  align-items: start;
+  padding: var(--s-sm);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  margin-bottom: var(--s-xs);
+}
+
+.suggest__item strong {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.suggest__item .note {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+}
+
+.suggest__footnote {
+  margin-top: var(--s-md);
+  font-size: 0.75rem;
+}
+
 /* ---------- tornado ---------- */
 
 .tornado {

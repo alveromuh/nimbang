@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { suggestApi } from './server/suggest';
 
 export default defineConfig({
-  plugins: [react()],
+  // The only server-side piece: it holds the System One key, which a browser
+  // cannot. See server/suggest.ts for why it exists and what it refuses to do.
+  plugins: [react(), suggestApi()],
   test: {
     projects: [
       {
@@ -13,6 +16,14 @@ export default defineConfig({
           // src/*.test.ts is the integration test. Without it here, the file
           // matches no project and silently never runs.
           include: ['src/core/**/*.test.ts', 'src/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'suggestions',
+          environment: 'node',
+          include: ['src/suggestions/**/*.test.ts'],
         },
       },
       {
