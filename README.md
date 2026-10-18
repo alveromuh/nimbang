@@ -76,10 +76,11 @@ src/core/                 pure decision engine, no UI imports
 tools/vision/             research tooling: page photo -> text
 ```
 
-## Contributing
+## Local setup
 
-Not open for contributions yet — the framework and spec are still being written.
-Issues and discussion are welcome once the spec lands.
+```bash
+git config core.hooksPath .githooks   # one time per clone; blocks page photos
+```
 
 ## License
 

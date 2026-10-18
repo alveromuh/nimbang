@@ -1,0 +1,43 @@
+#!/bin/sh
+# Block source-page photographs from ever entering a commit.
+#
+# .gitignore stops normal `git add`, but `git add -f` bypasses it. This hook is
+# the backstop: it inspects the staged tree and refuses image files and anything
+# under docs/sources/ that is not a markdown note.
+#
+# Enable once per clone:
+#   git config core.hooksPath .githooks
+
+set -u
+
+blocked=""
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+for path in $staged; do
+    case "$path" in
+        docs/sources/*.md)
+            continue
+            ;;
+        docs/sources/*)
+            blocked="$blocked\n  $path  (anything under docs/sources/ except .md)"
+            continue
+            ;;
+    esac
+
+    case "$path" in
+        *.jpg|*.jpeg|*.png|*.heic|*.heif|*.tif|*.tiff|*.webp|*.bmp|*.gif|*.pdf)
+            blocked="$blocked\n  $path  (image/document)"
+            ;;
+    esac
+done
+
+if [ -n "$blocked" ]; then
+    printf 'commit refused: source material must stay local\n' >&2
+    printf "$blocked\n" >&2
+    printf '\nIf this is genuinely a project asset and not a page photo, move it\n' >&2
+    printf 'outside docs/sources/ and use a proper format (SVG or generated art).\n' >&2
+    exit 1
+fi
+
+exit 0

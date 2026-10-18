@@ -10,6 +10,11 @@ All notable changes to this project are documented here. Format follows
 
 - Repository scaffold: ignore rules that keep source-page photographs out of
   git, notes directory, spec and plan directories, pure-engine directory.
+- `.githooks/pre-commit` — refuses to commit any image or document under
+  `docs/sources/` (except `.md` notes) and any image staged anywhere in the
+  repo, so source photographs stay local even against `git add -f`. Verified:
+  a force-added `.jpg` and a `.png` outside `docs/sources/` were both refused,
+  while a `.md` note committed normally.
 - `tools/vision/` — reads a page photograph with a vision model on Kenari.id.
   Default model verified against a rotated, compressed test page: text and table
   structure both correct.

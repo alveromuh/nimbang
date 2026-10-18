@@ -32,6 +32,10 @@ scaffolding.
   its coined terms, or its cover as a name, feature name, or branding.
 - **Page photographs never enter git.** `docs/sources/*.jpg` is ignored. Only
   `.md` notes are tracked. Do not add an exception to `.gitignore`.
+  A `pre-commit` hook in `.githooks/` enforces this even against `git add -f`:
+  it refuses any image or document under `docs/sources/` except `.md`, and
+  refuses image files staged anywhere in the repo. Enable it in a fresh clone
+  with `git config core.hooksPath .githooks`.
 - **Never commit credentials.** The Kenari API key is read at runtime from
   `~/.hermes/.env` via the `kenari-key` helper. It must not appear in code,
   logs, docs, commits, or output.
