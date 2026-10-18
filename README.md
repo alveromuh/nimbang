@@ -78,11 +78,12 @@ and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
 - [x] **M2 — Spec.** Design document, approved before any code.
 - [x] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
       calibration. 117 tests across 18 files.
-- [x] **M4 — App.** Guided pipeline, end to end, with print and share. *All nine
-      stages are reachable from the form: items carry benefit/cost, probability,
-      reference class and a fatal flag; the bias gate and commit screens exist;
-      the draft persists to localStorage; decisions share as a URL fragment and
-      export as JSON; a print stylesheet hides the share controls.*
+- [x] **M4 — App.** Guided pipeline, end to end, with print and share. *A
+      dashboard: a rail of decisions and a workspace for the open one, with the
+      verdict above the inputs. All nine stages are reachable; the draft persists
+      to localStorage; decisions share as a URL fragment and export as JSON; a
+      print stylesheet hides the controls. Visual identity is specified in
+      [`DESIGN.md`](DESIGN.md).*
 - [ ] **M5 — Release.** Public repo, live demo, docs.
 - [ ] **M6 — Structured input.** System One endpoint, question set under version
       control, 100-case regression suite in CI.
@@ -99,8 +100,9 @@ docs/
   sources/                  extracted notes (page photos are never committed)
   superpowers/specs/        design documents
   superpowers/plans/        implementation plans
+DESIGN.md                   design tokens and rationale (Google DESIGN.md spec)
 src/core/                   pure decision engine, no UI imports
-src/ui/                     React form and result view
+src/ui/                     dashboard, workspace, panels, stylesheet
 tools/vision/               research tooling: page photo -> text
 tools/eval/                 System One eval cases, runner, raw results
 ```

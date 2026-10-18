@@ -8,6 +8,19 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- **Dashboard shell.** The app was one vertical run of seven sections. It is now
+  a rail of decisions beside a workspace for the open one, with the verdict
+  above the inputs so the answer stays visible while they change.
+- **`DESIGN.md`** — the visual identity as a token spec (Google's DESIGN.md
+  format), linted with `@google/design.md`: 0 errors, 0 warnings, WCAG AA
+  contrast passing. Warm paper and ink, one deep-green accent, Newsreader for
+  display, Inter for interface, JetBrains Mono for numbers only.
+- **Score matrix.** Options down the side, objectives across the top. Comparing
+  options is the task, and a list forces the reader to hold the others in
+  memory. Probability, reference class and the fatal flag sit behind a
+  `<details>` disclosure so the matrix stays scannable.
+- **Decisions library.** One storage key per decision plus an index, and a
+  migration of the old single-draft key so existing work survives the change.
 - **M4: the app reaches every stage.** Previously the form could only express a
   benefit with probability 1 and no fatal risk, which made four of the engine's
   five distinguishing features unreachable. Now:
@@ -73,6 +86,15 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- `grid-template-columns` used `repeat(var(--cols), …)`, which is invalid CSS:
+  `repeat()` needs an integer, so the declaration was dropped and the score
+  matrix never formed. Every cell stacked full width.
+- The workspace passed `null` as storage, which the library correctly read as
+  "no storage available" and no-op'd — nothing saved.
+- An inline `grid-template-columns` overrode the mobile media query, so the
+  matrix scrolled sideways on a phone.
+- User-facing copy exposed internal field names (`sunkCost`,
+  `hastyGeneralisation`) and printed "6 bias check(s)".
 - `DecisionSchema` carried no `swingPoints`, so a shared URL restored the
   options and items but silently lost the weights: the recipient would open a
   decision that scores differently from the one shared. Review Focus 5 asks for
