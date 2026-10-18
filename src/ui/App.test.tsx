@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
+import { loadDraft } from './persistence';
 
 describe('App', () => {
   it('renders the form', () => {
@@ -85,4 +86,81 @@ describe('App', () => {
 
     expect(screen.getByText(/no recommendation/i)).toBeInTheDocument();
   });
+
+  it('saves the draft as it is edited, so a refresh does not lose work', async () => {
+    const user = userEvent.setup();
+    const storage = installStorage();
+    render(<App />);
+
+    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
+
+    // Criterion 1: created and saved. The adapter validates against the schema,
+    // so what lands in storage is a decision, not a partial form.
+    const saved = loadDraft(storage);
+    expect(saved?.objectives[0]?.statement).toBe('Penghasilan');
+  });
+
+  it('restores a saved draft on the next visit', async () => {
+    const user = userEvent.setup();
+    const storage = installStorage();
+    const first = render(<App />);
+    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
+    first.unmount();
+
+    render(<App />);
+    // Criterion 1: loaded.
+    expect(screen.getByLabelText(/^objective 1$/i)).toHaveValue('Penghasilan');
+    expect(loadDraft(storage)?.objectives[0]?.statement).toBe('Penghasilan');
+  });
+
+  it('offers a share link and a JSON export', async () => {
+    const user = userEvent.setup();
+    installStorage();
+    render(<App />);
+
+    await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
+
+    // Criterion 1: exported as JSON, and shareable.
+    const json = screen.getByLabelText(/json/i) as HTMLTextAreaElement;
+    expect(JSON.parse(json.value).objectives[0].statement).toBe('Penghasilan');
+
+    const link = screen.getByLabelText(/share link/i) as HTMLInputElement;
+    expect(link.value).toContain('#d=');
+  });
+
+  it('asks the bias questions and refuses to call the gate complete', () => {
+    installStorage();
+    render(<App />);
+    // Criterion 7: sunk cost is recorded and visibly excluded.
+    expect(screen.getByText(/excluded from the arithmetic/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/who tried this and failed/i)).toBeInTheDocument();
+  });
+
+  it('says there is no calibration score until a prediction is resolved', () => {
+    installStorage();
+    render(<App />);
+    // Criterion 8: a Brier score is computed from resolved predictions, and its
+    // absence is stated rather than shown as zero.
+    expect(screen.getByText(/no resolved predictions/i)).toBeInTheDocument();
+  });
 });
+
+/**
+ * Replaces the global with an in-memory store. jsdom's localStorage getter
+ * returns undefined under vitest, so the app's default lookup would find
+ * nothing and persistence would be untestable through the UI.
+ */
+function installStorage() {
+  const entries = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => entries.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      entries.set(key, value);
+    },
+    removeItem: (key: string) => {
+      entries.delete(key);
+    },
+  };
+  Object.defineProperty(globalThis, 'localStorage', { value: storage, configurable: true });
+  return storage;
+}

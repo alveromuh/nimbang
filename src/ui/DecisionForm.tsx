@@ -1,17 +1,24 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
+  deserializeDecision,
   scoreDecision,
   stressTest,
   swingWeights,
   validateDiverge,
   validateFrame,
   type Decision,
+  type GateInputs,
   type Item,
   type Objective,
   type Option,
+  type Prediction,
 } from '../core';
+import { CommitPanel } from './CommitPanel';
+import { GatePanel } from './GatePanel';
 import { ItemEditor } from './ItemEditor';
 import { Result } from './Result';
+import { ShareBar } from './ShareBar';
+import { loadDraft, saveDraft } from './persistence';
 
 /**
  * The pipeline as one form. No chat, and no wizard that hides the arithmetic:
@@ -24,22 +31,53 @@ import { Result } from './Result';
  * text, so a test (or a screen reader) cannot address the field unambiguously.
  */
 export function DecisionForm() {
-  const [title, setTitle] = useState('');
-  const [objectives, setObjectives] = useState<Objective[]>([
-    { id: 'o1', statement: '', kind: 'motivation' },
-  ]);
-  const [options, setOptions] = useState<Option[]>([
-    { id: 'a', label: 'Do nothing', isBaseline: true },
-    { id: 'b', label: '', isBaseline: false },
-    { id: 'c', label: '', isBaseline: false },
-  ]);
-  const [items, setItems] = useState<Item[]>([]);
-  const [swingPoints, setSwingPoints] = useState<Record<string, number>>({ o1: 100 });
+  // Initial state comes from the URL fragment if present, then from the saved
+  // draft, then from a blank decision. The URL wins because opening a shared
+  // link is an explicit request to see that decision, not whatever was last
+  // being worked on.
+  const [initial] = useState(loadInitialDecision);
+
+  const [title, setTitle] = useState(initial.title);
+  const [objectives, setObjectives] = useState<Objective[]>(initial.objectives);
+  const [options, setOptions] = useState<Option[]>(initial.options);
+  const [items, setItems] = useState<Item[]>(initial.items);
+  const [swingPoints, setSwingPoints] = useState<Record<string, number>>(
+    initial.swingPoints ?? { o1: 100 },
+  );
+  const [gate, setGate] = useState<GateInputs>(
+    initial.gate ?? {
+      sunkCost: null,
+      survivorship: '',
+      ostrich: '',
+      hastyGeneralisation: '',
+      causation: '',
+      falseComparison: '',
+    },
+  );
+  const [predictions, setPredictions] = useState<Prediction[]>(initial.predictions ?? []);
+  const [outcomes, setOutcomes] = useState<Record<string, boolean>>(initial.outcomes ?? {});
 
   const decision: Decision = useMemo(
-    () => ({ id: 'draft', title, objectives, options, items, claims: [] }),
-    [title, objectives, options, items],
+    () => ({
+      id: initial.id,
+      title,
+      objectives,
+      options,
+      items,
+      claims: [],
+      swingPoints,
+      predictions,
+      outcomes,
+    }),
+    [initial.id, title, objectives, options, items, swingPoints, predictions, outcomes],
   );
+
+  // Persist on every change. A failed write (private mode, full quota) is not
+  // surfaced: the form keeps working, and blocking the user over a storage
+  // error would be worse than losing the draft.
+  useEffect(() => {
+    saveDraft(decision);
+  }, [decision]);
 
   const frame = validateFrame(decision);
   const diverge = validateDiverge(decision);
@@ -162,8 +200,56 @@ export function DecisionForm() {
       </section>
 
       {result && <Result decision={decision} score={result.score} stress={result.stress} />}
+
+      <GatePanel value={gate} onChange={setGate} />
+
+      <CommitPanel
+        predictions={predictions}
+        outcomes={outcomes}
+        onChangePredictions={setPredictions}
+        onChangeOutcomes={setOutcomes}
+      />
+
+      <ShareBar decision={decision} />
     </form>
   );
+}
+
+/**
+ * A shared link wins over the local draft. `location` is read defensively
+ * because this module also runs in tests and in any future server-side render,
+ * where it does not exist.
+ */
+function loadInitialDecision(): Decision {
+  if (typeof location !== 'undefined') {
+    const payload = location.hash.startsWith('#d=') ? location.hash.slice(3) : null;
+    if (payload !== null) {
+      try {
+        return deserializeDecision(payload);
+      } catch {
+        // A malformed link falls through to the draft rather than blanking the
+        // page: the user still has their own work.
+      }
+    }
+  }
+
+  return loadDraft() ?? blankDecision();
+}
+
+function blankDecision(): Decision {
+  return {
+    id: 'draft',
+    title: '',
+    objectives: [{ id: 'o1', statement: '', kind: 'motivation' }],
+    options: [
+      { id: 'a', label: 'Do nothing', isBaseline: true },
+      { id: 'b', label: '', isBaseline: false },
+      { id: 'c', label: '', isBaseline: false },
+    ],
+    items: [],
+    claims: [],
+    swingPoints: { o1: 100 },
+  };
 }
 
 function replaceAt<T>(list: T[], index: number, value: T): T[] {
