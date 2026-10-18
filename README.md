@@ -7,9 +7,10 @@ options, explicit value trade-offs, probability-weighted outcomes, sensitivity
 analysis, and a record of what you predicted so you can learn from it — and puts
 it in one guided pipeline instead of eight disconnected worksheets.
 
-> **Status: research.** No application code yet. The framework is being derived
-> from primary sources first; the spec follows from that. See
-> [`docs/`](docs/) and the roadmap below.
+> **Status: v1 engine and app working.** The core engine (`src/core/`) is
+> implemented test-first and covers all nine stages; a minimal React form in
+> `src/ui/` runs the pipeline end to end. See the roadmap below for what is
+> still missing before release.
 
 ## Why not just a pros/cons calculator
 
@@ -70,14 +71,16 @@ and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
 
 ## Roadmap
 
-- [ ] **M0 — Sources.** Photograph and extract the secondary source; verify the
+- [x] **M0 — Sources.** Photograph and extract the secondary source; verify the
       primary sources it rests on.
-- [ ] **M1 — Framework.** `docs/framework.md`: formal stages, formulas,
+- [x] **M1 — Framework.** `docs/framework.md`: formal stages, formulas,
       citations.
-- [ ] **M2 — Spec.** Design document, approved before any code.
-- [ ] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
-      calibration.
-- [ ] **M4 — App.** Guided pipeline, end to end, with print and share.
+- [x] **M2 — Spec.** Design document, approved before any code.
+- [x] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
+      calibration. 68 tests across 13 files.
+- [ ] **M4 — App.** Guided pipeline, end to end, with print and share. *The form
+      and the result view exist; localStorage persistence, print, and the gate /
+      commit screens do not.*
 - [ ] **M5 — Release.** Public repo, live demo, docs.
 - [ ] **M6 — Structured input.** System One endpoint, question set under version
       control, 100-case regression suite in CI.
@@ -95,6 +98,7 @@ docs/
   superpowers/specs/        design documents
   superpowers/plans/        implementation plans
 src/core/                   pure decision engine, no UI imports
+src/ui/                     React form and result view
 tools/vision/               research tooling: page photo -> text
 tools/eval/                 System One eval cases, runner, raw results
 ```
@@ -102,6 +106,10 @@ tools/eval/                 System One eval cases, runner, raw results
 ## Local setup
 
 ```bash
+pnpm install
+pnpm test        # 71 tests: core engine, UI, integration
+pnpm build       # tsc --noEmit, then a production bundle
+pnpm dev         # the form, in a browser
 git config core.hooksPath .githooks   # one time per clone; blocks page photos
 ```
 
