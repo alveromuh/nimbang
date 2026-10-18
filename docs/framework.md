@@ -197,9 +197,19 @@ Rules that the arithmetic depends on:
 - **A flip is the winner changing, not only the top two swapping.** An item
   belonging to a third option can overtake the leader; ignoring it would report
   a fragile decision as robust.
-- **Strictly past `v*`.** At exactly `delta` the options tie, and a tie is not a
-  reversal. This is the convention that keeps the arithmetic finite when two
-  options are identical: `delta` is reported, `fragile` stays false.
+- **Strictly past `v*`.** Moving the value by exactly `delta` produces a tie, and
+  a tie is not a reversal, so a flip requires a change strictly greater than
+  `delta`. This is why a break-even that lands exactly on the edge of the 1–5
+  scale is reported as no flip: the value can only reach the tie, never pass it.
+- **A leader that is already tied is reported as `delta = 0`, and `fragile` is
+  true.** The ranking is undetermined before any input moves, which is the
+  strongest fragility there is, and it is the honest answer when an option with
+  no items nets the same as the leader. Reporting it as robust would be a lie
+  told by a division.
+- **Only the direction that hurts counts.** A cost is searched upward and a
+  benefit downward when the item belongs to the winner, and the reverse when it
+  belongs to a challenger. Searching the harmless direction would always find
+  nothing and would make every decision look robust.
 - **An item on an objective where all options tie (`range_o = 0`) has `B = 0`.**
   It cannot move the ranking, so it contributes no flip and no influence. This is
   the division-by-zero guard; there is no special case in the code path.
