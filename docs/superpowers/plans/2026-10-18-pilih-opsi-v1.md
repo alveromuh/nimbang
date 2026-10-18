@@ -346,6 +346,10 @@ git commit -m "feat: swing weighting"
 **Interfaces:**
 - Consumes: `Decision`, `Objective`, `Item` types from Task 1
 - Produces: `scoreDecision(decision: Decision, weights: Record<string, number>): ScoreResult`
+  where `ScoreResult = { net, ranking, anchors, fatal, recommendation }`, as
+  defined in the Score section of [`../../framework.md`](../../framework.md).
+  `anchors` is what Task 8 needs to solve a break-even, so it is part of the
+  output rather than recomputed downstream.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -491,10 +495,27 @@ describe('sensitivity', () => {
     const result = stressTest(decision, weights);
     expect(result.fragile).toBe(true);
     expect(result.flipsAt.itemId).toBe('i1');
-    expect(result.flipsAt.delta).toBe(0.5);
+    expect(result.flipsAt.delta).toBe(1);
+  });
+  it('reports no flip when the margin is wider than the scale', () => {
+    // two objectives, each 5 vs 1: the leader cannot be caught by one item
+    // ... expect(result.flipsAt).toBeNull()
+  });
+  it('does not divide by zero when an objective has no spread', () => {
+    // both items value 3 on o1: range 0, so the item cannot move the ranking
+    // ... expect(result.tornado.every((t) => t.influence === 0)).toBe(true)
   });
 });
 ```
+
+**Why `delta` is 1, not 0.5.** Normalising `a=4, b=3` gives `net.a = 1`,
+`net.b = 0`, so the margin is 1. The slope of `net` in `i1`'s raw value is
+`w · p / range = 1 · 1 / 1 = 1`, so the break-even is `1 / 1 = 1` raw point:
+`a` at 3 ties `b`, and `a` below 3 loses. A fixed ±0.5 step can never flip this
+decision, so it cannot be the method. See the Stress section of
+[`../../framework.md`](../../framework.md).
+
+Both `i1` and `i2` break even at 1. Item array order picks `i1`.
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -524,8 +545,14 @@ git commit -m "feat: sensitivity"
 - Test: `src/core/gate.test.ts`
 
 **Interfaces:**
-- Consumes: `Decision` type from Task 1
-- Produces: `validateGate(decision: Decision): GateResult`
+- Consumes: `GateInputs` (defined here; the gate fields are not part of `Decision`
+  until they are recorded, so this function takes the inputs directly)
+- Produces: `validateGate(inputs: GateInputs): GateResult`
+
+`GateInputs` is a separate type rather than a slice of `Decision` because the
+plan's own test passes a flat object, and because a `Decision` in progress has no
+gate fields yet. `DecisionSchema` gains `gate` and `reviewAt` as optional fields
+so a committed decision can carry them.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -711,6 +738,17 @@ git commit -m "feat: URL round-trip"
 - Create: `src/ui/DecisionForm.tsx`
 - Create: `src/ui/Result.tsx`
 - Test: `src/ui/App.test.tsx`
+- Delete: `src/App.tsx` (it is replaced by `src/ui/App.tsx`)
+- Edit: `src/main.tsx` — import from `./ui/App`
+- Edit: `vite.config.ts` — the `ui` project needs `@testing-library/jest-dom`
+  matchers loaded via `setupFiles`, because the test uses
+  `toBeInTheDocument()`
+
+Install first:
+
+```bash
+pnpm add -D @testing-library/react @testing-library/jest-dom jsdom
+```
 
 **Interfaces:**
 - Consumes: all core functions from Tasks 1–11
@@ -755,7 +793,12 @@ git commit -m "feat: minimal UI"
 ### Task 13: Integration test
 
 **Files:**
+- Create: `src/core/index.ts` (the barrel every consumer imports from)
 - Create: `src/integration.test.ts`
+- Edit: `vite.config.ts` — the `core` project's `include` is
+  `src/core/**/*.test.ts`, which does not match `src/integration.test.ts`, so
+  that file would run in no project and silently never execute. Widen it to
+  `['src/core/**/*.test.ts', 'src/*.test.ts']`.
 
 **Interfaces:**
 - Consumes: all core functions

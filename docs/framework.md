@@ -103,11 +103,28 @@ item: {
 }
 
 // normalise per objective across the option set
-v_i = (value_i - min) / (max - min)   // min-max to [0, 1]
-// if max == min, all options tie on this objective: v_i = 0 for all
+v_i = (value_i - min_o) / (max_o - min_o)   // min-max to [0, 1]
+// if max_o == min_o, all options tie on this objective: v_i = 0 for all
 
 // weighted sum
 net(option) = Σ_objectives w_o * ( Σ_benefit (v * p) − Σ_cost (v * p) )_o
+```
+
+The anchors `min_o`, `max_o` are **computed once, over the option set, and
+carried in the result**. Stress needs them to solve for a break-even without
+re-normalising, and re-normalising per perturbation would make every score
+scale-invariant — no change to a single value could ever flip the ranking.
+
+Output:
+
+```
+ScoreResult: {
+  net: Record<optionId, number>,
+  ranking: optionId[],              // best first, ties broken by array order
+  anchors: Record<objectiveId, { min: number, max: number }>,
+  fatal: optionId[],                // options carrying any risk = 'fatal'
+  recommendation: optionId | null,  // null if the leader is in `fatal`
+}
 ```
 
 Fatal risk is not priced. If any `risk = 'fatal'` exists in the winning option,
@@ -124,27 +141,82 @@ Output: every probability must name a reference class.
 probability: {
   value: 0..1,
   referenceClass: string,   // "How do similar cases usually turn out?"
-  basis: 'data' | 'judgement' | 'model',
+  basis: 'data' | 'judgement' | 'model',   // deferred: see note
 }
 ```
 
 Rule: no probability is accepted without a reference class.
 
+`basis` is **not** in `ItemSchema` for v1, and that is deliberate: every
+probability in v1 is typed by the user, so the only honest value would be
+`'judgement'`, and a field that can only hold one value is a lie about how much
+the engine knows. It becomes load-bearing in M6, when a model can fill a
+probability field and the value has to be labelled as model-derived and
+overridable. It is recorded here so the deferral is visible rather than
+forgotten.
+
 ### Stress
 
-Input: the scored decision.
+Input: the scored decision, with the per-objective anchors frozen at scoring time.
 
 Output: fragility report.
 
 ```
 fragile: boolean
-flipsAt: { itemId: string, delta: number }   // smallest change that flips top-2
-tornado: [ { itemId: string, influence: number } ]   // ranked
+flipsAt: { itemId: string, delta: number } | null   // smallest change that reverses the ranking
+tornado: [ { itemId: string, influence: number } ]  // ranked, largest first
 ```
 
-Procedure: for each item, vary its value by ±0.5 on the 1–5 scale while holding
-everything else constant. If the top two options swap, mark fragile and record
-the delta.
+Procedure: **break-even, computed in closed form.** For each item, hold
+everything else constant and ask how far its raw `value` would have to move for
+the ranking to change. Do not step the value in fixed increments: the weighted
+sum is affine in each item's value, so the break-even is exact.
+
+```
+// anchors frozen per objective over the option set, at scoring time
+range_o = max_o - min_o
+
+// net(option) is affine in each item's value, with slope
+B(item) = ± w_o · p / range_o        // + for benefit, − for cost, 0 if range_o = 0
+
+// margin between the current winner and the best other option
+margin  = net(winner) - net(runner-up)
+
+// distance to indifference, in raw 1–5 units
+delta   = margin / |B(item)|
+v*      = v_0 ∓ delta                // the value at which the ranking ties
+
+// a flip requires moving STRICTLY past v*, and v* must lie in [1, 5]
+fragile = ∃ item whose v* is reachable and whose change reverses the ranking
+```
+
+Rules that the arithmetic depends on:
+
+- **`delta` is in raw 1–5 units.** It is what the user typed, so it is the only
+  form in which "your score for this would have to fall by 1.5" is actionable.
+- **A flip is the winner changing, not only the top two swapping.** An item
+  belonging to a third option can overtake the leader; ignoring it would report
+  a fragile decision as robust.
+- **Strictly past `v*`.** At exactly `delta` the options tie, and a tie is not a
+  reversal. This is the convention that keeps the arithmetic finite when two
+  options are identical: `delta` is reported, `fragile` stays false.
+- **An item on an objective where all options tie (`range_o = 0`) has `B = 0`.**
+  It cannot move the ranking, so it contributes no flip and no influence. This is
+  the division-by-zero guard; there is no special case in the code path.
+- **`flipsAt = null`** when no single reachable change reverses the ranking.
+  A report of "nothing flips it within 1–5" is a real answer, not a failure.
+- **Tie-breaks are by array order** — options and items in the order given. The
+  engine never sorts on a hidden key.
+
+`tornado` influence is the change in the top-two margin at the item's most
+influential reachable value, so the ranking of inputs is on the same scale as
+the flip: `influence = |B(item)| · reachable_change`.
+
+The procedure is one-at-a-time, and that is exact here rather than a shortcut:
+the aggregation is an additive value function with no interaction terms, so
+one-at-a-time and variance-based decomposition agree. If a later version adds a
+non-additive term, this justification collapses and the method must change with
+it.
 
 ### Gate
 
