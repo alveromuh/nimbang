@@ -30,6 +30,9 @@ scaffolding.
   a page establishes, and how it maps to a stage of our framework. Never copy
   prose, example cases, tables, or illustrations. Never use the book's title,
   its coined terms, or its cover as a name, feature name, or branding.
+  `docs/sources/notes/` holds those notes and is tracked. `docs/sources/raw/`
+  (photographs) and `docs/sources/raw-text/` (verbatim OCR) are both ignored on
+  purpose — verbatim extraction is a transcription and must not be published.
 - **Page photographs never enter git.** `docs/sources/*.jpg` is ignored. Only
   `.md` notes are tracked. Do not add an exception to `.gitignore`.
   A `pre-commit` hook in `.githooks/` enforces this even against `git add -f`:

@@ -25,7 +25,14 @@ build/
 .idea/
 .vscode/
 
-# book scans: never commit photographs of the source book
+# book scans: never commit photographs of the source book, and never commit a
+# transcription of its prose. Only our own extraction notes are tracked.
 docs/sources/*
 !docs/sources/README.md
 !docs/sources/*.md
+# our own notes: allowed (they record pages + concepts in our words, never prose)
+!docs/sources/notes/
+!docs/sources/notes/**
+# verbatim OCR output: blocked, because it is a transcription of the book
+docs/sources/raw-text/
+docs/sources/raw/
