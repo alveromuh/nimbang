@@ -1,0 +1,960 @@
+{
+  "stats": {
+    "calls": 142,
+    "retries": 10,
+    "failed": 0
+  },
+  "results": {
+    "jev-1-13-free": {
+      "summary": {
+        "n_scored": 20,
+        "n_failed": 0,
+        "accuracy": 1.0,
+        "mean_confidence": 0.959,
+        "tujuan_spearman": 0.37142857142857144,
+        "tujuan_acc_at_05": 0.8,
+        "det_identical_stable": "4/4",
+        "det_permute_stable": "4/4",
+        "det_failures": 0,
+        "tokens": 6438
+      },
+      "rows": [
+        {
+          "id": "c01",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.99,
+          "tujuan_prob": 0.71,
+          "tujuan_expected": true,
+          "kejelasan": 3,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 333,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c02",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.91,
+          "tujuan_expected": true,
+          "kejelasan": 2.69,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 331,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c03",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.26,
+          "tujuan_expected": false,
+          "kejelasan": 0.8,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 308,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c04",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.23,
+          "tujuan_expected": false,
+          "kejelasan": 1.4,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 317,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c05",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.51,
+          "tujuan_expected": true,
+          "kejelasan": 1.21,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 343,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c06",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.98,
+          "tujuan_prob": 0.81,
+          "tujuan_expected": true,
+          "kejelasan": 1.07,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 319,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c07",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.21,
+          "tujuan_expected": true,
+          "kejelasan": 1.28,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 322,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c08",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.76,
+          "tujuan_expected": true,
+          "kejelasan": 1.16,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 322,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c09",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.96,
+          "tujuan_prob": 0.89,
+          "tujuan_expected": true,
+          "kejelasan": 1.18,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 324,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c10",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.48,
+          "tujuan_prob": 0.58,
+          "tujuan_expected": true,
+          "kejelasan": 1.19,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 320,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c11",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.04,
+          "tujuan_expected": false,
+          "kejelasan": 0.01,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 311,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c12",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.12,
+          "tujuan_expected": false,
+          "kejelasan": 0.94,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 307,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c13",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.92,
+          "tujuan_prob": 0.18,
+          "tujuan_expected": false,
+          "kejelasan": 2.96,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 367,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c14",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.98,
+          "tujuan_prob": 0.21,
+          "tujuan_expected": true,
+          "kejelasan": 1.68,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 316,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c15",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.84,
+          "tujuan_expected": true,
+          "kejelasan": 0.82,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 319,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c16",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.87,
+          "tujuan_prob": 0.24,
+          "tujuan_expected": true,
+          "kejelasan": 1.59,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 311,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c17",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.85,
+          "tujuan_expected": true,
+          "kejelasan": 2.01,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 325,
+            "output_tokens": 112
+          }
+        },
+        {
+          "id": "c18",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.61,
+          "tujuan_expected": true,
+          "kejelasan": 1.14,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 321,
+            "output_tokens": 111
+          }
+        },
+        {
+          "id": "c19",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.18,
+          "tujuan_expected": true,
+          "kejelasan": 1.19,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 316,
+            "output_tokens": 113
+          }
+        },
+        {
+          "id": "c20",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 1,
+          "tujuan_prob": 0.06,
+          "tujuan_expected": false,
+          "kejelasan": 0,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 306,
+            "output_tokens": 113
+          }
+        }
+      ],
+      "failures": []
+    },
+    "clef:free": {
+      "summary": {
+        "n_scored": 20,
+        "n_failed": 0,
+        "accuracy": 1.0,
+        "mean_confidence": 0.7604949999999999,
+        "tujuan_spearman": 0.23458646616541354,
+        "tujuan_acc_at_05": 0.5,
+        "det_identical_stable": "4/4",
+        "det_permute_stable": "4/4",
+        "det_failures": 0,
+        "tokens": 6418
+      },
+      "rows": [
+        {
+          "id": "c01",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.8475,
+          "tujuan_prob": 0.1755,
+          "tujuan_expected": true,
+          "kejelasan": 2.7563,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 332,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c02",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.9409,
+          "tujuan_prob": 0.5508,
+          "tujuan_expected": true,
+          "kejelasan": 2.2116,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 330,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c03",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.4863,
+          "tujuan_prob": 0.0834,
+          "tujuan_expected": false,
+          "kejelasan": 1.1855,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 307,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c04",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.7559,
+          "tujuan_prob": 0.2193,
+          "tujuan_expected": false,
+          "kejelasan": 2,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 316,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c05",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.6185,
+          "tujuan_prob": 0.5106,
+          "tujuan_expected": true,
+          "kejelasan": 1.8076,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 342,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c06",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.6522,
+          "tujuan_prob": 0.4308,
+          "tujuan_expected": true,
+          "kejelasan": 1.7252,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 318,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c07",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.8767,
+          "tujuan_prob": 0.2222,
+          "tujuan_expected": true,
+          "kejelasan": 1.8938,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 321,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c08",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.9592,
+          "tujuan_prob": 0.2869,
+          "tujuan_expected": true,
+          "kejelasan": 1.6204,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 321,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c09",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.8668,
+          "tujuan_prob": 0.7462,
+          "tujuan_expected": true,
+          "kejelasan": 1.6852,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 323,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c10",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.6974,
+          "tujuan_prob": 0.1842,
+          "tujuan_expected": true,
+          "kejelasan": 1.7219,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 319,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c11",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 0.9254,
+          "tujuan_prob": 0.016,
+          "tujuan_expected": false,
+          "kejelasan": 0.5293,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 310,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c12",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.5863,
+          "tujuan_prob": 0.0701,
+          "tujuan_expected": false,
+          "kejelasan": 1.3212,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 306,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c13",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.7358,
+          "tujuan_prob": 0.063,
+          "tujuan_expected": false,
+          "kejelasan": 2.4324,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 366,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c14",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.8166,
+          "tujuan_prob": 0.0699,
+          "tujuan_expected": true,
+          "kejelasan": 1.7048,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 315,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c15",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.595,
+          "tujuan_prob": 0.2707,
+          "tujuan_expected": true,
+          "kejelasan": 1.4347,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 318,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c16",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.5838,
+          "tujuan_prob": 0.0618,
+          "tujuan_expected": true,
+          "kejelasan": 1.8921,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 310,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c17",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.6657,
+          "tujuan_prob": 0.5564,
+          "tujuan_expected": true,
+          "kejelasan": 2.7542,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 324,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c18",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.8374,
+          "tujuan_prob": 0.247,
+          "tujuan_expected": true,
+          "kejelasan": 1.6447,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 320,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c19",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.8377,
+          "tujuan_prob": 0.0473,
+          "tujuan_expected": true,
+          "kejelasan": 1.7794,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 315,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c20",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 0.9248,
+          "tujuan_prob": 0.0353,
+          "tujuan_expected": false,
+          "kejelasan": 0.8098,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 305,
+            "output_tokens": 0
+          }
+        }
+      ],
+      "failures": []
+    },
+    "clef-flash:free": {
+      "summary": {
+        "n_scored": 20,
+        "n_failed": 0,
+        "accuracy": 0.9,
+        "mean_confidence": 0.578435,
+        "tujuan_spearman": 0.3368421052631579,
+        "tujuan_acc_at_05": 0.5,
+        "det_identical_stable": "4/4",
+        "det_permute_stable": "4/4",
+        "det_failures": 0,
+        "tokens": 6447
+      },
+      "rows": [
+        {
+          "id": "c01",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.2773,
+          "tujuan_prob": 0.3622,
+          "tujuan_expected": true,
+          "kejelasan": 3.0859,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 334,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c02",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.7396,
+          "tujuan_prob": 0.8955,
+          "tujuan_expected": true,
+          "kejelasan": 2.3986,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 331,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c03",
+          "expected": "ya_tidak",
+          "got": "belum_jelas",
+          "correct": false,
+          "confidence": 0.292,
+          "tujuan_prob": 0.2139,
+          "tujuan_expected": false,
+          "kejelasan": 0.7578,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 309,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c04",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.4654,
+          "tujuan_prob": 0.3745,
+          "tujuan_expected": false,
+          "kejelasan": 2.1041,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 318,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c05",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.7807,
+          "tujuan_prob": 0.5679,
+          "tujuan_expected": true,
+          "kejelasan": 1.5167,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 344,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c06",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.7633,
+          "tujuan_prob": 0.4985,
+          "tujuan_expected": true,
+          "kejelasan": 1.178,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 319,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c07",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.7886,
+          "tujuan_prob": 0.1719,
+          "tujuan_expected": true,
+          "kejelasan": 1.4387,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 322,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c08",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.9029,
+          "tujuan_prob": 0.3703,
+          "tujuan_expected": true,
+          "kejelasan": 1.1917,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 323,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c09",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.868,
+          "tujuan_prob": 0.6986,
+          "tujuan_expected": true,
+          "kejelasan": 1.4529,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 325,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c10",
+          "expected": "beli_info",
+          "got": "beli_info",
+          "correct": true,
+          "confidence": 0.4093,
+          "tujuan_prob": 0.4298,
+          "tujuan_expected": true,
+          "kejelasan": 1.4912,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 320,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c11",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 0.7518,
+          "tujuan_prob": 0.0454,
+          "tujuan_expected": false,
+          "kejelasan": 1.0907,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 311,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c12",
+          "expected": "ya_tidak",
+          "got": "belum_jelas",
+          "correct": false,
+          "confidence": 0.2686,
+          "tujuan_prob": 0.0952,
+          "tujuan_expected": false,
+          "kejelasan": 1.0269,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 307,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c13",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.2639,
+          "tujuan_prob": 0.2126,
+          "tujuan_expected": false,
+          "kejelasan": 2.2205,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 367,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c14",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.2208,
+          "tujuan_prob": 0.1321,
+          "tujuan_expected": true,
+          "kejelasan": 1.3053,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 316,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c15",
+          "expected": "prioritas",
+          "got": "prioritas",
+          "correct": true,
+          "confidence": 0.7725,
+          "tujuan_prob": 0.3975,
+          "tujuan_expected": true,
+          "kejelasan": 1.3602,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 320,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c16",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.2789,
+          "tujuan_prob": 0.2202,
+          "tujuan_expected": true,
+          "kejelasan": 1.8325,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 311,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c17",
+          "expected": "ya_tidak",
+          "got": "ya_tidak",
+          "correct": true,
+          "confidence": 0.5035,
+          "tujuan_prob": 0.6221,
+          "tujuan_expected": true,
+          "kejelasan": 2.1314,
+          "kejelasan_min": 1,
+          "usage": {
+            "input_tokens": 326,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c18",
+          "expected": "alokasi",
+          "got": "alokasi",
+          "correct": true,
+          "confidence": 0.9007,
+          "tujuan_prob": 0.4211,
+          "tujuan_expected": true,
+          "kejelasan": 1.3927,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 322,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c19",
+          "expected": "pilih_opsi",
+          "got": "pilih_opsi",
+          "correct": true,
+          "confidence": 0.5536,
+          "tujuan_prob": 0.2132,
+          "tujuan_expected": true,
+          "kejelasan": 1.4994,
+          "kejelasan_min": 2,
+          "usage": {
+            "input_tokens": 316,
+            "output_tokens": 0
+          }
+        },
+        {
+          "id": "c20",
+          "expected": "belum_jelas",
+          "got": "belum_jelas",
+          "correct": true,
+          "confidence": 0.7673,
+          "tujuan_prob": 0.1225,
+          "tujuan_expected": false,
+          "kejelasan": 0.5528,
+          "kejelasan_min": 0,
+          "usage": {
+            "input_tokens": 306,
+            "output_tokens": 0
+          }
+        }
+      ],
+      "failures": []
+    }
+  }
+}
