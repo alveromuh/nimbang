@@ -39,5 +39,14 @@ export function validateDiverge(input: { options: Option[] }): DivergeResult {
     };
   }
 
+  const unnamed = options.filter((option) => option.label.trim().length === 0).length;
+
+  if (unnamed > 0) {
+    return {
+      ok: false,
+      reason: `${unnamed} option(s) have no name. An option you cannot state is not an option.`,
+    };
+  }
+
   return { ok: true };
 }

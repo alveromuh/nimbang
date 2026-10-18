@@ -42,4 +42,17 @@ describe('option floor', () => {
     expect(result.ok).toBe(false);
     expect(result.reason).toMatch(/baseline/i);
   });
+  it('rejects an option with no name', () => {
+    // Three options exist on paper, but one of them is a blank row. Counting it
+    // would let a two-option decision pass the false-dichotomy check.
+    const result = validateDiverge({
+      options: [
+        { id: 'a', label: 'A', isBaseline: true },
+        { id: 'b', label: 'B', isBaseline: false },
+        { id: 'c', label: '  ', isBaseline: false },
+      ],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.reason).toMatch(/no name/i);
+  });
 });

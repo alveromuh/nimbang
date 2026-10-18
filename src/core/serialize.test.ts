@@ -45,7 +45,7 @@ describe('URL round-trip', () => {
   });
 
   it('rejects a payload whose JSON is valid but is not a decision', () => {
-    const notADecision = Buffer.from(JSON.stringify({ hello: 'world' }), 'utf8').toString('base64url');
+    const notADecision = referenceBase64Url(JSON.stringify({ hello: 'world' }));
     expect(() => deserializeDecision(notADecision)).toThrow();
   });
 
@@ -62,8 +62,21 @@ describe('URL round-trip', () => {
         items: [],
         claims: [],
       };
-      const expected = Buffer.from(JSON.stringify(decision), 'utf8').toString('base64url');
-      expect(serializeDecision(decision)).toBe(expected);
+      expect(serializeDecision(decision)).toBe(referenceBase64Url(JSON.stringify(decision)));
     }
   });
 });
+
+/**
+ * Node's own base64url encoder, reached through `process` so this file does not
+ * need @types/node just to check the codec. Test-only: `src/core/` itself must
+ * not depend on Node or on the DOM.
+ */
+function referenceBase64Url(text: string): string {
+  const nodeProcess = (globalThis as unknown as { process: { getBuiltinModule: (id: string) => unknown } })
+    .process;
+  const buffer = nodeProcess.getBuiltinModule('node:buffer') as {
+    Buffer: { from: (input: string, encoding: string) => { toString: (encoding: string) => string } };
+  };
+  return buffer.Buffer.from(text, 'utf8').toString('base64url');
+}
