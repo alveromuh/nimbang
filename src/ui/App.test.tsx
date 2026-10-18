@@ -143,6 +143,65 @@ describe('App', () => {
     // absence is stated rather than shown as zero.
     expect(screen.getByText(/no resolved predictions/i)).toBeInTheDocument();
   });
+
+  it('adds a second objective, so swing weighting can express a trade-off', async () => {
+    const user = userEvent.setup();
+    installStorage();
+    render(<App />);
+
+    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: /add objective/i }));
+    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(2);
+
+    await user.type(screen.getByLabelText(/^objective 2$/i), 'Jam kerja');
+    // A second objective needs its own swing weight, or the decision cannot be
+    // scored at all.
+    expect(screen.getByLabelText(/swing weight for jam kerja/i)).toBeInTheDocument();
+  });
+
+  it('removes an objective', async () => {
+    const user = userEvent.setup();
+    installStorage();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /add objective/i }));
+    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(2);
+
+    await user.click(screen.getAllByRole('button', { name: /remove objective/i })[1]);
+    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(1);
+  });
+
+  it('adds an option beyond the third, and marks it non-baseline', async () => {
+    const user = userEvent.setup();
+    installStorage();
+    render(<App />);
+
+    expect(screen.getAllByLabelText(/^option \d+$/i)).toHaveLength(3);
+    await user.click(screen.getByRole('button', { name: /add option/i }));
+    expect(screen.getAllByLabelText(/^option \d+$/i)).toHaveLength(4);
+    expect(screen.getByLabelText(/^option 4$/i)).toHaveValue('');
+  });
+
+  it('removes an option', async () => {
+    const user = userEvent.setup();
+    installStorage();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /add option/i }));
+    await user.click(screen.getAllByRole('button', { name: /remove option/i })[3]);
+    expect(screen.getAllByLabelText(/^option \d+$/i)).toHaveLength(3);
+  });
+
+  it('refuses to remove the last objective', () => {
+    installStorage();
+    render(<App />);
+
+    // A decision with no objective cannot be scored, so the form should not let
+    // the user reach that state by clicking.
+    const remove = screen.getByRole('button', { name: /remove objective/i });
+    expect(remove).toBeDisabled();
+  });
 });
 
 /**

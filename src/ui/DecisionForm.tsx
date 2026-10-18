@@ -82,6 +82,23 @@ export function DecisionForm() {
   const frame = validateFrame(decision);
   const diverge = validateDiverge(decision);
 
+  /**
+   * Ids are derived from the current set rather than a counter, so that removing
+   * a middle objective does not make a later id collide with an existing one.
+   */
+  function addObjective() {
+    const id = nextId('o', objectives);
+    setObjectives([...objectives, { id, statement: '', kind: 'motivation' }]);
+    setSwingPoints({ ...swingPoints, [id]: 50 });
+  }
+
+  function addOption() {
+    const id = nextId('x', options);
+    // A new option is never the baseline: exactly one baseline exists already,
+    // and a second would make the comparison ambiguous.
+    setOptions([...options, { id, label: '', isBaseline: false }]);
+  }
+
   const result = useMemo(() => {
     if (!frame.ok || !diverge.ok) {
       return null;
@@ -122,8 +139,28 @@ export function DecisionForm() {
                 )
               }
             />
+            <button
+              type="button"
+              aria-label={`Remove objective ${index + 1}`}
+              // The last objective cannot be removed: a decision with none cannot
+              // be scored, and the form should not let the user reach that state.
+              disabled={objectives.length === 1}
+              onClick={() => {
+                setObjectives(objectives.filter((candidate) => candidate.id !== objective.id));
+                setItems(items.filter((item) => item.objectiveId !== objective.id));
+                const remaining = { ...swingPoints };
+                delete remaining[objective.id];
+                setSwingPoints(remaining);
+              }}
+            >
+              Remove
+            </button>
           </div>
         ))}
+
+        <button type="button" onClick={() => addObjective()}>
+          Add objective
+        </button>
 
         {!frame.ok && <p role="status">{frame.reason}</p>}
       </section>
@@ -142,8 +179,25 @@ export function DecisionForm() {
                 setOptions(replaceAt(options, index, { ...option, label: event.target.value }))
               }
             />
+            <button
+              type="button"
+              aria-label={`Remove option ${index + 1}`}
+              // The baseline cannot be removed by index: it is the comparison
+              // point, and losing it would silently change what the ranking means.
+              disabled={option.isBaseline || options.length <= 3}
+              onClick={() => {
+                setOptions(options.filter((candidate) => candidate.id !== option.id));
+                setItems(items.filter((item) => item.optionId !== option.id));
+              }}
+            >
+              Remove
+            </button>
           </div>
         ))}
+
+        <button type="button" onClick={() => addOption()}>
+          Add option
+        </button>
 
         {!diverge.ok && <p role="status">{diverge.reason}</p>}
       </section>
@@ -254,6 +308,20 @@ function blankDecision(): Decision {
 
 function replaceAt<T>(list: T[], index: number, value: T): T[] {
   return list.map((entry, position) => (position === index ? value : entry));
+}
+
+/**
+ * The first unused id with this prefix. Deriving from the existing set rather
+ * than from `length` matters after a removal: with three objectives, removing the
+ * second leaves `o1` and `o3`, and `length + 1` would produce `o3` again.
+ */
+function nextId(prefix: string, existing: { id: string }[]): string {
+  const taken = new Set(existing.map((entry) => entry.id));
+  let index = 1;
+  while (taken.has(`${prefix}${index}`)) {
+    index += 1;
+  }
+  return `${prefix}${index}`;
 }
 
 /**
