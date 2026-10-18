@@ -80,7 +80,9 @@ Expected: FAIL with "Cannot find module './types'"
 - [ ] **Step 3: Implement `src/core/types.ts`**
 
 Define these types and export them: `Decision`, `Objective`, `Option`, `Item`,
-`Claim`, `Prediction`, `ScoreResult`. Define a Zod schema for `Decision`.
+`Claim`, `Prediction`. Define a Zod schema for `Decision`.
+
+`ScoreResult` is defined in Task 6, which is where it is produced.
 
 `Objective`, `Option`, `Item`, `Claim` are defined here because later tasks
 consume them.
