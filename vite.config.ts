@@ -23,7 +23,7 @@ export default defineConfig({
         test: {
           name: 'suggestions',
           environment: 'node',
-          include: ['src/suggestions/**/*.test.ts'],
+          include: ['src/suggestions/**/*.test.ts', 'src/chat/**/*.test.ts', 'server/**/*.test.ts'],
         },
       },
       {
