@@ -268,7 +268,18 @@ brierScore = mean( (p - o)^2 )   // over resolved predictions
 
 ## What this framework deliberately does not do
 
-- **No chatbot.** The pipeline is a form, not a conversation.
+- **No chatbot as the interface.** The pipeline is a form, not a conversation.
+  A model may be invited into one bounded panel to help a person articulate what
+  they already know — the options they have not written down, the evidence they
+  are avoiding. It never sees the scores, never produces a number, and never
+  replaces the form. The panel is scoped to one stage at a time and can be
+  closed without changing anything.
+
+  This is a revision. Earlier versions of this document said "no chatbot" without
+  qualification. That was a rule about the *surface*, and it still holds: the
+  conversation is never the way you operate the decision. The rule that does not
+  move is the next one, and it is why a bounded panel is acceptable while a
+  conversational interface is not.
 - **No model-generated numbers.** A model may fill a field, but the engine
   computes. Model-derived numbers are labelled and overridable.
 - **No ranking of people.** The framework decides options, not people.
