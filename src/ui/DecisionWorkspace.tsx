@@ -17,6 +17,7 @@ import { GatePanel } from './GatePanel';
 import { ItemGrid } from './ItemGrid';
 import { Result } from './Result';
 import { ChatPanel } from './ChatPanel';
+import { fillOptionSlots } from './fillOptions';
 import { sendTurn } from '../chat/client';
 
 interface DecisionWorkspaceProps {
@@ -112,22 +113,20 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
   }
 
   /**
-   * Accepts the options the user ticked. They arrive as normal, editable options:
-   * once added they are the user's text to change or delete.
+   * Accepts the options the user ticked by **filling the template's rows**, not
+   * by appending beside them. Two accepted options in a three-row template leave
+   * three rows, not five: a surplus blank row is dropped, and a fourth accepted
+   * option adds a fourth row.
+   *
+   * Scores belonging to a removed row go with it, so nothing is left pointing at
+   * an option that no longer exists.
    */
-  function acceptSuggestedOptions(items: string[]): void {
-    // Ids are allocated against the growing list, one at a time. Building them
-    // from a fixed snapshot gave every new option the same id, which React
-    // reports as duplicate keys and which would break edits on the wrong row.
-    const added: Option[] = [];
-    for (const label of items) {
-      added.push({
-        id: nextId('x', [...options, ...added]),
-        label,
-        isBaseline: false,
-      });
-    }
-    setOptions([...options, ...added]);
+  function acceptSuggestedOptions(accepted: string[]): void {
+    const filled = fillOptionSlots(options, accepted);
+    const keptIds = new Set(filled.map((option) => option.id));
+
+    setOptions(filled);
+    setItems(items.filter((item) => keptIds.has(item.optionId)));
   }
 
   /** A re-framed aim becomes a real objective, with its own swing weight. */
