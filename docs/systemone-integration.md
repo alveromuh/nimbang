@@ -4,9 +4,15 @@
 Nimbang. This document is the contract a coding agent must follow when building
 against it.
 
-Status: **implemented for suggestions**, behind `POST /api/suggest`. See
-[`../docs/eval-systemone.md`](../docs/eval-systemone.md) for the measurements
-this rests on.
+Status: **superseded** by the elicitation panel. Kept because its measurements and
+its dividing line still apply, and because it records why System One was chosen
+first. The panel now uses a chat model with tool calling instead — see
+[`superpowers/specs/2026-10-19-elicitation-chat.md`](superpowers/specs/2026-10-19-elicitation-chat.md)
+and [`llm-providers.md`](llm-providers.md).
+
+The rule below is unchanged and still binding: **the model fills fields, the
+engine computes.** The panel honours it by never sending a score, weight, or
+probability to the model at all.
 
 ## What is built
 

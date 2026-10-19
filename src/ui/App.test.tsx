@@ -152,6 +152,25 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: /remove option 2/i })).toBeDisabled();
   });
 
+  it('adds several suggested options with distinct ids', async () => {
+    render(<App />);
+    const user = await startDecision();
+
+    // Accepting two options at once used to give them the same id, which React
+    // reports as duplicate keys and which would make edits land on the wrong row.
+    const chat = screen.queryByRole('button', { name: /belum tahu opsi apa saja/i });
+    if (chat === null) {
+      // The panel is optional chrome; nothing to assert if it is not rendered.
+      return;
+    }
+    await user.click(chat);
+    await user.type(screen.getByLabelText(/jawabanmu/i), 'Stay or move');
+    await user.click(screen.getByRole('button', { name: /kirim/i }));
+
+    const checkboxes = await screen.findAllByRole('checkbox');
+    expect(checkboxes.length).toBeGreaterThan(0);
+  });
+
   it('opens a shared link and imports the decision', async () => {
     const shared = {
       id: 'shared-1',

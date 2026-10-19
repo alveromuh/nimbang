@@ -768,6 +768,140 @@ button:disabled {
   font-size: 0.75rem;
 }
 
+/* ---------- chat panel ---------- */
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+  margin-top: var(--s-md);
+  padding: var(--s-md);
+  background: var(--accent-soft);
+  border-radius: var(--r-md);
+  max-height: 34rem;
+  overflow-y: auto;
+}
+
+.chat__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-sm);
+}
+
+.chat__title {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.chat__log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+}
+
+.chat__turn {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: var(--s-sm) var(--s-md);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  max-width: 90%;
+}
+
+.chat__turn--user {
+  align-self: flex-end;
+  background: var(--surface-sunken);
+  border-color: var(--line-strong);
+}
+
+.chat__thinking {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0;
+  max-width: none;
+}
+
+.chat__flag,
+.chat__proposal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-sm);
+  padding: var(--s-sm) var(--s-md);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+}
+
+.chat__flag p {
+  margin: 0;
+}
+
+.chat__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+.chat__check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  margin: 0;
+  min-height: 32px;
+}
+
+.chat__check input {
+  width: 1rem;
+  height: 1rem;
+  min-height: 0;
+  accent-color: var(--accent);
+}
+
+.chat__present {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.chat__compose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-xs);
+}
+
+.chat__compose textarea {
+  min-height: 3.5rem;
+}
+
+.chat__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-sm);
+}
+
+.chat__count {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+}
+
 /* ---------- tornado ---------- */
 
 .tornado {

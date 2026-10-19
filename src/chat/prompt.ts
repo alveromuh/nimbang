@@ -24,6 +24,7 @@ export interface PromptContext {
 const SHARED = `You are helping one person think clearly about a decision they are making. You are not deciding for them.
 
 Rules that are not negotiable:
+- Reply in the same language the person writes in. If their objectives or their last message are in Indonesian, reply in Indonesian. Do not switch to English because these instructions are in English.
 - You are talking to one person about their own life. Do not invent facts about them.
 - Ask one question at a time. Never a list of questions.
 - Never produce a number, a score, a ranking, or a recommendation. Another part of the application does that, and you are not it.
@@ -79,18 +80,23 @@ export function systemPrompt(context: PromptContext): string {
  *
  * The spec requires the first line to name the objectives, and doing it here
  * rather than asking the model to do it means it is always correct and costs no
- * request. The model's first call then responds to the person's answer.
+ * request.
+ *
+ * It is written in Indonesian because the app is: `index.html` declares
+ * `lang="id"` and every example in the docs is Indonesian. A model asked in
+ * Indonesian answers in Indonesian, so the panel does not open in one language
+ * and continue in another.
  */
 export function openingMessage(objectives: string[]): string {
   const named = objectives.filter((objective) => objective.trim() !== '');
   if (named.length === 0) {
-    return 'What options are you currently considering?';
+    return 'Opsi apa saja yang sedang kamu pertimbangkan?';
   }
   if (named.length === 1) {
-    return `What options are you currently considering for reaching ${named[0]}?`;
+    return `Opsi apa saja yang sedang kamu pertimbangkan untuk mencapai ${named[0]}?`;
   }
 
   const last = named[named.length - 1];
   const rest = named.slice(0, -1).join(', ');
-  return `What options are you currently considering for reaching ${rest} and ${last}?`;
+  return `Opsi apa saja yang sedang kamu pertimbangkan untuk mencapai ${rest} dan ${last}?`;
 }

@@ -58,16 +58,16 @@ Every citation behind the pipeline is in [`docs/references.md`](docs/references.
 
 ## Structured input
 
-Turning a messy human description into the fields the engine needs is handled by
-a **decision model**, not a chatbot: `POST /v1/systemone` on Kenari.id returns
-typed answers with probabilities, keyed by question id — no free text, no output
-to parse.
+Turning a messy human description into the fields the engine needs is handled by a
+bounded **elicitation panel**, not a chatbot that runs the decision: it asks what
+you are already considering, and proposes options for you to accept. Off-topic
+remarks are re-framed rather than rejected, because they usually reveal an
+objective you had not written down.
 
 The dividing line is absolute: **the model fills fields, the engine computes.**
-No model output ever becomes a ranking or a winner. Assessed against 20 cases
-with ground truth — see
-[`docs/systemone-integration.md`](docs/systemone-integration.md) for the contract
-and [`docs/eval-systemone.md`](docs/eval-systemone.md) for the measurements.
+The panel never sees a score, a weight, or a probability, so no model output can
+become a ranking or a winner. It works with any OpenAI-compatible gateway —
+see [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## Roadmap
 
@@ -95,8 +95,9 @@ docs/
   framework.md              the framework itself: stages, formulas, citations
   references.md             verified sources for every method the engine uses
   core-engine-scope.md      what ships, what is excluded, and why
-  systemone-integration.md  contract for the model-backed input layer
-  eval-systemone.md         measurements behind that decision
+  llm-providers.md          configuring the panel for any OpenAI-compatible gateway
+  systemone-integration.md  superseded: the earlier structured-input contract
+  eval-systemone.md         measurements behind that earlier decision
   sources/                  extracted notes (page photos are never committed)
   superpowers/specs/        design documents
   superpowers/plans/        implementation plans
@@ -122,17 +123,23 @@ example with a share link you can paste in.
 
 ### AI suggestions (optional)
 
-The app works fully without this. To enable the suggestion panel, the server
-needs a Kenari key, because a browser cannot hold one:
+The app works fully without this. The panel that helps you articulate options
+needs a chat model with tool calling, and any OpenAI-compatible gateway will do.
 
 ```bash
-export KENARI_API_KEY=...     # or have ~/.local/bin/kenari-key on PATH
+cp .env.example .env    # then fill in LLM_API_KEY
 pnpm dev
 ```
 
+```bash
+LLM_BASE_URL=https://kenari.id/v1
+LLM_API_KEY=...
+LLM_MODEL=            # optional; discovered when blank
+```
+
 Without a key the endpoint returns `503 not_configured` and the panel says so —
-it does not silently do nothing. See
-[`docs/systemone-integration.md`](docs/systemone-integration.md).
+it does not silently do nothing. Settings for Kenari, OpenAI, Groq, OpenRouter,
+Ollama and others: [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## License
 

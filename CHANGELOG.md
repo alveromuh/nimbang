@@ -8,12 +8,21 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
-- **AI suggestions for options and bias checks.** The two places a user gets
-  stuck now offer a proposal on request. Built to the System One contract: the
-  model classifies, the app owns every word, nothing applies until the user
-  clicks, and each failure mode says what it is. `server/suggest.ts` is the
-  project's only server-side code, and exists solely because the key cannot live
-  in a browser.
+- **Elicitation panel** (`src/ui/ChatPanel.tsx`). In the Options stage, a person
+  can open a bounded conversation and be asked questions until what they already
+  know has been articulated. The result is a checklist of proposals, never a
+  silent overwrite. Off-topic input is re-framed rather than rejected, because an
+  off-topic remark usually means an objective the person had not written down.
+- **Provider-neutral gateway layer** (`server/llm/`). Three env vars configure
+  any OpenAI-compatible gateway; nothing in the code names a provider. Model
+  discovery probes `/v1/models` because the response shape differs between
+  gateways, and fails with a message telling you to set `LLM_MODEL`.
+- **Streaming.** Reasoning streams as a "thinking…" indicator, so a 5–15 second
+  wait is not a blank screen. Question text cannot stream: it lives inside tool
+  arguments that are not valid JSON until the final chunk.
+- **`docs/llm-providers.md`** — settings for Kenari, OpenAI, Groq, Together,
+  OpenRouter, DeepSeek, Mistral, Azure, Ollama and LM Studio, and why tool
+  calling is required rather than optional.
 - **Dashboard shell.** The app was one vertical run of seven sections. It is now
   a rail of decisions beside a workspace for the open one, with the verdict
   above the inputs so the answer stays visible while they change.
@@ -83,6 +92,13 @@ All notable changes to this project are documented here. Format follows
 
 - The share and export section is removed. It had no effect on the decision, and
   the URL-import path stays so a link that was already shared still opens.
+- **System One is replaced by the elicitation panel.** Its measurements still
+  hold and are still in `docs/eval-systemone.md`; the feature it powered does not
+  exist any more. `server/suggest.ts`, `src/suggestions/` and `SuggestionPanel`
+  are gone.
+- The panel is written in Indonesian, matching `index.html`'s `lang="id"`. It
+  previously opened in English and the model answered in Indonesian, which read
+  as two different products.
 - `docs/framework.md` — the Stress procedure was "vary each value by ±0.5 and
   record the delta". That is not a break-even and cannot flip the plan's own
   worked example, so the section now specifies the closed-form break-even and
@@ -94,6 +110,9 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- Accepting several suggested options gave them all the same id, which React
+  reported as duplicate keys and which would have made an edit land on the wrong
+  row. Found in a browser run, not by a test.
 - `grid-template-columns` used `repeat(var(--cols), …)`, which is invalid CSS:
   `repeat()` needs an integer, so the declaration was dropped and the score
   matrix never formed. Every cell stacked full width.

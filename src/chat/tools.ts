@@ -22,6 +22,9 @@ export interface ToolDefinition {
   };
 }
 
+/** What a caller sends to the endpoint: the same shape, named for the wire. */
+export type ToolSpec = ToolDefinition;
+
 const FLAG_SCOPE: ToolDefinition = {
   type: 'function',
   function: {

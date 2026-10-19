@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { suggestApi } from './server/suggest';
+import { chatApi } from './server/chat';
 
 export default defineConfig({
-  // The only server-side piece: it holds the System One key, which a browser
-  // cannot. See server/suggest.ts for why it exists and what it refuses to do.
-  plugins: [react(), suggestApi()],
+  // The only server-side piece: it holds the gateway key, which a browser cannot.
+  // See server/chat.ts for why it exists and what it refuses to do.
+  plugins: [react(), chatApi()],
   test: {
     projects: [
       {
@@ -23,7 +23,7 @@ export default defineConfig({
         test: {
           name: 'suggestions',
           environment: 'node',
-          include: ['src/suggestions/**/*.test.ts', 'src/chat/**/*.test.ts', 'server/**/*.test.ts'],
+          include: ['src/chat/**/*.test.ts', 'server/**/*.test.ts'],
         },
       },
       {
