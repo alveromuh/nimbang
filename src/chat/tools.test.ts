@@ -111,9 +111,36 @@ describe('chat tools', () => {
       }),
     });
 
+    // The field has to survive the parse: five answers with no fields would be
+    // five paragraphs the panel could not write back into the right gate field.
     expect(result).toEqual({
       kind: 'record',
       items: ['Dua teman berhenti setelah 3 bulan'],
+      answers: [{ field: 'survivorship', text: 'Dua teman berhenti setelah 3 bulan' }],
+    });
+  });
+
+  it('rejects a bias answer for a check that does not exist', () => {
+    const result = parseTurn('bias', {
+      name: 'record_answers',
+      arguments: JSON.stringify({ answers: [{ field: 'vibes', text: 'x' }] }),
+    });
+
+    // Writing it under a guessed heading would put the user's words in the wrong
+    // place, which is worse than saying the reply could not be used.
+    expect(result).toMatchObject({ kind: 'error' });
+  });
+
+  it('carries the field on a bias question', () => {
+    const result = parseTurn('bias', {
+      name: 'ask_question',
+      arguments: JSON.stringify({ field: 'ostrich', question: 'What are you avoiding?' }),
+    });
+
+    expect(result).toEqual({
+      kind: 'ask',
+      question: 'What are you avoiding?',
+      field: 'ostrich',
     });
   });
 });

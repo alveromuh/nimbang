@@ -98,6 +98,15 @@ const BIAS_FIELDS = [
   'falseComparison',
 ] as const;
 
+/**
+ * A bias question's identifier.
+ *
+ * Exported because the answer has to land in the matching gate field. Losing this
+ * and keeping only the text would leave the panel able to collect five answers
+ * that it could not tell apart.
+ */
+export type BiasField = (typeof BIAS_FIELDS)[number];
+
 const ASK_QUESTION: ToolDefinition = {
   type: 'function',
   function: {
@@ -155,10 +164,16 @@ export interface RawToolCall {
 }
 
 export type ParsedTurn =
-  | { kind: 'ask'; question: string }
-  | { kind: 'record'; items: string[] }
+  | { kind: 'ask'; question: string; field?: BiasField }
+  | { kind: 'record'; items: string[]; answers?: BiasAnswer[] }
   | { kind: 'flag'; flagKind: ScopeFlagKind; text: string; question: string }
   | { kind: 'error'; message: string };
+
+/** One answered bias check, keyed to the field it answers. */
+export interface BiasAnswer {
+  field: BiasField;
+  text: string;
+}
 
 /**
  * Parses the model's turn.
@@ -174,7 +189,7 @@ export function parseTurn(
   if (call === null) {
     return {
       kind: 'error',
-      message: 'The model replied without calling a tool, so there is nothing to act on.',
+      message: 'Asisten menjawab tanpa memanggil tool, jadi tidak ada yang bisa dipakai.',
     };
   }
 
@@ -182,7 +197,7 @@ export function parseTurn(
     if (call.length !== 1) {
       return {
         kind: 'error',
-        message: `The model returned ${call.length} tool calls; exactly one was expected.`,
+        message: `Asisten mengirim ${call.length} panggilan tool; seharusnya tepat satu.`,
       };
     }
     return parseTurn(scope, call[0]);
@@ -192,7 +207,7 @@ export function parseTurn(
   if (!allowed.includes(call.name)) {
     return {
       kind: 'error',
-      message: `The model called "${call.name}", which is not part of this panel.`,
+      message: `Asisten memanggil "${call.name}", yang bukan bagian dari panel ini.`,
     };
   }
 
@@ -200,31 +215,38 @@ export function parseTurn(
   try {
     args = JSON.parse(call.arguments);
   } catch {
-    return { kind: 'error', message: 'The model returned arguments that were not valid JSON.' };
+    return { kind: 'error', message: 'Asisten mengirim argumen yang bukan JSON yang sah.' };
   }
 
   if (typeof args !== 'object' || args === null) {
-    return { kind: 'error', message: 'The model returned no arguments.' };
+    return { kind: 'error', message: 'Asisten tidak mengirim argumen.' };
   }
 
   const record = args as Record<string, unknown>;
 
   if (call.name === 'ask_clarification' || call.name === 'ask_question') {
     const question = typeof record.question === 'string' ? record.question.trim() : '';
-    return question === ''
-      ? { kind: 'error', message: 'The model asked an empty question.' }
-      : { kind: 'ask', question };
+    if (question === '') {
+      return { kind: 'error', message: 'Asisten mengirim pertanyaan kosong.' };
+    }
+    // ask_question names the check it is asking about; carrying the field through
+    // lets the panel show which question is being answered instead of leaving the
+    // user to infer it from the wording.
+    const field = BIAS_FIELDS.find((candidate) => candidate === record.field);
+    return field === undefined
+      ? { kind: 'ask', question }
+      : { kind: 'ask', question, field };
   }
 
   if (call.name === 'flag_scope') {
     const kind = record.kind;
     if (kind !== 'missing_objective' && kind !== 'unrelated') {
-      return { kind: 'error', message: 'The model used an unknown scope flag.' };
+      return { kind: 'error', message: 'Asisten memakai penanda lingkup yang tidak dikenal.' };
     }
     const text = typeof record.text === 'string' ? record.text.trim() : '';
     const question = typeof record.question === 'string' ? record.question.trim() : '';
     if (text === '' || question === '') {
-      return { kind: 'error', message: 'The model sent a scope flag with no text.' };
+      return { kind: 'error', message: 'Asisten mengirim penanda lingkup tanpa isi.' };
     }
     return { kind: 'flag', flagKind: kind, text, question };
   }
@@ -232,32 +254,39 @@ export function parseTurn(
   if (call.name === 'record_options') {
     const items = stringList(record.options);
     return items === null
-      ? { kind: 'error', message: 'The model recorded no usable options.' }
+      ? { kind: 'error', message: 'Asisten tidak mencatat opsi yang bisa dipakai.' }
       : { kind: 'record', items };
   }
 
-  // record_answers: the user's wording, kept verbatim.
+  // record_answers: the user's wording, kept verbatim, keyed to the check it answers.
   if (!Array.isArray(record.answers)) {
-    return { kind: 'error', message: 'The model recorded no usable answers.' };
+    return { kind: 'error', message: 'Asisten tidak mencatat jawaban yang bisa dipakai.' };
   }
 
-  const items: string[] = [];
+  const answers: BiasAnswer[] = [];
   for (const entry of record.answers) {
     if (typeof entry !== 'object' || entry === null) {
-      return { kind: 'error', message: 'The model recorded a malformed answer.' };
+      return { kind: 'error', message: 'Asisten mencatat jawaban yang bentuknya salah.' };
     }
-    const text = (entry as Record<string, unknown>).text;
+    const { field, text } = entry as Record<string, unknown>;
     if (typeof text !== 'string') {
-      return { kind: 'error', message: 'The model recorded an answer that was not text.' };
+      return { kind: 'error', message: 'Asisten mencatat jawaban yang bukan teks.' };
+    }
+    const matched = BIAS_FIELDS.find((candidate) => candidate === field);
+    if (matched === undefined) {
+      // An answer with no recognisable field cannot be written anywhere, and
+      // guessing which question it belongs to would put the user's words under
+      // the wrong heading.
+      return { kind: 'error', message: 'Asisten mencatat jawaban untuk pemeriksaan yang tidak dikenal.' };
     }
     if (text.trim() !== '') {
-      items.push(text.trim());
+      answers.push({ field: matched, text: text.trim() });
     }
   }
 
-  return items.length === 0
-    ? { kind: 'error', message: 'The model recorded no usable answers.' }
-    : { kind: 'record', items };
+  return answers.length === 0
+    ? { kind: 'error', message: 'Asisten tidak mencatat jawaban yang bisa dipakai.' }
+    : { kind: 'record', items: answers.map((answer) => answer.text), answers };
 }
 
 function stringList(value: unknown): string[] | null {

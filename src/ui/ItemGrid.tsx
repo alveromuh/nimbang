@@ -1,5 +1,7 @@
 import type { Item, Objective, Option } from '../core';
 import { ItemEditor } from './ItemEditor';
+import { Bi } from './Bi';
+import { copy } from './i18n';
 
 interface ItemGridProps {
   options: Option[];
@@ -21,10 +23,10 @@ export function ItemGrid({ options, objectives, items, onChange }: ItemGridProps
     <section className="panel" aria-labelledby="score-heading">
       <div className="panel__head">
         <h2 className="panel__title" id="score-heading">
-          Scores
+          <Bi text={copy.scores} />
         </h2>
         <p className="panel__hint">
-          Value 1–5, benefit or cost, how likely, and what similar cases usually do.
+          <Bi text={copy.scoresHint} />
         </p>
       </div>
 
@@ -33,10 +35,10 @@ export function ItemGrid({ options, objectives, items, onChange }: ItemGridProps
           className="grid__row"
           style={{ gridTemplateColumns: `11rem repeat(${objectives.length}, minmax(9rem, 17rem))` }}
         >
-          <div className="grid__head">Option</div>
+          <div className="grid__head">{copy.optionLabel.id}</div>
           {objectives.map((objective, index) => (
             <div className="grid__head" key={objective.id}>
-              {objective.statement || `Objective ${index + 1}`}
+              {objective.statement || `Tujuan ${index + 1}`}
             </div>
           ))}
         </div>
@@ -48,8 +50,8 @@ export function ItemGrid({ options, objectives, items, onChange }: ItemGridProps
             style={{ gridTemplateColumns: `11rem repeat(${objectives.length}, minmax(9rem, 17rem))` }}
           >
             <div className="grid__option">
-              {option.label || `Option ${optionIndex + 1}`}
-              {option.isBaseline && <small>baseline</small>}
+              {option.label || `Opsi ${optionIndex + 1}`}
+              {option.isBaseline && <small>{copy.baseline.id}</small>}
             </div>
 
             {objectives.map((objective) => {
@@ -62,8 +64,8 @@ export function ItemGrid({ options, objectives, items, onChange }: ItemGridProps
                 <ItemEditor
                   key={itemId}
                   idPrefix={itemId}
-                  label={`${option.label || `Option ${optionIndex + 1}`} on ${
-                    objective.statement || 'this objective'
+                  label={`${option.label || `Opsi ${optionIndex + 1}`} pada ${
+                    objective.statement || 'tujuan ini'
                   }`}
                   item={item}
                   onChange={(next) => onChange(itemId, next)}

@@ -2,18 +2,39 @@ import { useMemo, useState } from 'react';
 import { ChatError, type TurnResult } from '../chat/client';
 import { openingMessage, systemPrompt } from '../chat/prompt';
 import { MAX_TURNS, type ChatState, type Scope } from '../chat/state';
-import { parseTurn, toolsFor, type ParsedTurn } from '../chat/tools';
+import { parseTurn, toolsFor, type BiasAnswer, type BiasField, type ParsedTurn } from '../chat/tools';
+import { AiMark } from './AiMark';
+import { copy } from './i18n';
+
+/**
+ * The heading each bias answer is filed under.
+ *
+ * Indonesian, matching the panel it writes into. Kept here rather than imported
+ * from the gate so the chat panel does not depend on the gate's markup, and so a
+ * reworded question in one place cannot silently retitle the other.
+ */
+const BIAS_TITLES: Record<BiasField, string> = {
+  survivorship: copy.survivorship.id,
+  ostrich: copy.ostrich.id,
+  hastyGeneralisation: copy.hasty.id,
+  causation: copy.causation.id,
+  falseComparison: copy.comparison.id,
+};
 
 interface ChatPanelProps {
   scope?: Scope;
   title?: string;
   objectives: string[];
   existingOptions: string[];
+  /** Answers already in the gate, so the panel does not ask again what is filled. */
+  existingAnswers?: string[];
   onSend: (request: {
     messages: { role: 'system' | 'user' | 'assistant'; content: string }[];
     tools: ReturnType<typeof toolsFor>;
   }) => Promise<TurnResult>;
   onAccept: (items: string[]) => void;
+  /** Bias scope only: writes each answer into the gate field it belongs to. */
+  onAcceptAnswers?: (answers: BiasAnswer[]) => void;
   onAddObjective: (text: string) => void;
   onClose: () => void;
 }
@@ -35,12 +56,14 @@ export function ChatPanel({
   title = '',
   objectives,
   existingOptions,
+  existingAnswers = [],
   onSend,
   onAccept,
+  onAcceptAnswers,
   onAddObjective,
   onClose,
 }: ChatPanelProps) {
-  const opening = useMemo(() => openingMessage(objectives), [objectives]);
+  const opening = useMemo(() => openingMessage(objectives, scope), [objectives, scope]);
 
   const [turns, setTurns] = useState<{ role: 'model' | 'user'; text: string }[]>([
     { role: 'model', text: opening },
@@ -50,6 +73,7 @@ export function ChatPanel({
   const [thinking, setThinking] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [proposal, setProposal] = useState<string[] | null>(null);
+  const [answers, setAnswers] = useState<BiasAnswer[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [flag, setFlag] = useState<{ text: string; question: string } | null>(null);
   const [done, setDone] = useState(false);
@@ -78,7 +102,7 @@ export function ChatPanel({
               scope,
               title,
               objectives,
-              existing: existingOptions,
+              existing: scope === 'options' ? existingOptions : existingAnswers,
               turn: replies,
               maxTurns: MAX_TURNS,
             }),
@@ -102,7 +126,7 @@ export function ChatPanel({
 
   function handle(result: TurnResult) {
     if (result.truncated) {
-      setError('The reply was cut off before it finished. Try again.');
+      setError('Jawabannya terpotong sebelum selesai. Coba lagi.');
       return;
     }
 
@@ -127,14 +151,35 @@ export function ChatPanel({
       return;
     }
 
+    setDone(true);
+
+    // Bias answers are keyed to a gate field, so they are shown one per check
+    // rather than as one undifferentiated list.
+    if (scope === 'bias') {
+      const recorded = parsed.answers ?? [];
+      setAnswers(recorded);
+      setSelected(new Set(recorded.map((answer) => answer.field)));
+      return;
+    }
+
     // Recorded: show the proposal, tick everything that is not already present.
     const fresh = parsed.items.filter((item) => !alreadyHas(existingOptions, item));
     setProposal(parsed.items);
     setSelected(new Set(fresh));
-    setDone(true);
   }
 
   function accept() {
+    if (scope === 'bias') {
+      if (answers !== null && onAcceptAnswers !== undefined) {
+        const chosen = answers.filter((answer) => selected.has(answer.field));
+        if (chosen.length > 0) {
+          onAcceptAnswers(chosen);
+        }
+      }
+      onClose();
+      return;
+    }
+
     if (proposal === null) {
       return;
     }
@@ -146,9 +191,12 @@ export function ChatPanel({
   }
 
   return (
-    <aside className="chat" aria-label="Asisten opsi">
+    <aside className="chat" aria-label={scope === 'bias' ? 'Asisten pemeriksaan bias' : 'Asisten opsi'}>
       <header className="chat__head">
-        <span className="chat__title">Berpikir sambil bicara</span>
+        <span className="chat__title">
+          <AiMark />
+          {scope === 'bias' ? 'Menggali jawabanmu' : 'Berpikir sambil bicara'}
+        </span>
         <button type="button" className="btn-quiet btn-icon" onClick={onClose}>
           Tutup
         </button>
@@ -189,35 +237,60 @@ export function ChatPanel({
         </div>
       )}
 
-      {proposal !== null ? (
+      {proposal !== null || answers !== null ? (
         <div className="chat__proposal">
-          <p className="chat__label">Usulan opsi</p>
-          {proposal.map((item) => {
-            const present = alreadyHas(existingOptions, item);
-            return (
-              <label className="chat__check" key={item}>
-                <input
-                  type="checkbox"
-                  aria-label={item}
-                  checked={!present && selected.has(item)}
-                  disabled={present}
-                  onChange={(event) => {
-                    const next = new Set(selected);
-                    if (event.target.checked) {
-                      next.add(item);
-                    } else {
-                      next.delete(item);
-                    }
-                    setSelected(next);
-                  }}
-                />
-                {item}
-                {present && <span className="chat__present">sudah ada di daftarmu</span>}
-              </label>
-            );
-          })}
+          <p className="chat__label">{scope === 'bias' ? 'Usulan jawaban' : 'Usulan opsi'}</p>
+
+          {answers !== null
+            ? answers.map((answer) => (
+                <label className="chat__check" key={answer.field}>
+                  <input
+                    type="checkbox"
+                    aria-label={BIAS_TITLES[answer.field]}
+                    checked={selected.has(answer.field)}
+                    onChange={(event) => {
+                      const next = new Set(selected);
+                      if (event.target.checked) {
+                        next.add(answer.field);
+                      } else {
+                        next.delete(answer.field);
+                      }
+                      setSelected(next);
+                    }}
+                  />
+                  <span>
+                    <span className="chat__field">{BIAS_TITLES[answer.field]}</span>
+                    {answer.text}
+                  </span>
+                </label>
+              ))
+            : (proposal ?? []).map((item) => {
+                const present = alreadyHas(existingOptions, item);
+                return (
+                  <label className="chat__check" key={item}>
+                    <input
+                      type="checkbox"
+                      aria-label={item}
+                      checked={!present && selected.has(item)}
+                      disabled={present}
+                      onChange={(event) => {
+                        const next = new Set(selected);
+                        if (event.target.checked) {
+                          next.add(item);
+                        } else {
+                          next.delete(item);
+                        }
+                        setSelected(next);
+                      }}
+                    />
+                    {item}
+                    {present && <span className="chat__present">sudah ada di daftarmu</span>}
+                  </label>
+                );
+              })}
+
           <button type="button" className="btn-primary" onClick={accept}>
-            Tambahkan yang dipilih
+            {scope === 'bias' ? 'Isi yang dipilih' : 'Tambahkan yang dipilih'}
           </button>
         </div>
       ) : (
@@ -249,30 +322,37 @@ function alreadyHas(existing: string[], candidate: string): boolean {
   return existing.some((entry) => normalise(entry) === normalise(candidate));
 }
 
+/**
+ * Failures, in the interface's language.
+ *
+ * Indonesian because these are the app's own sentences, and the rule is that the
+ * app owns every word the user reads. The model's prose never reaches here: a
+ * parser error is the app reporting what it could not use.
+ */
 function messageFor(error: unknown): string {
   if (error instanceof ChatError) {
     switch (error.kind) {
       case 'not_configured':
-        return 'The assistant is not configured on this server. Everything else still works.';
+        return 'Asisten belum diatur di server ini. Bagian lain tetap berjalan.';
       case 'unauthorized':
-        return 'The gateway rejected the API key.';
+        return 'Kunci API ditolak oleh gateway.';
       case 'rate_limited':
         return error.retryAfter === undefined
-          ? 'The gateway is rate limiting. Try again shortly.'
-          : `The gateway is rate limiting. Try again in ${error.retryAfter}s.`;
+          ? 'Gateway sedang membatasi permintaan. Coba lagi sebentar.'
+          : `Gateway sedang membatasi permintaan. Coba lagi dalam ${error.retryAfter} detik.`;
       case 'no_tools':
-        return 'The configured model does not support tool calling, which this panel needs.';
+        return 'Model yang dipakai tidak mendukung pemanggilan tool, padahal panel ini memerlukannya.';
       case 'no_model':
-        return 'No model is available. Set LLM_MODEL on the server.';
+        return 'Tidak ada model yang tersedia. Setel LLM_MODEL di server.';
       case 'interrupted':
-        return 'The reply was interrupted. Try again.';
+        return 'Jawabannya terputus. Coba lagi.';
       case 'malformed':
-        return 'The assistant returned something unexpected.';
+        return 'Asisten mengembalikan sesuatu yang tidak bisa dibaca.';
       case 'unreachable':
-        return 'Could not reach the assistant. Try again.';
+        return 'Tidak bisa menghubungi asisten. Coba lagi.';
     }
   }
-  return 'Something went wrong talking to the assistant.';
+  return 'Ada yang gagal saat menghubungi asisten.';
 }
 
 export type { ChatState };

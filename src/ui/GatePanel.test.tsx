@@ -27,22 +27,30 @@ function setup(initial: GateInputs = empty) {
 describe('GatePanel', () => {
   it('asks every bias question the framework requires', () => {
     setup();
-    expect(screen.getByLabelText(/who tried this and failed/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/evidence are you avoiding/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/how many cases/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/cause, or a coincidence/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/what differs between your case/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/bukti apa yang sedang kamu hindari/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/berdasar berapa kasus/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/sebab, atau kebetulan waktunya/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/beda kasusmu dengan kasus pembandingnya/i)).toBeInTheDocument();
+  });
+
+  it('shows the English line under each question, at lower emphasis', () => {
+    setup();
+    // Bilingual by design: Indonesian is the interface, English is the aid.
+    const english = screen.getByText(/who tried this and failed/i);
+    expect(english).toHaveAttribute('lang', 'en');
+    expect(english.className).toMatch(/bi__en/);
   });
 
   it('labels sunk cost as excluded from the arithmetic', () => {
     setup();
     // Review Focus 3: the exclusion must be visible, not merely true.
-    expect(screen.getByText(/excluded from the arithmetic/i)).toBeInTheDocument();
+    expect(screen.getByText(/tidak dihitung/i)).toBeInTheDocument();
   });
 
   it('accepts a zero sunk cost, because zero is an answer', async () => {
     const { user } = setup();
-    const amount = screen.getByLabelText(/sunk cost/i);
+    const amount = screen.getByLabelText(/biaya yang sudah keluar/i);
     await user.clear(amount);
     await user.type(amount, '0');
     expect(amount).toHaveValue(0);
@@ -50,21 +58,21 @@ describe('GatePanel', () => {
     // A recorded zero must not be reported as missing. The other five fields are
     // still empty here, so sunk cost must not appear among the unanswered ones.
     const status = screen.getByRole('status');
-    expect(status.textContent).not.toMatch(/sunk cost/i);
-    expect(status.textContent).toMatch(/who tried and failed/i);
+    expect(status.textContent).not.toMatch(/biaya yang sudah keluar/i);
+    expect(status.textContent).toMatch(/siapa yang mencoba ini lalu gagal/i);
   });
 
   it('reports the gate as incomplete until every field is answered', async () => {
     const { user } = setup();
-    expect(screen.getByText(/unanswered/i)).toBeInTheDocument();
+    expect(screen.getByText(/belum dijawab/i)).toBeInTheDocument();
 
     const answers: [RegExp, string][] = [
-      [/sunk cost/i, '5000000'],
-      [/who tried this and failed/i, 'teman yang pindah lalu kembali'],
-      [/evidence are you avoiding/i, 'gaji aktual di sana'],
-      [/how many cases/i, 'dua'],
-      [/cause, or a coincidence/i, 'koinsiden'],
-      [/what differs between your case/i, 'pengalaman'],
+      [/biaya yang sudah keluar/i, '5000000'],
+      [/siapa yang mencoba ini lalu gagal/i, 'teman yang pindah lalu kembali'],
+      [/bukti apa yang sedang kamu hindari/i, 'gaji aktual di sana'],
+      [/berdasar berapa kasus/i, 'dua'],
+      [/sebab, atau kebetulan waktunya/i, 'koinsiden'],
+      [/beda kasusmu dengan kasus pembandingnya/i, 'pengalaman'],
     ];
 
     for (const [label, answer] of answers) {
@@ -73,6 +81,6 @@ describe('GatePanel', () => {
       await user.type(field, answer);
     }
 
-    expect(screen.queryByText(/unanswered/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/belum dijawab/i)).not.toBeInTheDocument();
   });
 });

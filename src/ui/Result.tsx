@@ -1,4 +1,6 @@
 import type { Decision, ScoreResult, StressReport } from '../core';
+import { Bi } from './Bi';
+import { copy } from './i18n';
 
 interface ResultProps {
   decision: Decision;
@@ -31,28 +33,29 @@ export function Result({ decision, score, stress }: ResultProps) {
     <section className="panel" aria-labelledby="result-heading">
       <div className="panel__head">
         <h2 className="panel__title" id="result-heading">
-          Verdict
+          <Bi text={copy.verdict} />
         </h2>
         <p className="panel__hint">
-          {decision.items.length} {decision.items.length === 1 ? 'score' : 'scores'} · {decision.objectives.length}{' '}
-          {decision.objectives.length === 1 ? 'objective' : 'objectives'}
+          {decision.items.length} nilai · {decision.objectives.length} tujuan
         </p>
       </div>
 
       <div className="verdict">
         <div>
-          <div className="verdict__label">Recommendation</div>
+          <div className="verdict__label">
+            <Bi text={copy.recommendation} />
+          </div>
           {score.recommendation === null ? (
             <p className="verdict__value verdict__value--blocked" role="alert">
-              No recommendation. The leading option carries a fatal risk, and this engine does not
-              price a fatal risk against an ordinary one.
+              Tidak ada rekomendasi. Opsi teratas membawa risiko fatal, dan mesin ini tidak
+              menukar risiko fatal dengan risiko biasa.
             </p>
           ) : (
             <>
               <div className="verdict__value">{labelOf(score.recommendation)}</div>
               {margin !== null && (
                 <p className="verdict__sub">
-                  {margin.toFixed(3)} ahead of {labelOf(score.ranking[1])}
+                  Unggul {margin.toFixed(3)} dari {labelOf(score.ranking[1])}
                 </p>
               )}
             </>
@@ -60,20 +63,22 @@ export function Result({ decision, score, stress }: ResultProps) {
         </div>
 
         <div>
-          <div className="verdict__label">Fragility</div>
+          <div className="verdict__label">
+            <Bi text={copy.fragility} />
+          </div>
           {stress.flipsAt === null ? (
             <p className="verdict__sub" style={{ marginTop: 0 }}>
-              No single score reverses this ranking within the 1–5 scale. That is a robust answer,
-              not a precise one.
+              Tidak ada satu nilai pun dalam skala 1–5 yang membalik urutan ini. Itu jawaban yang
+              tahan uji, bukan jawaban yang presisi.
             </p>
           ) : (
             <>
               <div className="verdict__value">
-                {stress.flipsAt.delta === 0 ? 'Already tied' : `±${stress.flipsAt.delta.toFixed(2)}`}
+                {stress.flipsAt.delta === 0 ? 'Sudah seri' : `±${stress.flipsAt.delta.toFixed(2)}`}
               </div>
               <p className="verdict__sub">
-                Change {itemLabel(decision, stress.flipsAt.itemId)} by this much and the ranking
-                reverses. Find out whether that is true before committing.
+                Ubah {itemLabel(decision, stress.flipsAt.itemId)} sebesar ini dan urutannya
+                berbalik. Pastikan dulu itu benar sebelum memutuskan.
               </p>
             </>
           )}
@@ -86,11 +91,11 @@ export function Result({ decision, score, stress }: ResultProps) {
             <th className="rank" scope="col">
               #
             </th>
-            <th scope="col">Option</th>
+            <th scope="col">{copy.optionLabel.id}</th>
             <th className="num" scope="col">
               Net
             </th>
-            <th scope="col">Flags</th>
+            <th scope="col">Tanda</th>
           </tr>
         </thead>
         <tbody>
@@ -103,7 +108,7 @@ export function Result({ decision, score, stress }: ResultProps) {
                 {score.fatal.includes(optionId) ? (
                   <span className="badge badge--fatal">Fatal</span>
                 ) : index === 0 ? (
-                  <span className="badge badge--accent">Leads</span>
+                  <span className="badge badge--accent">{copy.leads.id}</span>
                 ) : null}
               </td>
             </tr>
@@ -114,7 +119,7 @@ export function Result({ decision, score, stress }: ResultProps) {
       {stress.tornado.length > 0 && (
         <>
           <h3 style={{ fontSize: '0.75rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: 'var(--s-lg) 0 var(--s-sm)', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-            What moves the answer most
+            <Bi text={copy.movesMost} />
           </h3>
           <ul className="tornado">
             {stress.tornado.slice(0, 6).map((entry) => {

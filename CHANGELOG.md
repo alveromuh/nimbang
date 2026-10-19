@@ -8,6 +8,24 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- **Bilingual interface, Indonesian first.** Every heading, field label and hint
+  shows Indonesian with an English gloss underneath in a quieter colour. The app
+  was already Indonesian (`index.html` sets `lang="id"`), but the panels were in
+  English, so a reader met two languages in one form. Buttons, errors, the chat
+  transcript and anything the user typed stay Indonesian only: a button is an
+  action, not a sentence to translate, and doubling every action's height would
+  turn a calm form into a manual. The gloss is `aria-hidden`, because inside a
+  `<label>` it would become part of the accessible name and announce every field
+  twice.
+- **AI button in the bias checks, with the same sparkle as the options one.**
+  The bias panel existed as tools and prompts but had no way in. Both entry
+  points now share one `AiTrigger` component, so they cannot drift, and both
+  carry the same mark so they read as one feature.
+- **Bias answers land in the right field.** `record_answers` used to be flattened
+  to a list of strings, which made five answers indistinguishable; the parser now
+  keeps the field each answer belongs to, and accepting writes each into its own
+  gate field. An answer for a check that does not exist is rejected rather than
+  filed under a guess.
 - **Elicitation panel** (`src/ui/ChatPanel.tsx`). In the Options stage, a person
   can open a bounded conversation and be asked questions until what they already
   know has been articulated. The result is a checklist of proposals, never a

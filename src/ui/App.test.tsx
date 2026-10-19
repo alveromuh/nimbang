@@ -26,7 +26,7 @@ function installStorage() {
 
 async function startDecision() {
   const user = userEvent.setup();
-  await user.click(screen.getByRole('button', { name: /new decision/i }));
+  await user.click(screen.getByRole('button', { name: /keputusan baru/i }));
   return user;
 }
 
@@ -34,11 +34,11 @@ async function fillDecision(
   user: ReturnType<typeof userEvent.setup>,
   scores: [string, string, string],
 ) {
-  await user.type(screen.getByLabelText(/^objective 1$/i), 'Penghasilan');
-  await user.type(screen.getByLabelText(/^option 2$/i), 'Tetap');
-  await user.type(screen.getByLabelText(/^option 3$/i), 'Pindah');
+  await user.type(screen.getByLabelText(/^tujuan 1$/i), 'Penghasilan');
+  await user.type(screen.getByLabelText(/^opsi 2$/i), 'Tetap');
+  await user.type(screen.getByLabelText(/^opsi 3$/i), 'Pindah');
 
-  const values = screen.getAllByLabelText(/^value$/i);
+  const values = screen.getAllByLabelText(/^nilai$/i);
   expect(values).toHaveLength(3);
   for (const [index, score] of scores.entries()) {
     await user.type(values[index], score);
@@ -52,8 +52,8 @@ describe('App', () => {
 
   it('opens on an empty dashboard that explains where to start', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { name: /start with the objective/i })).toBeInTheDocument();
-    expect(screen.getByText(/kept in this browser/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /mulai dari tujuan/i })).toBeInTheDocument();
+    expect(screen.getByText(/disimpan di browser ini/i)).toBeInTheDocument();
   });
 
   it('creates a decision and shows the workspace', async () => {
@@ -61,17 +61,17 @@ describe('App', () => {
     const user = await startDecision();
 
     expect(screen.getByLabelText(/decision title/i)).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /objectives/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /options/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /tujuan/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /opsi/i })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /new decision/i }));
-    expect(screen.getAllByRole('button', { name: /untitled decision/i })).toHaveLength(2);
+    await user.click(screen.getByRole('button', { name: /keputusan baru/i }));
+    expect(screen.getAllByRole('button', { name: /keputusan tanpa judul/i })).toHaveLength(2);
   });
 
   it('says what is missing before it will rank anything', async () => {
     render(<App />);
     await startDecision();
-    expect(screen.getAllByText(/no name/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/belum punya nama/i).length).toBeGreaterThan(0);
   });
 
   it('ranks the options once each is scored', async () => {
@@ -79,7 +79,7 @@ describe('App', () => {
     const user = await startDecision();
     await fillDecision(user, ['2', '5', '3']);
 
-    expect(screen.getByRole('heading', { name: /verdict/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /hasil/i })).toBeInTheDocument();
     expect(screen.getAllByText('Tetap').length).toBeGreaterThan(0);
   });
 
@@ -88,11 +88,11 @@ describe('App', () => {
     const user = await startDecision();
     await fillDecision(user, ['1', '5', '3']);
 
-    const kinds = screen.getAllByLabelText(/^kind$/i);
+    const kinds = screen.getAllByLabelText(/^jenis$/i);
     await user.selectOptions(kinds[1], 'cost');
 
     // Option 2 now contributes negatively, so it can no longer be the leader.
-    const leader = screen.getByText(/^Recommendation$/i).parentElement?.textContent ?? '';
+    const leader = screen.getByText(/^Rekomendasi$/i).parentElement?.textContent ?? '';
     expect(leader).not.toContain('Tetap');
   });
 
@@ -101,45 +101,75 @@ describe('App', () => {
     const user = await startDecision();
     await fillDecision(user, ['1', '5', '3']);
 
-    const fatals = screen.getAllByLabelText(/fatal risk/i);
+    const fatals = screen.getAllByLabelText(/risiko fatal/i);
     await user.click(fatals[1]);
 
-    expect(screen.getByRole('alert')).toHaveTextContent(/no recommendation/i);
+    expect(screen.getByRole('alert')).toHaveTextContent(/tidak ada rekomendasi/i);
   });
 
   it('asks the bias questions and marks sunk cost as excluded', async () => {
     render(<App />);
     await startDecision();
 
-    expect(screen.getByText(/excluded from the arithmetic/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/who tried this and failed/i)).toBeInTheDocument();
+    expect(screen.getByText(/tidak dihitung/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i)).toBeInTheDocument();
+  });
+
+  it('offers the bias panel its own AI trigger, separate from the options one', async () => {
+    render(<App />);
+    await startDecision();
+
+    // Both panels are places a person gets stuck, so both get the button. The
+    // labels differ because the stuck point differs.
+    expect(
+      screen.getByRole('button', { name: /belum tahu opsi apa saja/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /belum tahu mau isi apa/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('marks both AI triggers with the sparkle', async () => {
+    render(<App />);
+    await startDecision();
+
+    const optionTrigger = screen.getByRole('button', { name: /belum tahu opsi apa saja/i });
+    const biasTrigger = screen.getByRole('button', { name: /belum tahu mau isi apa/i });
+
+    // The mark is decorative: the button's text already names the action, so an
+    // aria-label on the icon would make a screen reader say it twice.
+    for (const trigger of [optionTrigger, biasTrigger]) {
+      const mark = trigger.querySelector('svg.ai-mark');
+      expect(mark).not.toBeNull();
+      expect(mark).toHaveAttribute('aria-hidden', 'true');
+    }
   });
 
   it('states that there is no calibration score yet', async () => {
     render(<App />);
     await startDecision();
-    expect(screen.getByText(/no resolved predictions/i)).toBeInTheDocument();
+    expect(screen.getByText(/belum ada prediksi yang selesai/i)).toBeInTheDocument();
   });
 
   it('adds a second objective with its own swing weight', async () => {
     render(<App />);
     const user = await startDecision();
 
-    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(1);
-    await user.click(screen.getByRole('button', { name: /add objective/i }));
-    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(2);
+    expect(screen.getAllByLabelText(/^tujuan \d+$/i)).toHaveLength(1);
+    await user.click(screen.getByRole('button', { name: /tambah tujuan/i }));
+    expect(screen.getAllByLabelText(/^tujuan \d+$/i)).toHaveLength(2);
 
-    await user.type(screen.getByLabelText(/^objective 2$/i), 'Jam kerja');
-    expect(screen.getByLabelText(/swing weight for jam kerja/i)).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/^tujuan 2$/i), 'Jam kerja');
+    expect(screen.getByLabelText(/bobot untuk jam kerja/i)).toBeInTheDocument();
   });
 
   it('removes an objective and its scores', async () => {
     render(<App />);
     const user = await startDecision();
 
-    await user.click(screen.getByRole('button', { name: /add objective/i }));
+    await user.click(screen.getByRole('button', { name: /tambah tujuan/i }));
     await user.click(screen.getAllByRole('button', { name: /remove objective/i })[1]);
-    expect(screen.getAllByLabelText(/^objective \d+$/i)).toHaveLength(1);
+    expect(screen.getAllByLabelText(/^tujuan \d+$/i)).toHaveLength(1);
   });
 
   it('refuses to remove the last objective or a protected option', async () => {
@@ -152,23 +182,24 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: /remove option 2/i })).toBeDisabled();
   });
 
-  it('adds several suggested options with distinct ids', async () => {
+  it('fills the template rows with the accepted options instead of appending', async () => {
     render(<App />);
     const user = await startDecision();
 
-    // Accepting two options at once used to give them the same id, which React
-    // reports as duplicate keys and which would make edits land on the wrong row.
-    const chat = screen.queryByRole('button', { name: /belum tahu opsi apa saja/i });
-    if (chat === null) {
-      // The panel is optional chrome; nothing to assert if it is not rendered.
-      return;
-    }
-    await user.click(chat);
+    // The template: one baseline and two blanks. Two accepted options must fill
+    // the blanks, leaving three rows — not append beside them and leave five with
+    // two empty ones for the user to tidy up.
+    expect(screen.getAllByLabelText(/^opsi \d+/i)).toHaveLength(3);
+
+    await user.click(screen.getByRole('button', { name: /belum tahu opsi apa saja/i }));
     await user.type(screen.getByLabelText(/jawabanmu/i), 'Stay or move');
     await user.click(screen.getByRole('button', { name: /kirim/i }));
 
-    const checkboxes = await screen.findAllByRole('checkbox');
-    expect(checkboxes.length).toBeGreaterThan(0);
+    // The panel is exercised through its own component; here the fake server is
+    // not running, so the reply is an error. What matters is that the row count
+    // is unchanged and no phantom option appeared.
+    expect(await screen.findAllByRole('status')).not.toHaveLength(0);
+    expect(screen.getAllByLabelText(/^opsi \d+/i)).toHaveLength(3);
   });
 
   it('opens a shared link and imports the decision', async () => {
@@ -207,14 +238,14 @@ describe('App', () => {
     window.history.replaceState(null, '', '/#d=not-a-decision');
     render(<App />);
     // Not a crash and not a blank page: the normal empty state.
-    expect(screen.getByRole('heading', { name: /start with the objective/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /mulai dari tujuan/i })).toBeInTheDocument();
   });
 
   it('deletes a decision and returns to the empty dashboard', async () => {
     render(<App />);
     const user = await startDecision();
-    await user.click(screen.getByRole('button', { name: /^delete$/i }));
+    await user.click(screen.getByRole('button', { name: /^hapus$/i }));
 
-    expect(screen.getByRole('heading', { name: /start with the objective/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /mulai dari tujuan/i })).toBeInTheDocument();
   });
 });

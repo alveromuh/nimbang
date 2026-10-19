@@ -17,8 +17,13 @@ import { GatePanel } from './GatePanel';
 import { ItemGrid } from './ItemGrid';
 import { Result } from './Result';
 import { ChatPanel } from './ChatPanel';
+import { AiTrigger } from './AiTrigger';
+import { Bi } from './Bi';
+import { copy } from './i18n';
 import { fillOptionSlots } from './fillOptions';
+import { divergeMessage, frameMessage } from './messages';
 import { sendTurn } from '../chat/client';
+import type { BiasAnswer } from '../chat/tools';
 
 interface DecisionWorkspaceProps {
   decision: Decision;
@@ -34,6 +39,15 @@ const EMPTY_GATE: GateInputs = {
   causation: '',
   falseComparison: '',
 };
+
+/** The five answered questions, in panel order. `sunkCost` is excluded: it is a number. */
+const GATE_FIELDS = [
+  'survivorship',
+  'ostrich',
+  'hastyGeneralisation',
+  'causation',
+  'falseComparison',
+] as const;
 
 /**
  * One decision, open for editing.
@@ -54,7 +68,13 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
   const [gate, setGate] = useState<GateInputs>(decision.gate ?? EMPTY_GATE);
   const [predictions, setPredictions] = useState<Prediction[]>(decision.predictions ?? []);
   const [outcomes, setOutcomes] = useState<Record<string, boolean>>(decision.outcomes ?? {});
-  const [chatOpen, setChatOpen] = useState(false);
+  /**
+   * Which elicitation panel is open, if any.
+   *
+   * One state rather than two booleans: two panels cannot be open at once, and a
+   * pair of booleans would allow exactly that state to exist.
+   */
+  const [chat, setChat] = useState<'options' | 'bias' | null>(null);
 
   const draft: Decision = useMemo(
     () => ({
@@ -136,6 +156,25 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
     setSwingPoints({ ...swingPoints, [id]: 50 });
   }
 
+  /**
+   * Writes accepted bias answers into the gate.
+   *
+   * Only fields the user ticked are written, and an empty answer is never written:
+   * the gate treats a blank field as unanswered, so writing `''` would look like
+   * the question had been answered and skipped.
+   */
+  function acceptBiasAnswers(answers: BiasAnswer[]): void {
+    const patch: Partial<GateInputs> = {};
+    for (const answer of answers) {
+      if (answer.text.trim() !== '') {
+        patch[answer.field] = answer.text.trim();
+      }
+    }
+    if (Object.keys(patch).length > 0) {
+      setGate({ ...gate, ...patch });
+    }
+  }
+
   function removeOption(id: string): void {
     setOptions(options.filter((option) => option.id !== id));
     setItems(items.filter((item) => item.optionId !== id));
@@ -145,21 +184,21 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
     <>
       <header className="work__head">
         <div className="work__head-main">
-          <p className="work__kicker">Decision</p>
+          <p className="work__kicker">Keputusan</p>
           <input
             aria-label="Decision title"
             className="work__title-input"
-            placeholder="What are you deciding?"
+            placeholder="Apa yang sedang kamu putuskan?"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
         </div>
         <div className="work__actions">
           <button type="button" className="btn-quiet" onClick={() => window.print()}>
-            Print
+            Cetak
           </button>
           <button type="button" className="btn-quiet" onClick={onDelete}>
-            Delete
+            Hapus
           </button>
         </div>
       </header>
@@ -178,19 +217,25 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
       <section className="panel" aria-labelledby="frame-heading">
         <div className="panel__head">
           <h2 className="panel__title" id="frame-heading">
-            Objectives
+            <Bi text={copy.objectives} />
           </h2>
-          <p className="panel__hint">What are you trying to achieve, before you list options?</p>
+          <p className="panel__hint">
+            <Bi text={copy.objectivesHint} />
+          </p>
         </div>
 
         {objectives.map((objective, index) => (
           <div key={objective.id} className="field">
-            <label htmlFor={`objective-${index}`}>Objective {index + 1}</label>
+            {/* Numbered labels stay Indonesian-only. They are structure, not
+                description: a reader who needs "Tujuan 2" translated is not
+                helped by a second line, and inside a <label> it would become part
+                of the field's accessible name. */}
+            <label htmlFor={`objective-${index}`}>Tujuan {index + 1}</label>
             <div className="row-actions">
               <input
                 id={`objective-${index}`}
                 value={objective.statement}
-                placeholder="e.g. Penghasilan naik tanpa jam kerja lebih panjang"
+                placeholder="mis. Penghasilan naik tanpa jam kerja lebih panjang"
                 onChange={(event) =>
                   setObjectives(
                     replaceAt(objectives, index, { ...objective, statement: event.target.value }),
@@ -204,37 +249,43 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
                 disabled={objectives.length === 1}
                 onClick={() => removeObjective(objective.id)}
               >
-                Remove
+                Hapus
               </button>
             </div>
           </div>
         ))}
 
-        {!frame.ok && <p className="note note--warn">{frame.reason}</p>}
+        {frameMessage(frame) !== null && (
+          <p className="note note--warn">{frameMessage(frame)}</p>
+        )}
         <button type="button" onClick={addObjective}>
-          Add objective
+          Tambah tujuan
         </button>
       </section>
 
       <section className="panel" aria-labelledby="diverge-heading">
         <div className="panel__head">
           <h2 className="panel__title" id="diverge-heading">
-            Options
+            <Bi text={copy.options} />
           </h2>
-          <p className="panel__hint">At least three, one of which is doing nothing.</p>
+          <p className="panel__hint">
+            <Bi text={copy.optionsHint} />
+          </p>
         </div>
 
         {options.map((option, index) => (
           <div key={option.id} className="field">
             <label htmlFor={`option-${index}`}>
-              Option {index + 1}
-              {option.isBaseline ? ' · baseline' : ''}
+              Opsi {index + 1}
+              {option.isBaseline ? ` · ${copy.baseline.id}` : ''}
             </label>
             <div className="row-actions">
               <input
                 id={`option-${index}`}
                 value={option.label}
-                placeholder={option.isBaseline ? 'Do nothing' : 'Name this option'}
+                placeholder={
+                  option.isBaseline ? 'Tidak melakukan apa-apa' : 'Beri nama opsi ini'
+                }
                 onChange={(event) =>
                   setOptions(replaceAt(options, index, { ...option, label: event.target.value }))
                 }
@@ -246,49 +297,42 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
                 disabled={option.isBaseline || options.length <= 3}
                 onClick={() => removeOption(option.id)}
               >
-                Remove
+                Hapus
               </button>
             </div>
           </div>
         ))}
 
-        {!diverge.ok && <p className="note note--warn">{diverge.reason}</p>}
+        {divergeMessage(diverge, options) !== null && (
+          <p className="note note--warn">{divergeMessage(diverge, options)}</p>
+        )}
         <button type="button" onClick={addOption}>
-          Add option
+          Tambah opsi
         </button>
 
-        {chatOpen ? (
+        {chat === 'options' ? (
           <ChatPanel
+            scope="options"
             title={title}
             objectives={objectives.map((objective) => objective.statement)}
             existingOptions={options.map((option) => option.label)}
             onSend={sendTurn}
             onAccept={acceptSuggestedOptions}
             onAddObjective={addSuggestedObjective}
-            onClose={() => setChatOpen(false)}
+            onClose={() => setChat(null)}
           />
         ) : (
-          <div className="suggest">
-            <div className="suggest__trigger">
-              <button type="button" className="btn-quiet" onClick={() => setChatOpen(true)}>
-                Belum tahu opsi apa saja?
-              </button>
-              <span className="suggest__hint">
-                Obrolan singkat untuk mengeluarkan yang sudah ada di kepalamu. Tidak ada yang
-                ditambahkan sampai kamu setujui.
-              </span>
-            </div>
-          </div>
+          <AiTrigger scope="options" onOpen={() => setChat('options')} />
         )}
       </section>
 
       <section className="panel" aria-labelledby="weigh-heading">
         <div className="panel__head">
           <h2 className="panel__title" id="weigh-heading">
-            Swing weights
+            <Bi text={copy.weights} />
           </h2>
           <p className="panel__hint">
-            How much does it matter that the options move from worst to best here?
+            <Bi text={copy.weightsHint} />
           </p>
         </div>
 
@@ -296,7 +340,7 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
           {objectives.map((objective, index) => (
             <div key={objective.id}>
               <label htmlFor={`swing-${index}`}>
-                Swing weight for {objective.statement || `objective ${index + 1}`}
+                Bobot untuk {objective.statement || `tujuan ${index + 1}`}
               </label>
               <input
                 id={`swing-${index}`}
@@ -319,7 +363,30 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
         onChange={(itemId, next) => setItems(upsertItem(items, itemId, next))}
       />
 
-      <GatePanel value={gate} onChange={setGate} />
+      <GatePanel
+        value={gate}
+        onChange={setGate}
+        ask={
+          chat === 'bias' ? (
+            <ChatPanel
+              scope="bias"
+              title={title}
+              objectives={objectives.map((objective) => objective.statement)}
+              existingOptions={[]}
+              existingAnswers={GATE_FIELDS.map((field) => gate[field]).filter(
+                (answer) => answer.trim() !== '',
+              )}
+              onSend={sendTurn}
+              onAccept={acceptSuggestedOptions}
+              onAcceptAnswers={acceptBiasAnswers}
+              onAddObjective={addSuggestedObjective}
+              onClose={() => setChat(null)}
+            />
+          ) : (
+            <AiTrigger scope="bias" onOpen={() => setChat('bias')} />
+          )
+        }
+      />
 
       <CommitPanel
         predictions={predictions}

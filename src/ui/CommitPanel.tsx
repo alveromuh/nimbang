@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { brierScore, resolvePredictions, type Prediction } from '../core';
+import { Bi } from './Bi';
+import { copy } from './i18n';
 
 interface CommitPanelProps {
   predictions: Prediction[];
@@ -30,20 +32,20 @@ export function CommitPanel({
     <section className="panel" aria-labelledby="commit-heading">
       <div className="panel__head">
         <h2 className="panel__title" id="commit-heading">
-          Commit
+          <Bi text={copy.commit} />
         </h2>
         <p className="panel__hint">
-          Write down what you expect, so later you can check it.
+          <Bi text={copy.commitHint} />
         </p>
       </div>
 
       <div className="field-row">
         <div>
-          <label htmlFor="commit-review">Review on</label>
+          <label htmlFor="commit-review">Tinjau pada</label>
           <input id="commit-review" type="date" />
         </div>
         <div>
-          <label htmlFor="commit-probability">Probability (0-1)</label>
+          <label htmlFor="commit-probability">Peluang (0-1)</label>
           <input
             id="commit-probability"
             type="number"
@@ -57,11 +59,11 @@ export function CommitPanel({
       </div>
 
       <div className="field">
-        <label htmlFor="commit-prediction">Prediction</label>
+        <label htmlFor="commit-prediction">Prediksi</label>
         <div className="row-actions">
           <input
             id="commit-prediction"
-            placeholder="What will be true, and by when?"
+            placeholder="Apa yang akan benar, dan kapan?"
             value={draftText}
             onChange={(event) => setDraftText(event.target.value)}
           />
@@ -86,7 +88,7 @@ export function CommitPanel({
               setDraftProbability('0.5');
             }}
           >
-            Add prediction
+            Tambah prediksi
           </button>
         </div>
       </div>
@@ -95,11 +97,11 @@ export function CommitPanel({
         <table className="table">
           <thead>
             <tr>
-              <th scope="col">Prediction</th>
+              <th scope="col">Prediksi</th>
               <th className="num" scope="col">
                 P
               </th>
-              <th scope="col">Happened</th>
+              <th scope="col">Terjadi</th>
             </tr>
           </thead>
           <tbody>
@@ -120,7 +122,7 @@ export function CommitPanel({
                         })
                       }
                     />
-                    Happened
+                    Terjadi
                   </label>
                 </td>
               </tr>
@@ -136,13 +138,17 @@ export function CommitPanel({
 
 function Calibration({ resolved }: { resolved: { p: number; o: boolean }[] }) {
   if (resolved.length === 0) {
-    return <p className="note">No resolved predictions yet, so there is no calibration score.</p>;
+    return (
+      <p className="note">
+        Belum ada prediksi yang selesai, jadi belum ada skor kalibrasi.
+      </p>
+    );
   }
 
   return (
     <p className="note">
-      Brier score: <strong>{brierScore(resolved).toFixed(3)}</strong> — lower is better; 0.25 is a
-      coin toss.
+      Skor Brier: <strong>{brierScore(resolved).toFixed(3)}</strong> — makin kecil makin baik; 0,25
+      sama dengan melempar koin.
     </p>
   );
 }

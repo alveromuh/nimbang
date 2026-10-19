@@ -7,6 +7,7 @@ colors:
   ink: "#1a1a17"
   ink-soft: "#5f5e56"
   ink-faint: "#75736b"
+  ink-gloss: "#6b6960"
   paper: "#faf9f5"
   surface: "#ffffff"
   surface-sunken: "#f2f0e9"
@@ -140,6 +141,10 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.sm}"
     padding: 4px
+  gloss:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-gloss}"
+    typography: "{typography.label}"
 ---
 
 ## Overview
@@ -178,3 +183,27 @@ Numbers are always tabular. A column of scores that does not align is unreadable
 `button-primary` is the only high-emphasis action per screen. `row-active` marks
 the decision being worked on. The two badges carry the two claims the engine
 insists on: a sunk cost is *excluded*, a fatal risk *blocks*.
+
+## Language
+
+Indonesian is the interface. English appears underneath as a reading aid, at
+smaller size in `ink-gloss` (#6b6960, 5.23:1 on paper).
+
+The second line is **not** everywhere:
+
+- **Bilingual:** panel titles, panel hints, field labels, and the bias questions.
+  These are the places a reader can get stuck, and where the exact wording
+  carries the method.
+- **Indonesian only:** buttons, inline errors, the chat transcript, numbered row
+  labels (`Opsi 2`), and the dense score-matrix cells. A button is an action, not
+  a sentence; a second line under every action doubles the vertical space and
+  makes a calm form feel like a manual.
+
+Two rules that are not stylistic:
+
+- The gloss is `aria-hidden`. Inside a `<label>` it would join the accessible
+  name — the field would announce "Opsi Option 2" — and a screen-reader user does
+  not need every label twice.
+- The quieter look comes from **colour, not opacity**. Opacity blends toward the
+  background: `ink-faint` at 0.75 measures 2.96:1 and fails AA. `ink-gloss` is a
+  real token that measures 5.23:1.

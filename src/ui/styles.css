@@ -9,6 +9,10 @@
   --ink: #1a1a17;
   --ink-soft: #5f5e56;
   --ink-faint: #75736b;
+  /* The second line of a bilingual label. Its own token rather than `ink-faint`
+     at reduced opacity: opacity is a blend, and #75736b at 0.75 lands at 2.96:1,
+     below AA. This is a real colour that measures 5.23:1 on paper. */
+  --ink-gloss: #6b6960;
   --paper: #faf9f5;
   --surface: #ffffff;
   --surface-sunken: #f2f0e9;
@@ -269,7 +273,9 @@ a {
 
 .panel__head {
   display: flex;
-  align-items: baseline;
+  /* Baseline alignment lines the two first lines up. With a two-line title and a
+     two-line hint, baseline alignment would drop one block below the other. */
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--s-md);
   padding-bottom: var(--s-sm);
@@ -277,13 +283,28 @@ a {
   border-bottom: 1px solid var(--line);
 }
 
+/* The hint sits at the right edge, but its two lines stay left-aligned inside
+   themselves: right-aligned prose of uneven length is harder to scan. */
+.panel__head > .panel__hint .bi {
+  align-items: flex-start;
+}
+
 .panel__title {
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink);
+}
+
+/* The English line under a panel title is a gloss, not a second heading: it
+   loses the uppercase and the tracking so the two do not compete. */
+.panel__title .bi__en {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink-gloss);
 }
 
 .panel__hint {
@@ -291,6 +312,99 @@ a {
   color: var(--ink-faint);
   margin: 0;
   max-width: none;
+}
+
+/* ---------- bilingual text ---------- */
+
+/* Indonesian on top, English underneath, quieter. Inline-block so the two lines
+   stack inside a label or a hint without changing the surrounding layout. */
+.bi {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.35;
+  vertical-align: top;
+}
+
+.bi__id {
+  display: block;
+}
+
+/* lang="en" on the element itself, so a screen reader switches voice rather than
+   reading English with Indonesian phonetics.
+
+   The quieter look comes from colour, not opacity. Opacity blends the text toward
+   the background, and #75736b at 0.75 measures 2.96:1 — well under AA. `ink-gloss`
+   is a real colour at 5.23:1 that reads as secondary without failing the check. */
+.bi__en {
+  display: block;
+  font-size: 0.8125em;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-gloss);
+  opacity: 1;
+}
+
+/* A hint's second line is already secondary; it does not need to recede further. */
+.panel__hint .bi__en,
+.note .bi__en {
+  opacity: 1;
+}
+
+.badge .bi {
+  flex-direction: row;
+  gap: 0.35em;
+}
+
+/* Badges are Indonesian-only, so this rule exists for any future badge that
+   carries a gloss: side by side, never stacked inside a pill. */
+
+/* ---------- the AI mark ---------- */
+
+.ai-mark {
+  flex: none;
+  margin-right: 0.35em;
+  vertical-align: -0.15em;
+}
+
+/* The one button that asks a model for help. It reads as an action, not as a
+   primary one: a suggestion is optional, and the accent fill is reserved for
+   the thing the user must do next. */
+.btn-ai {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.btn-ai:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* The sparkle aligns to the first text line, not the centre of two, so the mark
+   sits beside "Belum tahu…" rather than floating between the two lines. */
+.btn-ai .ai-mark {
+  margin-top: 0.2em;
+  margin-right: 0;
+}
+
+.btn-ai .bi {
+  align-items: flex-start;
+}
+
+.btn-ai .bi__en {
+  font-size: 0.6875rem;
+  color: inherit;
+  opacity: 0.9;
 }
 
 /* ---------- form primitives ---------- */
@@ -712,15 +826,20 @@ button:disabled {
   margin-top: var(--s-md);
 }
 
+/* Button, then its explanation underneath.
+   Side by side, two bilingual blocks made a four-line row that read as clutter;
+   stacking gives each its own line and leaves the button as the single target. */
 .suggest__trigger {
   display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--s-sm);
 }
 
 .suggest__hint {
+  max-width: 52ch;
   font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--ink-faint);
 }
 

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { Item } from '../core';
+import { bi } from './Bi';
+import { copy } from './i18n';
 
 interface ItemEditorProps {
   /** Unique within the page, so ids do not collide across rows. */
@@ -54,7 +56,10 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
 
       <div className="item__meta">
         <div>
-          <label htmlFor={`${idPrefix}-value`}>Value</label>
+          {/* Indonesian only: these labels sit in a dense matrix cell, where a
+              second line per field would push the grid out of shape. The words
+              are short and repeat across every cell, so they are learned once. */}
+          <label htmlFor={`${idPrefix}-value`}>{bi(copy.value)}</label>
           <input
             id={`${idPrefix}-value`}
             type="number"
@@ -78,14 +83,14 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
         </div>
 
         <div>
-          <label htmlFor={`${idPrefix}-kind`}>Kind</label>
+          <label htmlFor={`${idPrefix}-kind`}>{bi(copy.kind)}</label>
           <select
             id={`${idPrefix}-kind`}
             value={kind}
             onChange={(event) => emit({ kind: event.target.value === 'cost' ? 'cost' : 'benefit' })}
           >
-            <option value="benefit">Benefit</option>
-            <option value="cost">Cost</option>
+            <option value="benefit">{bi(copy.benefit)}</option>
+            <option value="cost">{bi(copy.cost)}</option>
           </select>
         </div>
       </div>
@@ -96,11 +101,11 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
           and needs no JavaScript. */}
       <details className="item__more">
         <summary>
-          {probability !== 1 ? `P ${probability}` : 'Likelihood'}
+          {probability !== 1 ? `P ${probability}` : 'Peluang'}
           {risk === 'fatal' ? ' · fatal' : ''}
         </summary>
 
-        <label htmlFor={`${idPrefix}-probability`}>Probability</label>
+        <label htmlFor={`${idPrefix}-probability`}>{bi(copy.probability)}</label>
         <input
           id={`${idPrefix}-probability`}
           type="number"
@@ -126,11 +131,11 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
           onBlur={() => setProbabilityDraft(null)}
         />
 
-        <label htmlFor={`${idPrefix}-reference`}>Reference class</label>
+        <label htmlFor={`${idPrefix}-reference`}>{bi(copy.referenceClass)}</label>
         <input
           id={`${idPrefix}-reference`}
           value={referenceClass}
-          placeholder="similar cases?"
+          placeholder="kasus serupa?"
           onChange={(event) => emit({ referenceClass: event.target.value })}
         />
 
@@ -141,7 +146,7 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
             checked={risk === 'fatal'}
             onChange={(event) => emit({ risk: event.target.checked ? 'fatal' : 'ordinary' })}
           />
-          Fatal risk
+          Risiko fatal
         </label>
       </details>
     </div>

@@ -33,7 +33,10 @@ export function createDecision(now: string = new Date().toISOString()): Decision
     title: '',
     objectives: [{ id: 'o1', statement: '', kind: 'motivation' }],
     options: [
-      { id: 'a', label: 'Do nothing', isBaseline: true },
+      // Indonesian, like the rest of the interface: this is a starting value the
+      // user reads and edits, not an enum. The engine only cares that exactly one
+      // option carries `isBaseline`.
+      { id: 'a', label: 'Tidak melakukan apa-apa', isBaseline: true },
       { id: 'b', label: '', isBaseline: false },
       { id: 'c', label: '', isBaseline: false },
     ],

@@ -87,7 +87,11 @@ export function systemPrompt(context: PromptContext): string {
  * Indonesian answers in Indonesian, so the panel does not open in one language
  * and continue in another.
  */
-export function openingMessage(objectives: string[]): string {
+export function openingMessage(objectives: string[], scope: Scope = 'options'): string {
+  if (scope === 'bias') {
+    return 'Sebelum memutuskan, ada beberapa hal yang perlu dicek. Mulai dari: siapa yang pernah mencoba ini lalu gagal, dan kenapa kamu tidak mendengar dari mereka?';
+  }
+
   const named = objectives.filter((objective) => objective.trim() !== '');
   if (named.length === 0) {
     return 'Opsi apa saja yang sedang kamu pertimbangkan?';

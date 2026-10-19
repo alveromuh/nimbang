@@ -174,7 +174,7 @@ describe('ChatPanel', () => {
     await user.type(screen.getByLabelText(/jawabanmu/i), 'stay or move');
     await user.click(screen.getByRole('button', { name: /kirim/i }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent(/rate limiting/i);
+    expect(await screen.findByRole('status')).toHaveTextContent(/membatasi permintaan/i);
   });
 
   it('tells the user when the model cannot call tools', async () => {
@@ -186,7 +186,7 @@ describe('ChatPanel', () => {
     await user.type(screen.getByLabelText(/jawabanmu/i), 'stay or move');
     await user.click(screen.getByRole('button', { name: /kirim/i }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent(/tool calling/i);
+    expect(await screen.findByRole('status')).toHaveTextContent(/pemanggilan tool/i);
   });
 
   it('closes without changing anything', async () => {

@@ -78,14 +78,16 @@ export function App() {
 
   return (
     <div className="shell">
-      <nav className="rail" aria-label="Decisions">
+      <nav className="rail" aria-label="Daftar keputusan">
         <div className="rail__brand">
           <h1>Nimbang</h1>
         </div>
-        <p className="rail__lede">Objectives before options, and a record of what you expected.</p>
+        <p className="rail__lede">
+          Tujuan dulu, baru opsi — dan catatan apa yang kamu harapkan.
+        </p>
 
         {decisions.length === 0 ? (
-          <p className="rail__empty">No decisions yet.</p>
+          <p className="rail__empty">Belum ada keputusan.</p>
         ) : (
           <ul className="rail__list">
             {decisions.map((decision) => (
@@ -97,10 +99,10 @@ export function App() {
                   onClick={() => setActiveId(decision.id)}
                 >
                   <span className="rail__item-title">
-                    {decision.title.trim() || 'Untitled decision'}
+                    {decision.title.trim() || 'Keputusan tanpa judul'}
                   </span>
                   <span className="rail__item-meta">
-                    {decision.options.length} options · {decision.items.length} scores
+                    {decision.options.length} opsi · {decision.items.length} nilai
                   </span>
                 </button>
               </li>
@@ -109,7 +111,7 @@ export function App() {
         )}
         <div className="rail__footer">
           <button type="button" className="btn-primary" onClick={openNew}>
-            New decision
+            Keputusan baru
           </button>
         </div>
       </nav>
@@ -117,13 +119,13 @@ export function App() {
       <main className="work">
         {active === null ? (
           <div className="empty">
-            <h2>Start with the objective</h2>
+            <h2>Mulai dari tujuan</h2>
             <p>
-              Not the options. A decision that begins with a list of choices has already given up
-              the chance to invent a better one.
+              Bukan dari opsinya. Keputusan yang dimulai dari daftar pilihan sudah melepas
+              kesempatan menemukan pilihan yang lebih baik.
             </p>
             <p className="empty__aside">
-              Your decisions are kept in this browser, and nowhere else.
+              Semua keputusanmu disimpan di browser ini, tidak di mana pun lagi.
             </p>
           </div>
         ) : (
