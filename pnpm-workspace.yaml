@@ -1,0 +1,4 @@
+# esbuild ships a postinstall script that fetches its platform binary. It is the
+# only dependency allowed to run one; everything else stays unbuilt.
+allowBuilds:
+  esbuild: true

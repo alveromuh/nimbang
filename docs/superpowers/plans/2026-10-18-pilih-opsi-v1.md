@@ -47,7 +47,7 @@ in `src/ui/`. State is a single JSON document in localStorage, shareable as URL.
 **Interfaces:**
 - Produces: `Decision`, `Objective`, `Option`, `Item`, `Claim`, `Prediction` types
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -72,25 +72,27 @@ describe('Decision schema', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/types.test.ts`
 Expected: FAIL with "Cannot find module './types'"
 
-- [ ] **Step 3: Implement `src/core/types.ts`**
+- [x] **Step 3: Implement `src/core/types.ts`**
 
 Define these types and export them: `Decision`, `Objective`, `Option`, `Item`,
-`Claim`, `Prediction`, `ScoreResult`. Define a Zod schema for `Decision`.
+`Claim`, `Prediction`. Define a Zod schema for `Decision`.
+
+`ScoreResult` is defined in Task 6, which is where it is produced.
 
 `Objective`, `Option`, `Item`, `Claim` are defined here because later tasks
 consume them.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/types.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add package.json tsconfig.json vite.config.ts index.html src/
@@ -109,7 +111,7 @@ git commit -m "feat: project scaffold with decision types"
 - Consumes: `Decision` type from Task 1
 - Produces: `validateFrame(decision: Decision): FrameResult`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -130,19 +132,19 @@ describe('objective gate', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/frame.test.ts`
 Expected: FAIL with "Cannot find module './frame'"
 
-- [ ] **Step 3: Implement `validateFrame` in `src/core/frame.ts`**
+- [x] **Step 3: Implement `validateFrame` in `src/core/frame.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/frame.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/frame.ts src/core/frame.test.ts
@@ -161,7 +163,7 @@ git commit -m "feat: objective gate"
 - Consumes: `Decision` type from Task 1
 - Produces: `validateDiverge(decision: Decision): DivergeResult`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -200,19 +202,19 @@ describe('option floor', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/diverge.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `validateDiverge` in `src/core/diverge.ts`**
+- [x] **Step 3: Implement `validateDiverge` in `src/core/diverge.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/diverge.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/diverge.ts src/core/diverge.test.ts
@@ -231,7 +233,7 @@ git commit -m "feat: option floor"
 - Consumes: `Decision` type from Task 1
 - Produces: `validateTag(decision: Decision): TagResult`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -259,19 +261,19 @@ describe('claim tagging', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/tag.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `validateTag` in `src/core/tag.ts`**
+- [x] **Step 3: Implement `validateTag` in `src/core/tag.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/tag.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/tag.ts src/core/tag.test.ts
@@ -290,7 +292,7 @@ git commit -m "feat: claim tagging"
 - Consumes: `Objective` type from Task 1
 - Produces: `swingWeights(objectives: Objective[], points: Record<string, number>): Record<string, number>`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -314,19 +316,19 @@ describe('swing weighting', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/weigh.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `swingWeights` in `src/core/weigh.ts`**
+- [x] **Step 3: Implement `swingWeights` in `src/core/weigh.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/weigh.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/weigh.ts src/core/weigh.test.ts
@@ -344,8 +346,12 @@ git commit -m "feat: swing weighting"
 **Interfaces:**
 - Consumes: `Decision`, `Objective`, `Item` types from Task 1
 - Produces: `scoreDecision(decision: Decision, weights: Record<string, number>): ScoreResult`
+  where `ScoreResult = { net, ranking, anchors, fatal, recommendation }`, as
+  defined in the Score section of [`../../framework.md`](../../framework.md).
+  `anchors` is what Task 8 needs to solve a break-even, so it is part of the
+  output rather than recomputed downstream.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -378,19 +384,19 @@ describe('scoring', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/score.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `scoreDecision` in `src/core/score.ts`**
+- [x] **Step 3: Implement `scoreDecision` in `src/core/score.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/score.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/score.ts src/core/score.test.ts
@@ -409,7 +415,7 @@ git commit -m "feat: scoring engine"
 - Consumes: `Item` type from Task 1
 - Produces: `validateProbabilities(items: Item[]): ProbabilifyResult`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -431,19 +437,19 @@ describe('probability with reference class', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/probabilify.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `validateProbabilities` in `src/core/probabilify.ts`**
+- [x] **Step 3: Implement `validateProbabilities` in `src/core/probabilify.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/probabilify.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/probabilify.ts src/core/probabilify.test.ts
@@ -462,7 +468,7 @@ git commit -m "feat: probability with reference class"
 - Consumes: `ScoreResult` from Task 6
 - Produces: `stressTest(decision: Decision, weights: Record<string, number>): StressReport`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -489,24 +495,41 @@ describe('sensitivity', () => {
     const result = stressTest(decision, weights);
     expect(result.fragile).toBe(true);
     expect(result.flipsAt.itemId).toBe('i1');
-    expect(result.flipsAt.delta).toBe(0.5);
+    expect(result.flipsAt.delta).toBe(1);
+  });
+  it('reports no flip when the margin is wider than the scale', () => {
+    // two objectives, each 5 vs 1: the leader cannot be caught by one item
+    // ... expect(result.flipsAt).toBeNull()
+  });
+  it('does not divide by zero when an objective has no spread', () => {
+    // both items value 3 on o1: range 0, so the item cannot move the ranking
+    // ... expect(result.tornado.every((t) => t.influence === 0)).toBe(true)
   });
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+**Why `delta` is 1, not 0.5.** Normalising `a=4, b=3` gives `net.a = 1`,
+`net.b = 0`, so the margin is 1. The slope of `net` in `i1`'s raw value is
+`w · p / range = 1 · 1 / 1 = 1`, so the break-even is `1 / 1 = 1` raw point:
+`a` at 3 ties `b`, and `a` below 3 loses. A fixed ±0.5 step can never flip this
+decision, so it cannot be the method. See the Stress section of
+[`../../framework.md`](../../framework.md).
+
+Both `i1` and `i2` break even at 1. Item array order picks `i1`.
+
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/stress.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `stressTest` in `src/core/stress.ts`**
+- [x] **Step 3: Implement `stressTest` in `src/core/stress.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/stress.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/stress.ts src/core/stress.test.ts
@@ -522,10 +545,16 @@ git commit -m "feat: sensitivity"
 - Test: `src/core/gate.test.ts`
 
 **Interfaces:**
-- Consumes: `Decision` type from Task 1
-- Produces: `validateGate(decision: Decision): GateResult`
+- Consumes: `GateInputs` (defined here; the gate fields are not part of `Decision`
+  until they are recorded, so this function takes the inputs directly)
+- Produces: `validateGate(inputs: GateInputs): GateResult`
 
-- [ ] **Step 1: Write the failing test**
+`GateInputs` is a separate type rather than a slice of `Decision` because the
+plan's own test passes a flat object, and because a `Decision` in progress has no
+gate fields yet. `DecisionSchema` gains `gate` and `reviewAt` as optional fields
+so a committed decision can carry them.
+
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -568,19 +597,19 @@ describe('bias gate', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/gate.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `validateGate` in `src/core/gate.ts`**
+- [x] **Step 3: Implement `validateGate` in `src/core/gate.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/gate.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/gate.ts src/core/gate.test.ts
@@ -599,7 +628,7 @@ git commit -m "feat: bias gate"
 - Consumes: `Decision` type from Task 1
 - Produces: `brierScore(predictions: { p: number, o: boolean }[]): number`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -623,19 +652,19 @@ describe('Brier score', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/commit.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `brierScore` in `src/core/commit.ts`**
+- [x] **Step 3: Implement `brierScore` in `src/core/commit.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/commit.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/commit.ts src/core/commit.test.ts
@@ -654,7 +683,7 @@ git commit -m "feat: commit and calibration"
 - Consumes: `Decision` type from Task 1
 - Produces: `serializeDecision(decision: Decision): string`, `deserializeDecision(s: string): Decision`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -681,19 +710,19 @@ describe('URL round-trip', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/core/serialize.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement `serializeDecision` and `deserializeDecision` in `src/core/serialize.ts`**
+- [x] **Step 3: Implement `serializeDecision` and `deserializeDecision` in `src/core/serialize.ts`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/core/serialize.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/core/serialize.ts src/core/serialize.test.ts
@@ -709,12 +738,23 @@ git commit -m "feat: URL round-trip"
 - Create: `src/ui/DecisionForm.tsx`
 - Create: `src/ui/Result.tsx`
 - Test: `src/ui/App.test.tsx`
+- Delete: `src/App.tsx` (it is replaced by `src/ui/App.tsx`)
+- Edit: `src/main.tsx` — import from `./ui/App`
+- Edit: `vite.config.ts` — the `ui` project needs `@testing-library/jest-dom`
+  matchers loaded via `setupFiles`, because the test uses
+  `toBeInTheDocument()`
+
+Install first:
+
+```bash
+pnpm add -D @testing-library/react @testing-library/jest-dom jsdom
+```
 
 **Interfaces:**
 - Consumes: all core functions from Tasks 1–11
 - Produces: a working app
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```tsx
 import { describe, it, expect } from 'vitest';
@@ -729,19 +769,19 @@ describe('App', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/ui/App.test.tsx`
 Expected: FAIL
 
-- [ ] **Step 3: Implement the UI in `src/ui/`**
+- [x] **Step 3: Implement the UI in `src/ui/`**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/ui/App.test.tsx`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/ui/
@@ -753,12 +793,17 @@ git commit -m "feat: minimal UI"
 ### Task 13: Integration test
 
 **Files:**
+- Create: `src/core/index.ts` (the barrel every consumer imports from)
 - Create: `src/integration.test.ts`
+- Edit: `vite.config.ts` — the `core` project's `include` is
+  `src/core/**/*.test.ts`, which does not match `src/integration.test.ts`, so
+  that file would run in no project and silently never execute. Widen it to
+  `['src/core/**/*.test.ts', 'src/*.test.ts']`.
 
 **Interfaces:**
 - Consumes: all core functions
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 import { describe, it, expect } from 'vitest';
@@ -771,19 +816,19 @@ describe('integration', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pnpm exec vitest run src/integration.test.ts`
 Expected: FAIL
 
-- [ ] **Step 3: Implement the integration test**
+- [x] **Step 3: Implement the integration test**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pnpm exec vitest run src/integration.test.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/integration.test.ts
@@ -797,7 +842,7 @@ git commit -m "test: integration"
 **Files:**
 - Create: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```yaml
 # .github/workflows/ci.yml
@@ -817,12 +862,12 @@ jobs:
       - run: pnpm build
 ```
 
-- [ ] **Step 2: Run the build locally**
+- [x] **Step 2: Run the build locally**
 
 Run: `pnpm build`
 Expected: succeeds, emits `dist/`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add .github/workflows/ci.yml
@@ -833,8 +878,25 @@ git commit -m "ci: test and build"
 
 ## Self-review checklist
 
-- [ ] Every stage in the spec has a task.
-- [ ] Every task has a failing test, a verification command, and a commit.
-- [ ] Type names are consistent across tasks.
-- [ ] The five Review Focus items each have a test.
-- [ ] The plan is shorter than the code it describes.
+- [x] Every stage in the spec has a task.
+- [x] Every task has a failing test, a verification command, and a commit.
+- [x] Type names are consistent across tasks.
+- [x] The five Review Focus items each have a test.
+- [x] The plan is shorter than the code it describes.
+
+## What changed while implementing
+
+Recorded because a plan that silently diverges from what was built is worse than
+no plan.
+
+| Task | Change | Why |
+|---|---|---|
+| 8 | `delta` is 1, not 0.5 | No consistent reading of the scoring rule produces 0.5. Break-even for that data is one full raw point. |
+| 8 | Stress is closed-form, not a ±0.5 step | A stepped search reports its step size, not the distance to indifference, and misses every flip smaller than the step. |
+| 6 | `ScoreResult` carries `anchors` | Stress needs the anchors; re-normalising per perturbation makes scores scale-invariant. |
+| 9 | `validateGate` takes `GateInputs` | A `Decision` in progress has no gate fields. `DecisionSchema` gained optional `gate` and `reviewAt`. |
+| 3 | Added the "no unnamed option" rule | Three rows with one blank passed the false-dichotomy check. |
+| 11 | Hand-written base64url | `btoa` is Latin-1 only and cannot carry Indonesian text; `Buffer` is not a browser global. |
+| 12 | Queries by role, explicit `htmlFor`/`id` | The plan's `getByText(/objective/i)` matched two elements. |
+| 13 | `vite.config.ts` include widened | `src/integration.test.ts` matched no vitest project and would never have run. |
+| 13 | `src/core/index.ts` added as a step | The integration test imported it; no task created it. |
