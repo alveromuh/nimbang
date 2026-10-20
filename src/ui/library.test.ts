@@ -70,15 +70,16 @@ describe('decision library', () => {
     expect(listDecisions(storage).map((entry) => entry.id)).toEqual(['good']);
   });
 
-  it('migrates a v1 single-draft key into the library', () => {
+  it('migrates a v1 single-draft key once so deletion stays permanent', () => {
     const storage = memoryStorage();
     storage.setItem(
       'nimbang.draft.v1',
       JSON.stringify({ ...createDecision(), id: 'legacy', title: 'From the old draft' }),
     );
 
-    // A user who had one draft must not lose it when the app gains a library.
     expect(listDecisions(storage).map((entry) => entry.title)).toEqual(['From the old draft']);
+    deleteDecision('legacy', storage);
+    expect(listDecisions(storage)).toEqual([]);
   });
 
   it('returns null for an unknown id', () => {

@@ -43,6 +43,12 @@ async function fillDecision(
   for (const [index, score] of scores.entries()) {
     await user.type(values[index], score);
   }
+  await user.type(screen.getByLabelText(/biaya yang sudah keluar/i), '0');
+  await user.type(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i), 'Tidak tahu');
+  await user.type(screen.getByLabelText(/bukti apa yang sedang kamu hindari/i), 'Tidak ada');
+  await user.type(screen.getByLabelText(/ini berdasar berapa kasus/i), 'Tiga');
+  await user.type(screen.getByLabelText(/ini sebab, atau kebetulan waktunya/i), 'Belum pasti');
+  await user.type(screen.getByLabelText(/apa beda kasusmu dengan kasus pembandingnya/i), 'Kondisinya berbeda');
 }
 
 describe('App', () => {

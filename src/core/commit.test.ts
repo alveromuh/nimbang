@@ -40,4 +40,12 @@ describe('Brier score', () => {
     const resolved = resolvePredictions([{ claimId: 'c1', probability: 0.8 }], { c1: false });
     expect(resolved).toEqual([{ p: 0.8, o: false }]);
   });
+
+  it('does not resolve inherited object property names', () => {
+    const resolved = resolvePredictions(
+      [{ claimId: 'constructor', probability: 0.9 }, { claimId: 'toString', probability: 0.8 }],
+      {},
+    );
+    expect(resolved).toEqual([]);
+  });
 });
