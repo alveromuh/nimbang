@@ -9,8 +9,7 @@ it in one guided pipeline instead of eight disconnected worksheets.
 
 > **Status: v1 engine and app working.** The core engine (`src/core/`) is
 > implemented test-first and covers all nine stages; a minimal React form in
-> `src/ui/` runs the pipeline end to end. See the roadmap below for what is
-> still missing before release.
+> `src/ui/` runs the pipeline end to end.
 
 ## Why not just a pros/cons calculator
 
@@ -69,25 +68,6 @@ The panel never sees a score, a weight, or a probability, so no model output can
 become a ranking or a winner. It works with any OpenAI-compatible gateway —
 see [`docs/llm-providers.md`](docs/llm-providers.md).
 
-## Roadmap
-
-- [x] **M0 — Sources.** Photograph and extract the secondary source; verify the
-      primary sources it rests on.
-- [x] **M1 — Framework.** `docs/framework.md`: formal stages, formulas,
-      citations.
-- [x] **M2 — Spec.** Design document, approved before any code.
-- [x] **M3 — Core engine.** Pure functions, test-first: scoring, sensitivity,
-      calibration. 117 tests across 18 files.
-- [x] **M4 — App.** Guided pipeline, end to end, with print and share. *A
-      dashboard: a rail of decisions and a workspace for the open one, with the
-      verdict above the inputs. All nine stages are reachable; the draft persists
-      to localStorage; decisions share as a URL fragment and export as JSON; a
-      print stylesheet hides the controls. Visual identity is specified in
-      [`DESIGN.md`](DESIGN.md).*
-- [ ] **M5 — Release.** Public repo, live demo, docs.
-- [ ] **M6 — Structured input.** System One endpoint, question set under version
-      control, 100-case regression suite in CI.
-
 ## Repository layout
 
 ```
@@ -96,8 +76,6 @@ docs/
   references.md             verified sources for every method the engine uses
   core-engine-scope.md      what ships, what is excluded, and why
   llm-providers.md          configuring the panel for any OpenAI-compatible gateway
-  systemone-integration.md  superseded: the earlier structured-input contract
-  eval-systemone.md         measurements behind that earlier decision
   sources/                  extracted notes (page photos are never committed)
   superpowers/specs/        design documents
   superpowers/plans/        implementation plans
@@ -105,7 +83,6 @@ DESIGN.md                   design tokens and rationale (Google DESIGN.md spec)
 src/core/                   pure decision engine, no UI imports
 src/ui/                     dashboard, workspace, panels, stylesheet
 tools/vision/               research tooling: page photo -> text
-tools/eval/                 System One eval cases, runner, raw results
 ```
 
 ## Local setup

@@ -164,10 +164,8 @@ All notable changes to this project are documented here. Format follows
 
 - The share and export section is removed. It had no effect on the decision, and
   the URL-import path stays so a link that was already shared still opens.
-- **System One is replaced by the elicitation panel.** Its measurements still
-  hold and are still in `docs/eval-systemone.md`; the feature it powered does not
-  exist any more. `server/suggest.ts`, `src/suggestions/` and `SuggestionPanel`
-  are gone.
+- **System One is replaced by the elicitation panel.** The model helps users
+  articulate options; the engine computes.
 - The panel is written in Indonesian, matching `index.html`'s `lang="id"`. It
   previously opened in English and the model answered in Indonesian, which read
   as two different products.
@@ -175,7 +173,7 @@ All notable changes to this project are documented here. Format follows
   record the delta". That is not a break-even and cannot flip the plan's own
   worked example, so the section now specifies the closed-form break-even and
   states the tie, direction, and division-by-zero rules the arithmetic depends
-  on. `probability.basis` is recorded as deferred to M6, with the reason it
+  on. `probability.basis` remains out of scope, with the reason it
   cannot hold an honest value in v1.
 - `src/setupTests.ts` removed: it imported `@testing-library/jest-dom`, which was
   not a dependency, and nothing referenced it after the vitest split.
