@@ -83,4 +83,18 @@ describe('CommitPanel', () => {
     // (0.8 - 1)^2 = 0.04
     expect(screen.getByText(/0\.04/)).toBeInTheDocument();
   });
+
+  it('assigns distinct ids to duplicate prediction text', async () => {
+    const user = userEvent.setup();
+    render(<Harness predictions={[]} outcomes={{}} />);
+    for (const probability of ['0.8', '0.3']) {
+      await user.type(screen.getByLabelText(/prediksi/i), 'Harga naik');
+      await user.clear(screen.getByLabelText(/^peluang/i));
+      await user.type(screen.getByLabelText(/^peluang/i), probability);
+      await user.click(screen.getByRole('button', { name: /tambah prediksi/i }));
+    }
+    expect(document.querySelectorAll('#outcome-harga-naik')).toHaveLength(1);
+    expect(document.querySelectorAll('#outcome-harga-naik-2')).toHaveLength(1);
+    expect(screen.getAllByRole('checkbox')).toHaveLength(2);
+  });
 });

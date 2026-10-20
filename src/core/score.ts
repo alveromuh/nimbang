@@ -40,15 +40,16 @@ export interface ScoreResult {
  * for the purposes of finding the min and max — otherwise adding an option with
  * no data would silently drag every other option's normalised score upward.
  *
- * Throws on an objective with no weight, and on an item naming an objective that
- * does not exist. Both are data errors, and a score computed by guessing what
- * the user meant is worse than no score.
+ * Throws on an objective with no weight, and on an item naming an objective or
+ * option that does not exist. These are data errors, and a score computed by
+ * guessing what the user meant is worse than no score.
  */
 export function scoreDecision(
   decision: Decision,
   weights: Record<string, number>,
 ): ScoreResult {
   const objectiveIds = new Set(decision.objectives.map((objective) => objective.id));
+  const optionIds = new Set(decision.options.map((option) => option.id));
 
   for (const objective of decision.objectives) {
     const weight = weights[objective.id];
@@ -61,6 +62,11 @@ export function scoreDecision(
     if (!objectiveIds.has(item.objectiveId)) {
       throw new Error(
         `Item "${item.id}" points at objective "${item.objectiveId}", which does not exist.`,
+      );
+    }
+    if (!optionIds.has(item.optionId)) {
+      throw new Error(
+        `Item "${item.id}" points at option "${item.optionId}", which does not exist.`,
       );
     }
   }

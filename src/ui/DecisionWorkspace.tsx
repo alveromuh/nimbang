@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   scoreDecision,
   stressTest,
   swingWeights,
   validateDiverge,
   validateFrame,
+  validateGate,
   type Decision,
   type GateInputs,
   type Item,
@@ -104,38 +105,58 @@ export function DecisionWorkspace({
       options,
       items,
       swingPoints,
+      gate,
       predictions,
       outcomes,
       // An empty date input is the absence of a review date, not an empty string
       // in the document: the schema calls the field optional.
       reviewAt: reviewAt === '' ? undefined : reviewAt,
     }),
-    [decision, title, objectives, options, items, swingPoints, predictions, outcomes, reviewAt],
+    [decision, title, objectives, options, items, swingPoints, gate, predictions, outcomes, reviewAt],
   );
 
-  // Save on a short debounce: typing a title should not write to storage on every
-  // keystroke, but nothing should be lost either.
-  useEffect(() => {
-    const handle = setTimeout(() => onSaved({ ...draft, updatedAt: new Date().toISOString() }), 250);
-    return () => clearTimeout(handle);
-    // onSaved is stable in the parent; draft changes on every edit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Save on a short debounce, but do not write when a parent refresh changes only
+  // object identity or updatedAt. The parent receives each save and refreshes the
+  // decision prop; comparing the persisted content prevents that round-trip from
+  // scheduling an endless series of writes.
+  const savedSnapshot = useMemo(() => {
+    const { updatedAt: _updatedAt, ...content } = draft;
+    return JSON.stringify(content);
   }, [draft]);
+  const lastSavedSnapshot = useRef(savedSnapshot);
+
+  useEffect(() => {
+    if (lastSavedSnapshot.current === savedSnapshot) {
+      return;
+    }
+    const handle = setTimeout(() => {
+      const saved = { ...draft, updatedAt: new Date().toISOString() };
+      lastSavedSnapshot.current = savedSnapshot;
+      onSaved(saved);
+    }, 250);
+    return () => clearTimeout(handle);
+    // onSaved is stable in the parent; savedSnapshot tracks persisted content.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedSnapshot]);
 
   const frame = validateFrame(draft);
   const diverge = validateDiverge(draft);
 
   const result = useMemo(() => {
-    if (!frame.ok || !diverge.ok) {
+    if (!frame.ok || !diverge.ok || !validateGate(gate).ok) {
       return null;
     }
     try {
       const weights = swingWeights(objectives, swingPoints);
-      return { score: scoreDecision(draft, weights), stress: stressTest(draft, weights) };
-    } catch {
-      return null;
+      return { score: scoreDecision(draft, weights), stress: stressTest(draft, weights), error: null };
+    } catch (error) {
+      return {
+        score: null,
+        stress: null,
+        error: scoringErrorMessage(error),
+      };
     }
-  }, [draft, frame.ok, diverge.ok, objectives, swingPoints]);
+  }, [draft, frame.ok, diverge.ok, gate, objectives, swingPoints]);
 
   function addObjective(): void {
     const id = nextId('o', objectives);
@@ -241,14 +262,15 @@ export function DecisionWorkspace({
         </div>
       </header>
 
-      {result !== null ? (
+      {result !== null && result.score !== null && result.stress !== null ? (
         <Result decision={draft} score={result.score} stress={result.stress} />
-      ) : frame.ok && diverge.ok ? (
-        // Only shown when both gates pass but there is nothing to rank yet. When
-        // a gate fails, its message already sits next to the field that caused
-        // it; repeating it up here would be the same sentence twice.
+      ) : result?.error ? (
         <div className="panel">
-          <p className="note">Add a score for each option to see a ranking.</p>
+          <p className="note note--warn" role="alert">Data keputusan tidak valid: {result.error}</p>
+        </div>
+      ) : frame.ok && diverge.ok && validateGate(gate).ok ? (
+        <div className="panel">
+          <p className="note">Isi penilaian untuk setiap opsi agar hasil bisa dihitung.</p>
         </div>
       ) : null}
 
@@ -458,6 +480,54 @@ export function DecisionWorkspace({
         onChangeOutcomes={setOutcomes}
         onChangeReviewAt={setReviewAt}
       />
+
+      <section className="panel reference" aria-labelledby="reference-title">
+        <div className="panel__head">
+          <h2 className="panel__title" id="reference-title">
+            Referensi
+          </h2>
+          <p className="panel__hint">Sumber metode yang mendasari mesin keputusan.</p>
+        </div>
+        <ul className="reference__list">
+          <li>
+            <a href="https://doi.org/10.2307/j.ctv322v4g7" target="_blank" rel="noreferrer">
+              Keeney (1992), <em>Value-Focused Thinking</em>
+            </a>
+            <span>— merumuskan tujuan sebelum menghasilkan alternatif.</span>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1017/9781108235594" target="_blank" rel="noreferrer">
+              Boardman et al. (2018), <em>Cost-Benefit Analysis</em>
+            </a>
+            <span>— kerangka manfaat, biaya, dan siapa yang terdampak.</span>
+          </li>
+          <li>
+            <a href="https://www.cambridge.org/core/books/decision-analysis-and-behavioral-research/" target="_blank" rel="noreferrer">
+              von Winterfeldt &amp; Edwards (1986), <em>Decision Analysis and Behavioral Research</em>
+            </a>
+            <span>— fungsi nilai aditif, normalisasi, dan swing weighting.</span>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1109/TSSC.1966.300074" target="_blank" rel="noreferrer">
+              Howard (1966), “Information Value Theory”
+            </a>
+            <span>— nilai informasi dan keputusan di bawah ketidakpastian.</span>
+          </li>
+          <li>
+            <span className="reference__citation">Saltelli et al., sensitivitas global berbasis varians</span>
+            <span>— dasar analisis sensitivitas; lihat catatan tentang aditivitas.</span>
+          </li>
+          <li>
+            <a href="https://doi.org/10.2307/1914185" target="_blank" rel="noreferrer">
+              Kahneman &amp; Tversky (1979), “Prospect Theory”
+            </a>
+            <span>— alasan risiko fatal ditandai terpisah dari skor biasa.</span>
+          </li>
+        </ul>
+        <p className="reference__note">
+          Sitasi dan batas penerapan metode: <code>docs/references.md</code>.
+        </p>
+      </section>
     </>
   );
 }
@@ -478,6 +548,22 @@ function nextId(prefix: string, existing: { id: string }[]): string {
     index += 1;
   }
   return `${prefix}${index}`;
+}
+
+function scoringErrorMessage(error: unknown): string {
+  if (!(error instanceof Error)) {
+    return 'Data keputusan tidak valid.';
+  }
+  if (/option .* does not exist/i.test(error.message)) {
+    return 'Ada nilai yang menunjuk ke opsi yang sudah tidak ada. Hapus atau perbaiki nilai itu.';
+  }
+  if (/objective .* does not exist/i.test(error.message)) {
+    return 'Ada nilai yang menunjuk ke tujuan yang sudah tidak ada. Hapus atau perbaiki nilai itu.';
+  }
+  if (/no weight/i.test(error.message)) {
+    return 'Setiap tujuan harus memiliki bobot sebelum hasil bisa dihitung.';
+  }
+  return 'Data keputusan tidak dapat dihitung. Periksa kembali nilai, tujuan, opsi, dan bobot.';
 }
 
 function upsertItem(items: Item[], itemId: string, next: Item | null): Item[] {

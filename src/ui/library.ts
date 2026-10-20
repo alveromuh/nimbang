@@ -142,8 +142,9 @@ function parseDecision(raw: string): Decision | null {
 }
 
 /**
- * Moves the old single draft into the library, once. The legacy key is left in
- * place: if the migration half-fails, the original is still there to retry.
+ * Moves the old single draft into the library. The source key is removed only
+ * after the destination write succeeds, so interrupted migrations remain retryable
+ * without resurrecting a decision after the user deletes it.
  */
 function migrateLegacyDraft(storage: StorageLike): void {
   let raw: string | null;
@@ -162,7 +163,13 @@ function migrateLegacyDraft(storage: StorageLike): void {
     return;
   }
 
-  saveDecision(decision, storage);
+  if (saveDecision(decision, storage)) {
+    try {
+      storage.removeItem(LEGACY_DRAFT_KEY);
+    } catch {
+      // The successful destination copy remains available; a later read can retry.
+    }
+  }
 }
 
 function timestamp(decision: Decision): number {

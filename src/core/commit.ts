@@ -50,7 +50,7 @@ export function resolvePredictions(
   outcomes: Record<string, boolean>,
 ): ResolvedPrediction[] {
   return predictions
-    .filter((prediction) => prediction.claimId in outcomes)
+    .filter((prediction) => Object.hasOwn(outcomes, prediction.claimId))
     .map((prediction) => ({
       p: prediction.probability,
       o: outcomes[prediction.claimId],

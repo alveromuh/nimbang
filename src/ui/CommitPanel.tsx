@@ -91,7 +91,8 @@ export function CommitPanel({
               // The claim id is derived from the text: predictions in v1 are keyed
               // by the claim they are about, and there is no separate claims editor
               // yet.
-              const claimId = draftText.trim().toLowerCase().replace(/\s+/g, '-');
+              const baseId = draftText.trim().toLowerCase().replace(/\s+/g, '-');
+              const claimId = uniqueClaimId(baseId, predictions);
               onChangePredictions([
                 ...predictions,
                 { claimId, probability, text: draftText.trim() },
@@ -163,4 +164,17 @@ function Calibration({ resolved }: { resolved: { p: number; o: boolean }[] }) {
       0,25 sama dengan melempar koin.
     </p>
   );
+}
+
+/** Slug plus a stable numeric suffix so repeated text remains independently resolvable. */
+function uniqueClaimId(base: string, predictions: Prediction[]): string {
+  const taken = new Set(predictions.map((prediction) => prediction.claimId));
+  if (!taken.has(base)) {
+    return base;
+  }
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) {
+    suffix += 1;
+  }
+  return `${base}-${suffix}`;
 }

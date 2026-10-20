@@ -150,5 +150,5 @@ function itemLabel(decision: Decision, itemId: string): string {
   }
   const option = decision.options.find((candidate) => candidate.id === item.optionId);
   const objective = decision.objectives.find((candidate) => candidate.id === item.objectiveId);
-  return `${option?.label || item.optionId} on ${objective?.statement || item.objectiveId}`;
+  return `${option?.label || item.optionId} untuk ${objective?.statement || item.objectiveId}`;
 }

@@ -1,113 +1,62 @@
 # How to use Nimbang
 
-A worked example, then the order the app asks for things and why.
+A worked example, followed by the order the app asks for inputs and why.
 
-Run it: `pnpm dev`, then open <http://localhost:5199/>.
+Run the app with `pnpm dev`, then open <http://localhost:5199/>.
 
-## The example
+## Load the complete example
 
-**The decision:** a job offer at a fashion media company, against staying put
-and against renegotiating where you are.
+The example is a common personal decision: improve household income without
+trading away family time, health, or future career options. It includes four
+objectives, four options, sixteen scored comparisons, probability reference
+classes, fact/preference claims, all bias checks, and predictions with a review
+date. Its inputs are illustrative, not advice; replace them with your own
+evidence before using the result.
 
-Load it instantly by pasting this into your browser:
+Generate the full local link:
 
-```
-http://localhost:5199/#d=eyJpZCI6ImNvbnRvaC1waW5kYWgta2VyamEiLCJ0aXRsZSI6IlBpbmRhaCBrZXJqYSBrZSBtZWRpYSBmYXNoaW9uIiwib2JqZWN0aXZlcyI6W3siaWQiOiJvMSIsInN0YXRlbWVudCI6IlBlbmdhc2lsYW4gbmFpayIsImtpbmQiOiJtb3RpdmF0aW9uIn0seyJpZCI6Im8yIiwic3RhdGVtZW50IjoiSmFtIGtlcmphIHRpZGFrIGJlcnRhbWJhaCIsImtpbmQiOiJoeWdpZW5lIn1dLCJvcHRpb25zIjpbeyJpZCI6ImEiLCJsYWJlbCI6IlRldGFwIGRpIHRlbXBhdCBzZWthcmFuZyIsImlzQmFzZWxpbmUiOnRydWV9LHsiaWQiOiJiIiwibGFiZWwiOiJQaW5kYWgga2UgbWVkaWEgZmFzaGlvbiIsImlzQmFzZWxpbmUiOmZhbHNlfSx7ImlkIjoiYyIsImxhYmVsIjoiTmVnb3NpYXNpIHVsYW5nIGRpIHRlbXBhdCBzZWthcmFuZyIsImlzQmFzZWxpbmUiOmZhbHNlfV0sIml0ZW1zIjpbeyJpZCI6ImEtLW8xIiwib3B0aW9uSWQiOiJhIiwib2JqZWN0aXZlSWQiOiJvMSIsImtpbmQiOiJiZW5lZml0IiwidmFsdWUiOjIsInByb2JhYmlsaXR5IjoxLCJyaXNrIjoib3JkaW5hcnkifSx7ImlkIjoiYi0tbzEiLCJvcHRpb25JZCI6ImIiLCJvYmplY3RpdmVJZCI6Im8xIiwia2luZCI6ImJlbmVmaXQiLCJ2YWx1ZSI6NSwicHJvYmFiaWxpdHkiOjAuOCwicmlzayI6Im9yZGluYXJ5IiwicmVmZXJlbmNlQ2xhc3MiOiIzIGRhcmkgNCB0ZW1hbiB5YW5nIHBpbmRhaCBkYXBhdCBzZXN1YWkgamFuamkifSx7ImlkIjoiYy0tbzEiLCJvcHRpb25JZCI6ImMiLCJvYmplY3RpdmVJZCI6Im8xIiwia2luZCI6ImJlbmVmaXQiLCJ2YWx1ZSI6MywicHJvYmFiaWxpdHkiOjAuNiwicmlzayI6Im9yZGluYXJ5IiwicmVmZXJlbmNlQ2xhc3MiOiJuZWdvc2lhbmkgdGVyYWtoaXIgZGkga2FudG9yIGluaTogMiBkYXJpIDUgYmVyaGFzaWwifSx7ImlkIjoiYS0tbzIiLCJvcHRpb25JZCI6ImEiLCJvYmplY3RpdmVJZCI6Im8yIiwia2luZCI6ImNvc3QiLCJ2YWx1ZSI6MywicHJvYmFiaWxpdHkiOjEsInJpc2siOiJvcmRpbmFyeSJ9LHsiaWQiOiJiLS1vMiIsIm9wdGlvbklkIjoiYiIsIm9iamVjdGl2ZUlkIjoibzIiLCJraW5kIjoiY29zdCIsInZhbHVlIjo1LCJwcm9iYWJpbGl0eSI6MSwicmlzayI6Im9yZGluYXJ5In0seyJpZCI6ImMtLW8yIiwib3B0aW9uSWQiOiJjIiwib2JqZWN0aXZlSWQiOiJvMiIsImtpbmQiOiJjb3N0IiwidmFsdWUiOjIsInByb2JhYmlsaXR5IjoxLCJyaXNrIjoib3JkaW5hcnkifV0sImNsYWltcyI6W10sInN3aW5nUG9pbnRzIjp7Im8xIjoxMDAsIm8yIjo0MH19
-```
-
-### The inputs
-
-| | **Tetap** (baseline) | **Pindah** | **Negosiasi** |
-|---|---|---|---|
-| **Penghasilan naik** — *benefit*, weight 100 | 2 · sure | 5 · **80%** | 3 · **60%** |
-| **Jam kerja tidak bertambah** — *cost*, weight 40 | 3 | 5 | 2 |
-
-Two things in that table are the whole point:
-
-- **"Pindah" scores 5 on income but only at 80%.** A pros/cons list would have
-  written "5" and moved on. The probability is what makes it a forecast rather
-  than a wish.
-- **"Jam kerja" is a cost, not a benefit.** Its 5 means *worst*, so it subtracts.
-  Getting this backwards is the most common mistake with a scoring table.
-
-Swing weights: income matters more (100) than hours (40), so income carries 71%
-of the decision.
-
-### The output
-
-```
-1. Pindah ke media fashion              0.286   <- leads
-2. Negosiasi ulang di tempat sekarang   0.143
-3. Tetap di tempat sekarang            -0.095
-
-Fragility: +-0.75
+```bash
+node --experimental-strip-types examples/keputusan-karier-keluarga.ts
 ```
 
-Read the second block first. **The winner leads by 0.143, and a 0.75 change in
-one input reverses it.** So the honest conclusion is not "move jobs" — it is:
+Copy the printed URL into the browser where the app is running. The app imports
+the decision into its local library and shows the computed result above the
+filled sections.
 
-> Go and check the salary. If the offer is as promised, move. If it is one notch
-> lower than promised, renegotiate instead.
-
-That is the difference between this and a calculator. It tells you what you do
-not know yet, not just what you wrote down.
-
-### The reference classes
-
-Under each probability, the example records what it is based on:
-
-- Pindah: *"3 dari 4 teman yang pindah dapat sesuai janji"*
-- Negosiasi: *"negosiasi terakhir di kantor ini: 2 dari 5 berhasil"*
-
-These are the fields that turn a guess into something checkable. They are also
-where you usually discover your number was wrong.
+The source record is
+[`examples/keputusan-karier-keluarga.ts`](../examples/keputusan-karier-keluarga.ts).
 
 ## The order the app asks for things
 
-The order is deliberate, and it is the part people want to skip.
+**1. Objective, before options.** State what you are trying to achieve before
+listing choices. Starting from options alone makes it easy to overlook a better
+course of action.
 
-**1. Objective, before options.** The app refuses to rank anything until you
-state what you are trying to achieve. Starting from a list of options means you
-can only ever choose among the ones you already thought of.
+**2. At least three options, including the baseline.** The baseline records
+what happens if you do nothing different. Additional options help avoid a false
+dichotomy.
 
-**2. At least three options, one of them "do nothing".** The baseline is
-mandatory because it is the option people forget, and it usually has the lowest
-switching cost. Three is the floor because two options is a false dichotomy.
+**3. Swing weights.** Ask how much the difference between the worst and best
+outcomes matters for each objective, rather than rating abstract importance.
 
-**3. Swing weights.** Not "how important is this" — that question has no anchor
-and everyone answers 5. The question is: *how much does it matter that the
-options move from worst to best on this objective?*
+**4. Scores and probabilities.** For each option/objective pair, enter a value
+from 1–5 and whether it is a benefit or cost. Add a probability and reference
+class where the outcome is uncertain.
 
-**4. Scores.** Per option, per objective: a value 1–5, benefit or cost, and
-optionally a probability and reference class under `+ Likelihood`.
+**5. Bias checks.** Record sunk costs, explicitly excluded from the arithmetic,
+and answer each required check: survivorship, avoided evidence, sample size,
+causation, and comparability.
 
-**5. Bias checks.** Six required fields, and they cannot be skipped. Sunk cost is
-recorded and badged **excluded from the arithmetic** — money already spent is the
-same whether you continue or stop.
-
-**6. Commit.** Write down what you expect and when you will check. Later, mark
-what happened and the app computes a **Brier score**: lower is better, 0.25 is a
-coin toss. This is the part that makes you better at judging over time rather
-than just better at this one decision.
+**6. Commit.** Record predictions and a review date. When a prediction is later
+resolved, the app can compute a Brier score; unresolved predictions are not
+treated as failures.
 
 ## Common mistakes
 
 | Mistake | What happens | Fix |
 |---|---|---|
-| All items set to `benefit` | Costs add to the score instead of subtracting | Set `Kind` to **Cost** for hours, money spent, risk |
-| Every probability left at 1 | The ranking looks confident and is fragile for no visible reason | Use `+ Likelihood` where you are genuinely unsure |
-| No reference class | The probability is an opinion with a decimal point | Write what similar cases did |
-| Scores all 4s and 5s | Normalisation spreads a tiny real difference across the whole 0–1 range | Score the *difference*, not the absolute quality |
-| Ignoring the fragility line | The app told you what to check and you skipped it | Treat the delta as your to-do list |
-
-## Doing it without the UI
-
-The engine is a pure library, so the same decision can be computed in a script.
-See [`examples/contoh-pindah-kerja.ts`](../examples/contoh-pindah-kerja.ts):
-
-```bash
-npx tsx examples/contoh-pindah-kerja.ts
-```
-
-It prints the weights, the normalisation anchors, the net scores, the ranking,
-the break-even and the tornado, and emits a share link you can paste into the app.
+| Every item is a benefit | Costs add instead of subtracting | Mark hours, money spent, or risk as **Cost** where appropriate |
+| Every probability is 1 | Uncertainty disappears from the result | Use a probability only when you have a defensible estimate |
+| No reference class | Probability is an unsupported decimal | Record comparable cases or a checkable basis |
+| Scores are all 4s and 5s | Small differences get exaggerated by normalisation | Score the difference between options, not absolute quality |
+| Ignoring fragility | The result may turn on a weak input | Investigate the input that flips the ranking |

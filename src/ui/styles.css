@@ -358,6 +358,39 @@ a {
   text-align: right;
 }
 
+/* Compact bibliography at the end of the decision pipeline. */
+.reference__list {
+  list-style: none;
+  display: grid;
+  gap: var(--s-sm);
+  margin: 0 0 var(--s-md);
+  padding: 0;
+}
+
+.reference__list li {
+  display: grid;
+  grid-template-columns: minmax(14rem, max-content) 1fr;
+  gap: var(--s-xs) var(--s-md);
+  align-items: baseline;
+  font-size: 0.8125rem;
+}
+
+.reference__list li span {
+  color: var(--ink-soft);
+}
+
+.reference__more {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+@media (max-width: 56rem) {
+  .reference__list li {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 /* The elicitation panel, docked beside the fields it fills.
    Two equal columns, so the form keeps half the section and the panel takes the
    other half. `start` and not the default `stretch`: the chat is an instrument

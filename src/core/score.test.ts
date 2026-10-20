@@ -146,4 +146,11 @@ describe('scoring', () => {
     ]);
     expect(() => scoreDecision(decision, { o1: 1 })).toThrow(/ghost/);
   });
+
+  it('throws on an item that points at an option that does not exist', () => {
+    const decision = decisionWith([
+      { id: 'i1', optionId: 'ghost', objectiveId: 'o1', kind: 'benefit', value: 5, probability: 1, risk: 'ordinary' },
+    ]);
+    expect(() => scoreDecision(decision, { o1: 1 })).toThrow(/ghost/);
+  });
 });

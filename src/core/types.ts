@@ -47,7 +47,7 @@ export const SunkCostSchema = z.object({
 });
 
 export const GateSchema = z.object({
-  sunkCost: SunkCostSchema,
+  sunkCost: SunkCostSchema.nullable(),
   survivorship: z.string(),
   ostrich: z.string(),
   hastyGeneralisation: z.string(),
@@ -63,7 +63,7 @@ export const DecisionSchema = z.object({
   items: z.array(ItemSchema),
   claims: z.array(ClaimSchema),
   predictions: z.array(PredictionSchema).optional(),
-  /** Present once the bias gate has been answered. */
+  /** Bias gate form state; nullable sunk cost distinguishes unanswered from zero. */
   gate: GateSchema.optional(),
   /** Present once the decision is committed. */
   reviewAt: z.string().optional(),

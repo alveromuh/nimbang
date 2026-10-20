@@ -53,6 +53,24 @@ function setup() {
   return { user: userEvent.setup() };
 }
 
+describe('DecisionWorkspace references', () => {
+  it('shows engine sources after the decision review section', () => {
+    setup();
+
+    const reference = screen.getByRole('heading', { name: /referensi/i }).closest('section');
+    const review = screen.getByRole('heading', { name: /komitmen/i }).closest('section');
+
+    expect(reference).not.toBeNull();
+    expect(review).not.toBeNull();
+    expect(review!.compareDocumentPosition(reference!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(screen.getByRole('link', { name: /keeney/i })).toHaveAttribute(
+      'href',
+      'https://doi.org/10.2307/j.ctv322v4g7',
+    );
+    expect(reference).toHaveTextContent(/swing weighting/i);
+  });
+});
+
 async function acceptOptions(user: ReturnType<typeof userEvent.setup>, labels: string[]) {
   replies.next.push(
     turn([{ name: 'record_options', arguments: JSON.stringify({ options: labels }) }]),
@@ -155,6 +173,16 @@ describe('DecisionWorkspace: filling the option rows', () => {
 describe('DecisionWorkspace: the bias panel', () => {
   beforeEach(() => {
     replies.next = [];
+  });
+
+  it('persists gate inputs when the draft is saved', async () => {
+    const onSaved = vi.fn();
+    render(<DecisionWorkspace decision={decision()} onSaved={onSaved} onDelete={() => {}} />);
+    await userEvent.setup().type(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i), 'Dua teman');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(onSaved).toHaveBeenLastCalledWith(
+      expect.objectContaining({ gate: expect.objectContaining({ survivorship: 'Dua teman' }) }),
+    );
   });
 
   it('offers an AI trigger inside the bias section', () => {
