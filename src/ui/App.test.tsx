@@ -43,6 +43,14 @@ async function fillDecision(
   for (const [index, score] of scores.entries()) {
     await user.type(values[index], score);
   }
+  const disclosures = document.querySelectorAll('details.item__more:not([open]) summary');
+  for (const disclosure of disclosures) {
+    await user.click(disclosure);
+  }
+  const references = screen.getAllByPlaceholderText(/kasus serupa/i);
+  for (const reference of references) {
+    await user.type(reference, 'kasus serupa yang pernah diamati');
+  }
   await user.type(screen.getByLabelText(/biaya yang sudah keluar/i), '0');
   await user.type(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i), 'Tidak tahu');
   await user.type(screen.getByLabelText(/bukti apa yang sedang kamu hindari/i), 'Tidak ada');
@@ -264,6 +272,47 @@ describe('App', () => {
     expect(screen.getAllByText('Pindah').length).toBeGreaterThan(0);
     // The fragment is cleared so a reload does not re-import a stale copy.
     expect(window.location.hash).toBe('');
+  });
+
+  it('keeps a shared link intact and shows the imported decision when storage refuses it', () => {
+    const shared = {
+      id: 'shared-failed',
+      title: 'Impor belum tersimpan',
+      objectives: [{ id: 'o1', statement: 'Penghasilan', kind: 'motivation' as const }],
+      options: [
+        { id: 'a', label: 'Tetap', isBaseline: true },
+        { id: 'b', label: 'Pindah', isBaseline: false },
+        { id: 'c', label: 'Negosiasi', isBaseline: false },
+      ],
+      items: [],
+      claims: [],
+      swingPoints: { o1: 100 },
+    };
+    window.history.replaceState(null, '', `/#d=${serializeDecision(shared)}`);
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: { getItem: () => null, setItem: () => { throw new Error('quota exceeded'); }, removeItem: () => undefined },
+      configurable: true,
+    });
+
+    render(<App />);
+
+    expect(screen.getByLabelText(/decision title/i)).toHaveValue('Impor belum tersimpan');
+    expect(screen.getByRole('alert')).toHaveTextContent(/belum tersimpan/i);
+    expect(window.location.hash).toMatch(/^#d=/);
+  });
+
+  it('keeps a new decision editable and warns when storage refuses it', async () => {
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: { getItem: () => null, setItem: () => { throw new Error('quota exceeded'); }, removeItem: () => undefined },
+      configurable: true,
+    });
+
+    render(<App />);
+    await startDecision();
+
+    expect(screen.getByLabelText(/decision title/i)).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent(/belum tersimpan/i);
+    expect(screen.getByRole('button', { name: /keputusan tanpa judul/i })).toBeInTheDocument();
   });
 
   it('falls back to the library when the shared link is malformed', () => {

@@ -704,14 +704,62 @@ button:disabled {
 .row-actions {
   display: flex;
   align-items: flex-end;
-  gap: var(--s-xs);
+  gap: var(--s-sm);
 }
 
 .row-actions input {
   flex: 1;
 }
 
+/* A row of controls keeps its button the same height as the field beside it, so
+   the pair reads as one line rather than a field with a stray box next to it. */
+.row-actions > button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-self: flex-end;
+}
+
 /* ---------- status ---------- */
+
+/* The coverage block. Its first line is a statement about the decision, so it is
+   full ink and slightly larger; everything under it is supporting remark. */
+.status {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--s-md) var(--s-lg) var(--s-lg);
+  margin-bottom: var(--s-md);
+}
+
+.status__headline {
+  font-size: 0.9375rem;
+  color: var(--ink);
+  margin: 0 0 var(--s-md);
+}
+
+.status__headline strong {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* Each remark is its own line, with the same gap between them. The 8px default
+   made four stacked notes look like one paragraph with uneven leading. */
+.status .note {
+  margin-top: var(--s-sm);
+}
+
+.status .note:first-of-type {
+  margin-top: 0;
+}
+
+/* The blocking remarks sit apart from the neutral explanation above them, so a
+   reader can tell which lines are the reason there is no result. */
+.status .note--warn:first-of-type {
+  margin-top: var(--s-md);
+  padding-top: var(--s-md);
+  border-top: 1px dashed var(--line-strong);
+}
 
 .note {
   font-size: 0.8125rem;
@@ -722,6 +770,53 @@ button:disabled {
 
 .note--warn {
   color: var(--caution);
+}
+
+/* Stacked notes are a list of remarks, not a paragraph followed by its
+   continuation. Without this the 8px default margin makes consecutive notes look
+   like one block with uneven line spacing. */
+.note + .note {
+  margin-top: var(--s-sm);
+}
+
+/* ---------- claim list ---------- */
+
+/* One claim is a card: its identity row, its tag, and its problem if it has one.
+   The grouping matters more here than anywhere else in the form, because three
+   claims in a row otherwise read as nine unrelated fields. */
+.claim {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-md);
+  margin-bottom: var(--s-md);
+  background: var(--surface);
+}
+
+.claim:focus-within {
+  border-color: var(--accent);
+}
+
+.claim__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9rem auto;
+  gap: var(--s-sm);
+  align-items: end;
+}
+
+.claim__tag {
+  margin-top: var(--s-md);
+}
+
+/* The warning belongs to the field above it, so it sits tighter to that field
+   than the card's own padding would put it. */
+.claim .note {
+  margin-top: var(--s-sm);
+}
+
+@media (max-width: 40rem) {
+  .claim__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .alert {
@@ -852,6 +947,9 @@ button:disabled {
   gap: var(--s-sm);
   overflow-x: auto;
   padding-bottom: var(--s-xs);
+  /* The matrix follows the attribute list, so it needs its own separation: the
+     two are different objects, not two halves of one control. */
+  margin-top: var(--s-sm);
 }
 
 .grid__row {
@@ -872,6 +970,74 @@ button:disabled {
   color: var(--ink-faint);
   padding-bottom: var(--s-xs);
   border-bottom: 1px solid var(--line);
+}
+
+/* An attribute that has no name of its own falls back to the objective sentence,
+   which is too long to shout in uppercase across a narrow column. */
+.grid__head--fallback {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.75rem;
+}
+
+/* The attribute name is the heading; the objective underneath is its context.
+   It has to be normal case: an uppercase objective statement is a shout, and the
+   column heading already carries the emphasis. */
+.grid__head small {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-faint);
+}
+
+/* ---------- attribute editor ---------- */
+
+/* One block per objective. The objective is a heading over its dimensions, not a
+   label inside the first field: three objectives stacked as bare inputs read as
+   one long form with no grouping. */
+.attribute-group {
+  padding: var(--s-md);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.attribute-group + .attribute-group {
+  margin-top: var(--s-sm);
+}
+
+.attribute-group__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 var(--s-md);
+  max-width: none;
+}
+
+/* Each row is one attribute: its name, and the control that removes it. */
+.attribute {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-sm);
+  align-items: end;
+}
+
+.attribute + .attribute {
+  margin-top: var(--s-sm);
+}
+
+/* The add control belongs to the group, so it sits below the rows with the same
+   gap rather than touching the last field. */
+.attribute-add {
+  margin-top: var(--s-md);
+}
+
+.attributes {
+  display: grid;
+  margin-bottom: var(--s-lg);
 }
 
 .grid__option {
@@ -927,6 +1093,17 @@ button:disabled {
 
 .item label {
   font-size: 0.6875rem;
+  margin-top: var(--s-md);
+}
+
+/* The first label in a row sits under the row's own heading, not under another
+   field, so it does not need the gap that separates stacked fields. Inside the
+   disclosure the first label follows the summary line and does need one. */
+.item__meta label {
+  margin-top: 0;
+}
+
+.item__more label:first-of-type {
   margin-top: var(--s-sm);
 }
 
@@ -940,10 +1117,21 @@ button:disabled {
 .item__meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--s-xs);
+  gap: var(--s-sm);
 }
 
+/* The disclosure holds the three refinements. It sits apart from the value and
+   kind above it, because it is a different level of detail rather than a third
+   field in the same row. */
 .item__more {
+  margin-top: var(--s-md);
+  padding-top: var(--s-sm);
+  border-top: 1px solid var(--line);
+}
+
+/* The fatal checkbox is the last control in the cell and must not touch the
+   reference-class field above it. */
+.item .check {
   margin-top: var(--s-sm);
 }
 

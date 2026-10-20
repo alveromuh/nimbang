@@ -17,6 +17,8 @@ function Harness({ initial, onCommit }: { initial: Item | undefined; onCommit: (
       idPrefix="b--o1"
       label="Pindah on Penghasilan"
       item={item}
+      objectiveId="o1"
+      attributeId="o1"
       onChange={(next) => {
         if (next !== null) {
           onCommit(next.probability);
@@ -108,5 +110,18 @@ describe('ItemEditor', () => {
     expect(screen.getByLabelText(/^jenis$/i)).toHaveValue('benefit');
     expect(screen.getByLabelText(/^peluang$/i)).toHaveValue(1);
     expect(screen.getByLabelText(/risiko fatal/i)).not.toBeChecked();
+  });
+
+  it('says on the closed cell that a reference class is still missing', () => {
+    setup(base);
+    // The field that blocks the recommendation is behind the disclosure, so the
+    // summary has to name it or the blockage is invisible in the matrix.
+    expect(screen.getByText(/perlu kasus pembanding/i)).toBeInTheDocument();
+  });
+
+  it('stops saying so once the reference class is filled', async () => {
+    const { user } = setup(base);
+    await user.type(screen.getByLabelText(/kasus pembanding/i), 'proyek serupa');
+    expect(screen.queryByText(/perlu kasus pembanding/i)).not.toBeInTheDocument();
   });
 });

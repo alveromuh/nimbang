@@ -313,7 +313,7 @@ describe('DecisionWorkspace: where the options trigger lives', () => {
   it('explains the baseline row the reader cannot remove', () => {
     setup();
 
-    const note = screen.getByText(/barisnya selalu ada/i);
+    const note = screen.getByText(/baris ini selalu ada/i);
 
     // Beside the row it explains, inside the same field.
     expect(note.closest('.field')).toContainElement(screen.getByLabelText(/^opsi 1/i));
@@ -478,6 +478,176 @@ describe('DecisionWorkspace: saving, escape, and the review date', () => {
     for (const hint of hints) {
       expect(hint.closest('.panel__head')).not.toBeNull();
     }
+  });
+});
+
+/** The five gate answers plus the sunk-cost amount, which the gate also requires. */
+async function answerGate(user: ReturnType<typeof userEvent.setup>) {
+  // Diverge also requires every option to be named; the fixture ships two blank
+  // rows, which is what a fresh decision looks like.
+  await user.type(screen.getByLabelText(/^opsi 2$/i), 'Tetap');
+  await user.type(screen.getByLabelText(/^opsi 3$/i), 'Pindah');
+  await user.type(screen.getByLabelText(/biaya yang sudah keluar/i), '0');
+  await user.type(screen.getByLabelText(/siapa yang mencoba ini lalu gagal/i), 'Tidak tahu');
+  await user.type(screen.getByLabelText(/bukti apa yang sedang kamu hindari/i), 'Tidak ada');
+  await user.type(screen.getByLabelText(/ini berdasar berapa kasus/i), 'Tiga');
+  await user.type(screen.getByLabelText(/ini sebab, atau kebetulan waktunya/i), 'Belum pasti');
+  await user.type(screen.getByLabelText(/apa beda kasusmu dengan kasus pembandingnya/i), 'Beda kondisi');
+}
+
+/**
+ * Fills every cell with the same value, plus the reference class each
+ * probability now needs. A uniform value leaves every attribute with no spread,
+ * which the engine scores as a tie — enough to reach a recommendation without
+ * depending on the arithmetic under test elsewhere.
+ */
+async function scoreEveryCell(user: ReturnType<typeof userEvent.setup>, value = '3') {
+  for (const input of screen.getAllByLabelText(/^nilai$/i)) {
+    await user.type(input, value);
+  }
+  for (const summary of document.querySelectorAll('details.item__more:not([open]) summary')) {
+    await user.click(summary);
+  }
+  for (const reference of screen.getAllByPlaceholderText(/kasus serupa/i)) {
+    await user.type(reference, 'proyek serupa');
+  }
+}
+
+const coverage = () => document.querySelector('[aria-live="polite"]')?.textContent ?? '';
+
+describe('DecisionWorkspace: matrix coverage', () => {
+  it('withholds the result and reports how many cells are still empty', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+
+    // One cell filled out of three option rows, so two are missing.
+    await user.type(screen.getAllByLabelText(/^nilai$/i)[0], '3');
+
+    expect(coverage()).toContain('1/3 sel');
+    expect(screen.queryByRole('heading', { name: /hasil/i })).not.toBeInTheDocument();
+  });
+
+  it('shows the result once every cell is assessed and the gate is answered', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+
+    expect(coverage()).toContain('3/3 sel');
+    expect(screen.getByRole('heading', { name: /hasil/i })).toBeInTheDocument();
+  });
+
+  it('counts an unassessed cell as missing rather than as zero', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+
+    // Clearing one value removes the item; the matrix must fall back below full
+    // rather than treat the empty cell as a scored zero.
+    await user.clear(screen.getAllByLabelText(/^nilai$/i)[0]);
+
+    expect(coverage()).toContain('2/3 sel');
+    expect(screen.queryByRole('heading', { name: /hasil/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('DecisionWorkspace: named attributes', () => {
+  it('adds a column per attribute and asks for the new cells too', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+
+    await user.click(screen.getByRole('button', { name: /tambah atribut/i }));
+
+    // The new attribute is a second dimension of the same objective, so three
+    // more cells are required and none of them is filled yet.
+    expect(coverage()).toContain('3/6 sel');
+    expect(screen.queryByRole('heading', { name: /hasil/i })).not.toBeInTheDocument();
+  });
+
+  it('names the column after the attribute, not the objective', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /tambah atribut/i }));
+    await user.type(screen.getByLabelText(/nama atribut penghasilan naik 2/i), 'Jam kerja');
+
+    const head = screen.getByText('Jam kerja');
+    expect(head.closest('.grid__head')).not.toBeNull();
+    // The objective stays visible as the column's context, one line down.
+    expect(head.closest('.grid__head')).toHaveTextContent('Penghasilan naik');
+  });
+
+  it('removes the assessments that belonged to a removed attribute', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+    await user.click(screen.getByRole('button', { name: /tambah atribut/i }));
+    await scoreEveryCell(user);
+
+    expect(screen.getAllByLabelText(/^nilai$/i)).toHaveLength(6);
+
+    await user.click(screen.getByRole('button', { name: /hapus atribut penghasilan naik 2/i }));
+
+    // The column and its three assessments go together, so the matrix is full
+    // again instead of pointing at an attribute that no longer exists.
+    expect(screen.getAllByLabelText(/^nilai$/i)).toHaveLength(3);
+    expect(coverage()).toContain('3/3 sel');
+  });
+
+  it('keeps the last attribute, because an objective needs a dimension', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+
+    await user.click(screen.getByRole('button', { name: /tambah atribut/i }));
+    await user.click(screen.getByRole('button', { name: /hapus atribut penghasilan naik 2/i }));
+
+    // With one attribute left there is nothing left to remove: the column is the
+    // objective itself, so the control stays visible but refuses.
+    expect(screen.getByRole('button', { name: /hapus atribut penghasilan naik 1/i })).toBeDisabled();
+    expect(screen.getAllByLabelText(/^nilai$/i)).toHaveLength(3);
+  });
+});
+
+describe('DecisionWorkspace: claims gate the recommendation', () => {
+  it('withholds the result while a claim is untagged, and shows it once tagged', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+
+    // Everything the score needs is now in place.
+    expect(screen.getByRole('heading', { name: /hasil/i })).toBeInTheDocument();
+
+    // A fact written without its source is the confusion the Tag stage exists to
+    // catch, so it has to be able to stop the answer.
+    await user.click(screen.getByRole('button', { name: /tambah klaim/i }));
+    await user.type(screen.getByLabelText(/^klaim 1$/i), 'Gaji di sana 12 juta');
+
+    expect(screen.queryByRole('heading', { name: /hasil/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/lengkapi sumber setiap klaim fakta/i)).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/sumber 1/i), 'tanya HRD');
+
+    expect(screen.getByRole('heading', { name: /hasil/i })).toBeInTheDocument();
+  });
+
+  it('does not let an untouched blank row block the answer', async () => {
+    const user = userEvent.setup();
+    render(<DecisionWorkspace decision={decision()} onSaved={() => {}} onDelete={() => {}} />);
+    await answerGate(user);
+    await scoreEveryCell(user);
+
+    // Opening the claim form adds a row. Nothing has been claimed yet, so there
+    // is nothing to tag and nothing to withhold.
+    await user.click(screen.getByRole('button', { name: /tambah klaim/i }));
+
+    expect(screen.getByRole('heading', { name: /hasil/i })).toBeInTheDocument();
+    expect(screen.queryByText(/lengkapi sumber setiap klaim fakta/i)).not.toBeInTheDocument();
   });
 });
 

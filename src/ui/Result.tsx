@@ -55,7 +55,7 @@ export function Result({ decision, score, stress }: ResultProps) {
               <div className="verdict__value">{labelOf(score.recommendation)}</div>
               {margin !== null && (
                 <p className="verdict__sub">
-                  Unggul {margin.toFixed(3)} dari {labelOf(score.ranking[1])}
+                  Unggul {margin.toFixed(2)} dari {labelOf(score.ranking[1])}
                 </p>
               )}
             </>
@@ -103,7 +103,7 @@ export function Result({ decision, score, stress }: ResultProps) {
             <tr key={optionId} data-leader={index === 0}>
               <td className="rank">{index + 1}</td>
               <td>{labelOf(optionId)}</td>
-              <td className="num">{(score.net[optionId] ?? 0).toFixed(3)}</td>
+              <td className="num">{(score.net[optionId] ?? 0).toFixed(2)}</td>
               <td>
                 {score.fatal.includes(optionId) ? (
                   <span className="badge badge--fatal">Fatal</span>
@@ -132,13 +132,24 @@ export function Result({ decision, score, stress }: ResultProps) {
                       <span style={{ width: `${Math.max(2, (entry.influence / max) * 100)}%` }} />
                     </div>
                   </div>
-                  <div className="tornado__value">{entry.influence.toFixed(3)}</div>
+                  <div className="tornado__value">{entry.influence.toFixed(2)}</div>
                 </li>
               );
             })}
           </ul>
         </>
       )}
+
+      {/* Last, because it is the caveat on everything above it: the two numbers a
+          reader is most likely to over-trust are the score and its margin. */}
+      <div className="field" style={{ marginTop: 'var(--s-lg)' }}>
+        <p className="note">
+          <Bi text={copy.netScale} />
+        </p>
+        <p className="note">
+          <Bi text={copy.netDepends} />
+        </p>
+      </div>
     </section>
   );
 }
@@ -150,5 +161,11 @@ function itemLabel(decision: Decision, itemId: string): string {
   }
   const option = decision.options.find((candidate) => candidate.id === item.optionId);
   const objective = decision.objectives.find((candidate) => candidate.id === item.objectiveId);
-  return `${option?.label || item.optionId} untuk ${objective?.statement || item.objectiveId}`;
+  // The attribute has to be named: two inputs under one objective would otherwise
+  // produce the same sentence twice, and the reader cannot tell which one to
+  // change. An item from before attributes existed falls back to the objective.
+  const attributeId = item.attributeId ?? item.objectiveId;
+  const attribute = objective?.attributes?.find((candidate) => candidate.id === attributeId);
+  const dimension = attribute?.name.trim() || objective?.statement || item.objectiveId;
+  return `${option?.label || item.optionId} untuk ${dimension}`;
 }

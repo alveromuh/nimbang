@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   scoreDecision,
+  validateTag,
+  validateProbabilities,
   stressTest,
   swingWeights,
   validateDiverge,
@@ -9,10 +11,12 @@ import {
   type Decision,
   type GateInputs,
   type Item,
+  type Claim,
   type Objective,
   type Option,
   type Prediction,
 } from '../core';
+import { ClaimPanel } from './ClaimPanel';
 import { CommitPanel } from './CommitPanel';
 import { GatePanel } from './GatePanel';
 import { ItemGrid } from './ItemGrid';
@@ -75,6 +79,7 @@ export function DecisionWorkspace({
   const [objectives, setObjectives] = useState<Objective[]>(decision.objectives);
   const [options, setOptions] = useState<Option[]>(decision.options);
   const [items, setItems] = useState<Item[]>(decision.items);
+  const [claims, setClaims] = useState<Claim[]>(decision.claims);
   const [swingPoints, setSwingPoints] = useState<Record<string, number>>(
     decision.swingPoints ?? { o1: 100 },
   );
@@ -104,6 +109,7 @@ export function DecisionWorkspace({
       objectives,
       options,
       items,
+      claims,
       swingPoints,
       gate,
       predictions,
@@ -112,7 +118,7 @@ export function DecisionWorkspace({
       // in the document: the schema calls the field optional.
       reviewAt: reviewAt === '' ? undefined : reviewAt,
     }),
-    [decision, title, objectives, options, items, swingPoints, gate, predictions, outcomes, reviewAt],
+    [decision, title, objectives, options, items, claims, swingPoints, gate, predictions, outcomes, reviewAt],
   );
 
   // Save on a short debounce, but do not write when a parent refresh changes only
@@ -141,9 +147,43 @@ export function DecisionWorkspace({
 
   const frame = validateFrame(draft);
   const diverge = validateDiverge(draft);
+  // A blank row is not a claim yet. Validating it would mean the act of opening
+  // the form could block the answer, which is not what the rule says: every
+  // claim that has been *written* must be tagged.
+  const tag = validateTag({ claims: claims.filter((claim) => claim.text.trim() !== '') });
+  const probabilityCheck = validateProbabilities(items);
+  const attributesOf = (objective: Objective) =>
+    objective.attributes?.length ? objective.attributes : [{ id: objective.id, name: objective.statement }];
+  const assessedCells = objectives.reduce(
+    (sum, objective) => sum + attributesOf(objective).length * options.length,
+    0,
+  );
+  // One cell is one option-by-attribute pair. Counting complete *attributes*
+  // against a *cell* total made the matrix look permanently 1/N full, so the
+  // recommendation never appeared once there was more than one option.
+  const completeCells = objectives.reduce((sum, objective) => {
+    const attributes = attributesOf(objective);
+    return (
+      sum +
+      attributes.reduce(
+        (count, attribute) =>
+          count +
+          options.filter((option) =>
+            items.some(
+              (item) =>
+                item.optionId === option.id &&
+                item.objectiveId === objective.id &&
+                (item.attributeId ?? objective.id) === attribute.id,
+            ),
+          ).length,
+        0,
+      )
+    );
+  }, 0);
+  const matrixComplete = assessedCells > 0 && completeCells === assessedCells;
 
   const result = useMemo(() => {
-    if (!frame.ok || !diverge.ok || !validateGate(gate).ok) {
+    if (!frame.ok || !diverge.ok || !validateGate(gate).ok || !tag.ok || !probabilityCheck.ok || !matrixComplete) {
       return null;
     }
     try {
@@ -156,7 +196,7 @@ export function DecisionWorkspace({
         error: scoringErrorMessage(error),
       };
     }
-  }, [draft, frame.ok, diverge.ok, gate, objectives, swingPoints]);
+  }, [draft, frame.ok, diverge.ok, gate, objectives, swingPoints, tag.ok, probabilityCheck.ok, matrixComplete]);
 
   function addObjective(): void {
     const id = nextId('o', objectives);
@@ -170,6 +210,38 @@ export function DecisionWorkspace({
     const remaining = { ...swingPoints };
     delete remaining[id];
     setSwingPoints(remaining);
+  }
+
+  /**
+   * Removes one named dimension of an objective, along with every assessment
+   * that named it. Leaving those items behind would point the engine at an
+   * attribute that no longer exists, which is a hard error there.
+   *
+   * The last attribute cannot be removed: an objective with no dimension would
+   * have no weight to divide, and the column would silently reappear.
+   */
+  function removeAttribute(objectiveId: string, attributeId: string): void {
+    const objective = objectives.find((candidate) => candidate.id === objectiveId);
+    const attributes = objective?.attributes ?? [];
+    if (attributes.length <= 1) {
+      return;
+    }
+    setObjectives(
+      objectives.map((candidate) =>
+        candidate.id === objectiveId
+          ? { ...candidate, attributes: attributes.filter((attribute) => attribute.id !== attributeId) }
+          : candidate,
+      ),
+    );
+    setItems(
+      items.filter(
+        (item) =>
+          !(
+            item.objectiveId === objectiveId &&
+            (item.attributeId ?? objectiveId) === attributeId
+          ),
+      ),
+    );
   }
 
   function addOption(): void {
@@ -268,9 +340,9 @@ export function DecisionWorkspace({
         <div className="panel">
           <p className="note note--warn" role="alert">Data keputusan tidak valid: {result.error}</p>
         </div>
-      ) : frame.ok && diverge.ok && validateGate(gate).ok ? (
+      ) : frame.ok && diverge.ok && validateGate(gate).ok && !matrixComplete ? (
         <div className="panel">
-          <p className="note">Isi penilaian untuk setiap opsi agar hasil bisa dihitung.</p>
+          <p className="note">Isi semua sel agar hasil bisa dihitung.</p>
         </div>
       ) : null}
 
@@ -410,6 +482,8 @@ export function DecisionWorkspace({
         </div>
       </section>
 
+      <ClaimPanel claims={claims} onChange={setClaims} />
+
       <section className="panel" aria-labelledby="weigh-heading">
         <div className="panel__head">
           <h2 className="panel__title" id="weigh-heading">
@@ -445,7 +519,33 @@ export function DecisionWorkspace({
         objectives={objectives}
         items={items}
         onChange={(itemId, next) => setItems(upsertItem(items, itemId, next))}
+        onAttributesChange={(objectiveId, attributes) => setObjectives(objectives.map((objective) => objective.id === objectiveId ? { ...objective, attributes } : objective))}
+        onAttributeRemove={removeAttribute}
       />
+      <div className="status" aria-live="polite">
+        <p className="status__headline">
+          Cakupan matriks: <strong>{completeCells}/{assessedCells} sel</strong>
+          {assessedCells ? ` (${Math.round((completeCells / assessedCells) * 100)}%)` : ''}
+        </p>
+        {/* The count is a number; the sentence about it is a separate line. Run
+            together, the bilingual gloss broke the line mid-sentence. */}
+        <p className="note">
+          <Bi text={matrixComplete ? copy.coverageComplete : copy.coverageMissing} />
+        </p>
+        <p className="note">
+          <Bi text={copy.coverageHint} />
+        </p>
+        {!tag.ok && (
+          <p className="note note--warn">
+            <Bi text={copy.tagMissing} />
+          </p>
+        )}
+        {!probabilityCheck.ok && (
+          <p className="note note--warn">
+            <Bi text={copy.referenceMissing} />
+          </p>
+        )}
+      </div>
 
       <GatePanel
         value={gate}
@@ -486,7 +586,7 @@ export function DecisionWorkspace({
           <h2 className="panel__title" id="reference-title">
             Referensi
           </h2>
-          <p className="panel__hint">Sumber metode yang mendasari mesin keputusan.</p>
+          <p className="panel__hint">Sumber metode di balik mesin ini.</p>
         </div>
         <ul className="reference__list">
           <li>

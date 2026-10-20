@@ -9,6 +9,8 @@ interface ItemEditorProps {
   /** The accessible name for the group, e.g. "Pindah on Penghasilan". */
   label: string;
   item: Item | undefined;
+  objectiveId: string;
+  attributeId: string;
   /** `null` means "remove this item", which happens when the value is cleared. */
   onChange: (next: Item | null) => void;
 }
@@ -23,7 +25,7 @@ interface ItemEditorProps {
  * unreachable from the app, so the form could only ever express a naive
  * pros-and-cons score.
  */
-export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps) {
+export function ItemEditor({ idPrefix, label, item, objectiveId, attributeId, onChange }: ItemEditorProps) {
   const value = item?.value;
   const kind = item?.kind ?? 'benefit';
   const risk = item?.risk ?? 'ordinary';
@@ -41,7 +43,7 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
     if (item === undefined) {
       // First edit of an empty row: create it from the defaults, so the user does
       // not have to fill four fields before the fifth one works.
-      onChange({ ...defaults(idPrefix), ...patch });
+      onChange({ ...defaults(idPrefix, objectiveId, attributeId), ...patch });
       return;
     }
     onChange({ ...item, ...patch });
@@ -101,8 +103,17 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
           and needs no JavaScript. */}
       <details className="item__more">
         <summary>
-          {probability !== 1 ? `P ${probability}` : 'Peluang'}
+          {/* The summary names the group, not its first field: "Peluang" here
+              would sit directly above the "Peluang" label below it, which reads
+              as a duplicated row. The state of the group follows it, so a closed
+              cell still shows what is unusual about it. */}
+          Rincian
+          {probability !== 1 ? ` · P ${probability}` : ''}
           {risk === 'fatal' ? ' · fatal' : ''}
+          {/* A missing reference class blocks the recommendation, and the field is
+              behind this disclosure. Saying so on the summary is what makes the
+              blockage findable without opening nine cells one at a time. */}
+          {item !== undefined && referenceClass.trim() === '' ? ' · perlu kasus pembanding' : ''}
         </summary>
 
         <label htmlFor={`${idPrefix}-probability`}>{bi(copy.probability)}</label>
@@ -158,12 +169,13 @@ export function ItemEditor({ idPrefix, label, item, onChange }: ItemEditorProps)
  * it back is safe because the app generates it; an item arriving from a shared
  * URL keeps its own ids, which is why this is only used for a brand-new row.
  */
-function defaults(idPrefix: string): Item {
-  const [optionId, objectiveId] = idPrefix.split('--');
+function defaults(idPrefix: string, objectiveId: string, attributeId: string): Item {
+  const optionId = idPrefix.split('--')[0];
   return {
     id: idPrefix,
     optionId: optionId ?? idPrefix,
     objectiveId: objectiveId ?? '',
+    attributeId,
     kind: 'benefit',
     value: 3,
     probability: 1,

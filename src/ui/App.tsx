@@ -38,21 +38,29 @@ export function App() {
   // A shared link is imported once, on first render, and becomes a normal entry
   // in the library. It is not special afterwards: the user can edit it, delete
   // it, and it persists like anything else.
-  const [decisions, setDecisions] = useState<Decision[]>(() => {
+  const [initialState] = useState(() => {
     const shared = sharedDecisionFromUrl();
-    if (shared !== null) {
-      saveDecision(shared);
-      // Drop the fragment so a reload does not re-import a stale copy over edits.
-      if (typeof history !== 'undefined') {
-        history.replaceState(null, '', location.pathname + location.search);
-      }
-      return listDecisions();
+    if (shared === null) {
+      return { decisions: listDecisions(), saveFailed: false };
     }
-    return listDecisions();
+    const saved = saveDecision(shared);
+    // Keep the imported decision usable in memory if storage refuses the write.
+    // In that case the URL fragment is the remaining durable copy, so leave it.
+    if (saved && typeof history !== 'undefined') {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+    const existing = listDecisions();
+    return {
+      decisions: saved
+        ? existing
+        : [shared, ...existing.filter((entry) => entry.id !== shared.id)],
+      saveFailed: !saved,
+    };
   });
+  const [decisions, setDecisions] = useState<Decision[]>(initialState.decisions);
   const [activeId, setActiveId] = useState<string | null>(null);
   /** True once a write has been refused by storage, cleared on the next success. */
-  const [saveFailed, setSaveFailed] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(initialState.saveFailed);
 
   const active = useMemo(
     () => decisions.find((decision) => decision.id === activeId) ?? decisions[0] ?? null,
@@ -65,8 +73,13 @@ export function App() {
 
   function openNew(): void {
     const decision = createDecision();
-    saveDecision(decision);
-    refresh();
+    const saved = saveDecision(decision);
+    if (saved) {
+      refresh();
+    } else {
+      setDecisions((current) => [decision, ...current]);
+      setSaveFailed(true);
+    }
     setActiveId(decision.id);
   }
 
@@ -146,7 +159,14 @@ export function App() {
             onSaved={(saved) => {
               // The boolean is the only signal that the write happened. Discarding
               // it made a full quota look like a successful save.
-              setSaveFailed(!saveDecision(saved));
+              const persisted = saveDecision(saved);
+              setSaveFailed(!persisted);
+              if (persisted && location.hash.startsWith('#d=')) {
+                const shared = sharedDecisionFromUrl();
+                if (shared?.id === saved.id) {
+                  history.replaceState(null, '', location.pathname + location.search);
+                }
+              }
               setDecisions((current) =>
                 current.map((entry) => (entry.id === saved.id ? saved : entry)),
               );
