@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
+export const AttributeSchema = z.object({ id: z.string(), name: z.string() });
+
 export const ObjectiveSchema = z.object({
   id: z.string(),
   statement: z.string(),
   kind: z.enum(['hygiene', 'motivation']),
+  /** Named, stable comparison dimensions within this objective. */
+  attributes: z.array(AttributeSchema).optional(),
 });
 
 export const OptionSchema = z.object({
@@ -16,6 +20,8 @@ export const ItemSchema = z.object({
   id: z.string(),
   optionId: z.string(),
   objectiveId: z.string(),
+  /** Stable dimension identifier; omitted only in legacy documents. */
+  attributeId: z.string().optional(),
   kind: z.enum(['benefit', 'cost']),
   value: z.number().min(1).max(5),
   probability: z.number().min(0).max(1),
@@ -80,6 +86,7 @@ export const DecisionSchema = z.object({
 });
 
 export type Objective = z.infer<typeof ObjectiveSchema>;
+export type Attribute = z.infer<typeof AttributeSchema>;
 export type Option = z.infer<typeof OptionSchema>;
 export type Item = z.infer<typeof ItemSchema>;
 export type Claim = z.infer<typeof ClaimSchema>;

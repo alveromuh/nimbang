@@ -11,7 +11,7 @@ export interface ScoreResult {
   /** Option ids, best first. Ties broken by option array order. */
   ranking: string[];
   /**
-   * The per-objective min and max that normalisation used. Stress needs these to
+   * The per-attribute min and max that normalisation used. Stress needs these to
    * solve for a break-even without re-normalising: re-normalising after a
    * perturbation makes every score scale-invariant, and then no change to any
    * input could ever flip the ranking.
@@ -29,11 +29,11 @@ export interface ScoreResult {
 /**
  * Additive value function over options.
  *
- *     net(option) = Σ_o w_o · ( Σ_benefit v·p − Σ_cost v·p )_o
- *     v = (value − min_o) / (max_o − min_o)
+ *     net(option) = Σ_o Σ_a (w_o / n_o) · signed(v·p)_a
+ *     v = (value − min_a) / (max_a − min_a)
  *
- * Normalisation is per objective across the option set, not per option across
- * its items, so listing more items does not win by item count.
+ * Normalisation is per stable attribute across options. Each objective weight
+ * is divided equally among its distinct attributes.
  *
  * Anchors are computed from the items that exist. An option with no item on an
  * objective contributes nothing to that objective, and is not counted as a zero
@@ -50,6 +50,13 @@ export function scoreDecision(
 ): ScoreResult {
   const objectiveIds = new Set(decision.objectives.map((objective) => objective.id));
   const optionIds = new Set(decision.options.map((option) => option.id));
+  const attributesByObjective = new Map(decision.objectives.map((objective) => [
+    objective.id,
+    objective.attributes?.length ? objective.attributes : [{ id: objective.id, name: objective.statement }],
+  ]));
+
+  /** Which item owns each option-by-attribute cell, so a duplicate is caught. */
+  const cells = new Map<string, string>();
 
   for (const objective of decision.objectives) {
     const weight = weights[objective.id];
@@ -69,18 +76,48 @@ export function scoreDecision(
         `Item "${item.id}" points at option "${item.optionId}", which does not exist.`,
       );
     }
+    const attributes = attributesByObjective.get(item.objectiveId) ?? [];
+    const attributeId = item.attributeId ?? item.objectiveId;
+    if (!attributes.some((attribute) => attribute.id === attributeId)) {
+      throw new Error(`Item "${item.id}" points at attribute "${attributeId}", which does not exist.`);
+    }
+
+    // One cell, one assessment. A second item on the same option-and-attribute
+    // pair would add to the same normalised term and let an option win by being
+    // recorded twice — exactly the item-count advantage the normalisation is
+    // supposed to remove. The UI cannot produce this, but a shared link or an
+    // edited document can, so the engine refuses rather than quietly summing.
+    const cell = `${item.optionId}\u0000${attributeId}`;
+    const previous = cells.get(cell);
+    if (previous !== undefined) {
+      throw new Error(
+        `Items "${previous}" and "${item.id}" both score option "${item.optionId}" on attribute "${attributeId}". Each cell takes one assessment.`,
+      );
+    }
+    cells.set(cell, item.id);
   }
 
   const anchors: Record<string, ScoreAnchors> = {};
   for (const objective of decision.objectives) {
-    const values = decision.items
-      .filter((item) => item.objectiveId === objective.id)
-      .map((item) => item.value);
+    const attributes = attributesByObjective.get(objective.id) ?? [];
+    for (const attribute of attributes) {
+      // Anchors are keyed by attribute id alone, so two objectives sharing one
+      // would overwrite each other's range and normalise against the wrong
+      // scale. That is a data error, not something to paper over.
+      if (anchors[attribute.id] !== undefined) {
+        throw new Error(
+          `Attribute "${attribute.id}" appears more than once. Attribute ids must be unique across the decision.`,
+        );
+      }
+      const values = decision.items
+        .filter((item) => item.objectiveId === objective.id && (item.attributeId ?? objective.id) === attribute.id)
+        .map((item) => item.value);
 
-    anchors[objective.id] = {
-      min: values.length > 0 ? Math.min(...values) : 0,
-      max: values.length > 0 ? Math.max(...values) : 0,
-    };
+      anchors[attribute.id] = {
+        min: values.length > 0 ? Math.min(...values) : 0,
+        max: values.length > 0 ? Math.max(...values) : 0,
+      };
+    }
   }
 
   const net: Record<string, number> = {};
@@ -89,7 +126,8 @@ export function scoreDecision(
   }
 
   for (const item of decision.items) {
-    const { min, max } = anchors[item.objectiveId];
+    const attributeId = item.attributeId ?? item.objectiveId;
+    const { min, max } = anchors[attributeId];
     const range = max - min;
 
     // All options tie on this objective: no option is better, so this item
@@ -100,7 +138,8 @@ export function scoreDecision(
 
     const normalised = (item.value - min) / range;
     const signed = item.kind === 'benefit' ? 1 : -1;
-    const weight = weights[item.objectiveId];
+    const attributeCount = attributesByObjective.get(item.objectiveId)?.length ?? 1;
+    const weight = weights[item.objectiveId] / attributeCount;
 
     net[item.optionId] += weight * signed * normalised * item.probability;
   }

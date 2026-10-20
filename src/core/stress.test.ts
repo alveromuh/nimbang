@@ -129,3 +129,60 @@ describe('sensitivity', () => {
     expect(result.flipsAt?.delta).toBe(0);
   });
 });
+
+describe('sensitivity with attributes', () => {
+  const split = [
+    {
+      id: 'o1',
+      statement: 'Money',
+      kind: 'motivation' as const,
+      attributes: [
+        { id: 'o1-pay', name: 'Pay' },
+        { id: 'o1-hours', name: 'Hours' },
+      ],
+    },
+  ];
+
+  function splitDecision(
+    items: {
+      id: string;
+      optionId: string;
+      objectiveId: string;
+      attributeId: string;
+      kind: 'benefit' | 'cost';
+      value: number;
+      probability: number;
+      risk: 'ordinary' | 'fatal';
+    }[],
+  ) {
+    return { id: 'd1', title: 'Test', objectives: split, options, items, claims: [] };
+  }
+
+  it('uses the attribute range and its share of the objective weight', () => {
+    const decision = splitDecision([
+      { id: 'i1', optionId: 'a', objectiveId: 'o1', attributeId: 'o1-pay', kind: 'benefit', value: 4, probability: 1, risk: 'ordinary' },
+      { id: 'i2', optionId: 'b', objectiveId: 'o1', attributeId: 'o1-pay', kind: 'benefit', value: 3, probability: 1, risk: 'ordinary' },
+      { id: 'i3', optionId: 'a', objectiveId: 'o1', attributeId: 'o1-hours', kind: 'benefit', value: 3, probability: 1, risk: 'ordinary' },
+      { id: 'i4', optionId: 'b', objectiveId: 'o1', attributeId: 'o1-hours', kind: 'benefit', value: 3, probability: 1, risk: 'ordinary' },
+    ]);
+
+    const result = stressTest(decision, { o1: 1 });
+    // Pay spans 3..4, so a's lead is a full range of one attribute: 1/2 of the
+    // objective. Its slope is (1/2)/1, making the break-even one raw point.
+    expect(result.flipsAt?.itemId).toBe('i1');
+    expect(result.flipsAt?.delta).toBeCloseTo(1, 10);
+  });
+
+  it('reports a zero break-even when two attributes leave the options tied', () => {
+    const decision = splitDecision([
+      { id: 'i1', optionId: 'a', objectiveId: 'o1', attributeId: 'o1-pay', kind: 'benefit', value: 5, probability: 1, risk: 'ordinary' },
+      { id: 'i2', optionId: 'b', objectiveId: 'o1', attributeId: 'o1-pay', kind: 'benefit', value: 1, probability: 1, risk: 'ordinary' },
+      { id: 'i3', optionId: 'a', objectiveId: 'o1', attributeId: 'o1-hours', kind: 'benefit', value: 1, probability: 1, risk: 'ordinary' },
+      { id: 'i4', optionId: 'b', objectiveId: 'o1', attributeId: 'o1-hours', kind: 'benefit', value: 5, probability: 1, risk: 'ordinary' },
+    ]);
+
+    const result = stressTest(decision, { o1: 1 });
+    expect(result.fragile).toBe(true);
+    expect(result.flipsAt?.delta).toBe(0);
+  });
+});

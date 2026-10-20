@@ -46,8 +46,10 @@ export function stressTest(
 
   const tornado = decision.items
     .map((item) => {
-      const range = rangeOf(score.anchors[item.objectiveId]);
-      const slope = itemSlope(item, weights[item.objectiveId] ?? 0, range);
+      const attributeId = item.attributeId ?? item.objectiveId;
+      const range = rangeOf(score.anchors[attributeId]);
+      const count = decision.objectives.find((objective) => objective.id === item.objectiveId)?.attributes?.length ?? 1;
+      const slope = itemSlope(item, (weights[item.objectiveId] ?? 0) / count, range);
       const reachable = Math.max(item.value - MIN_VALUE, MAX_VALUE - item.value);
       return { itemId: item.id, influence: Math.abs(slope) * reachable };
     })
@@ -60,8 +62,10 @@ export function stressTest(
   let flipsAt: FlipPoint | null = null;
 
   for (const item of decision.items) {
-    const range = rangeOf(score.anchors[item.objectiveId]);
-    const slope = itemSlope(item, weights[item.objectiveId] ?? 0, range);
+    const attributeId = item.attributeId ?? item.objectiveId;
+    const range = rangeOf(score.anchors[attributeId]);
+    const count = decision.objectives.find((objective) => objective.id === item.objectiveId)?.attributes?.length ?? 1;
+    const slope = itemSlope(item, (weights[item.objectiveId] ?? 0) / count, range);
 
     if (slope === 0) {
       continue;
