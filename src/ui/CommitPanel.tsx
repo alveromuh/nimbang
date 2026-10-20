@@ -6,8 +6,10 @@ import { copy } from './i18n';
 interface CommitPanelProps {
   predictions: Prediction[];
   outcomes: Record<string, boolean>;
+  reviewAt: string;
   onChangePredictions: (next: Prediction[]) => void;
   onChangeOutcomes: (next: Record<string, boolean>) => void;
+  onChangeReviewAt: (next: string) => void;
 }
 
 /**
@@ -20,8 +22,10 @@ interface CommitPanelProps {
 export function CommitPanel({
   predictions,
   outcomes,
+  reviewAt,
   onChangePredictions,
   onChangeOutcomes,
+  onChangeReviewAt,
 }: CommitPanelProps) {
   const resolved = resolvePredictions(predictions, outcomes);
 
@@ -42,7 +46,12 @@ export function CommitPanel({
       <div className="field-row">
         <div>
           <label htmlFor="commit-review">Tinjau pada</label>
-          <input id="commit-review" type="date" />
+          <input
+            id="commit-review"
+            type="date"
+            value={reviewAt}
+            onChange={(event) => onChangeReviewAt(event.target.value)}
+          />
         </div>
         <div>
           <label htmlFor="commit-probability">Peluang (0-1)</label>
@@ -83,7 +92,10 @@ export function CommitPanel({
               // by the claim they are about, and there is no separate claims editor
               // yet.
               const claimId = draftText.trim().toLowerCase().replace(/\s+/g, '-');
-              onChangePredictions([...predictions, { claimId, probability }]);
+              onChangePredictions([
+                ...predictions,
+                { claimId, probability, text: draftText.trim() },
+              ]);
               setDraftText('');
               setDraftProbability('0.5');
             }}
@@ -107,7 +119,7 @@ export function CommitPanel({
           <tbody>
             {predictions.map((prediction) => (
               <tr key={prediction.claimId}>
-                <td>{prediction.claimId}</td>
+                <td>{prediction.text ?? prediction.claimId}</td>
                 <td className="num">{prediction.probability}</td>
                 <td>
                   <label className="check" htmlFor={`outcome-${prediction.claimId}`}>
@@ -147,8 +159,8 @@ function Calibration({ resolved }: { resolved: { p: number; o: boolean }[] }) {
 
   return (
     <p className="note">
-      Skor Brier: <strong>{brierScore(resolved).toFixed(3)}</strong> — makin kecil makin baik; 0,25
-      sama dengan melempar koin.
+      Skor Brier: <strong>{brierScore(resolved).toFixed(3)}</strong>. Makin kecil makin baik;
+      0,25 sama dengan melempar koin.
     </p>
   );
 }

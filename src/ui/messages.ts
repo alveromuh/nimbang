@@ -20,7 +20,10 @@ export function divergeMessage(result: DivergeResult, options: { label: string; 
   }
 
   if (options.length < 3) {
-    return `Baru ada ${options.length} opsi. Minimal tiga, dan satu di antaranya tidak melakukan apa-apa.`;
+    // The count is stated here because this is the last place it is stated at
+    // all: the form cannot go below three rows, so this branch is a backstop for
+    // a decision that arrived with fewer, not a warning a user normally sees.
+    return `Baru ada ${options.length} opsi. Minimal tiga.`;
   }
 
   const baselines = options.filter((option) => option.isBaseline).length;

@@ -84,6 +84,30 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.md}"
     padding: 10px
+  button-print:
+    backgroundColor: "{colors.accent}"
+    textColor: "{colors.surface}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: 10px
+  button-print-hover:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.surface}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: 10px
+  button-danger:
+    backgroundColor: "{colors.danger}"
+    textColor: "{colors.surface}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: 10px
+  button-danger-hover:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.surface}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
+    padding: 10px
   row-active:
     backgroundColor: "{colors.accent-soft}"
     textColor: "{colors.ink}"
@@ -158,6 +182,26 @@ The composition is a **Monitor** surface with an **Operate** secondary: a list o
 decisions on the left, the working decision on the right. No hero, no feature
 cards, no marketing framing.
 
+### Dials
+
+Set once, held from the first panel to the last:
+
+**ENERGY 1 / RHYTHM 2 / MOTION 1**
+
+- **ENERGY 1.** No hero, no greeting, no illustration. The loudest thing on the
+  screen is the verdict, and only once there is one.
+- **RHYTHM 2.** The panels are a consistent stack, broken in exactly one place:
+  the verdict sits above the inputs instead of after them, because the answer has
+  to stay visible while the numbers change.
+- **MOTION 1.** Hover and focus states only. No entrance animation: a form that
+  moves while it is being filled is a form that has to be re-read.
+
+### Design read
+
+> Reading this as a decision instrument for one person weighing their own life
+> choices, in a ledger language (warm paper, hairline rules, one green accent),
+> dial ENERGY 1 / RHYTHM 2 / MOTION 1.
+
 ## Colors
 
 - **Ink (#1a1a17):** body and headings. Warm near-black, never pure `#000`.
@@ -166,8 +210,12 @@ cards, no marketing framing.
   and the active row. Not indigo — that is the default every model reaches for.
 - **Caution (#8a5a1e):** reserved for the sunk-cost badge, where the point is
   that the number is visible but excluded.
-- **Danger (#8a3b2e):** fatal risk only. If it appears twice on a screen, the
-  screen is wrong.
+- **Danger (#8a3b2e):** fatal risk and the one action that destroys work. It
+  appears as a badge when an option carries fatal risk, and as the fill of the
+  delete button, and those are the only two places. A badge and a button side by
+  side is fine — the badge makes a claim, the button is a control, and no reader
+  confuses the two. A third use means the colour is being spent on something that
+  is not dangerous, and the screen is wrong.
 
 ## Typography
 
@@ -183,6 +231,108 @@ Numbers are always tabular. A column of scores that does not align is unreadable
 `button-primary` is the only high-emphasis action per screen. `row-active` marks
 the decision being worked on. The two badges carry the two claims the engine
 insists on: a sunk cost is *excluded*, a fatal risk *blocks*.
+
+The corner actions **Cetak** and **Hapus** are filled and coloured — accent and
+danger respectively — because the reader arrives at that corner looking for one of
+them and should not have to read two words to find it. They are not
+`button-primary`: that slot belongs to the action the user must take next, and
+filling these the same way would make the corner of the page louder than the
+verdict inside it. Neither depends on its colour to be understood. Each carries a
+mark, so the printer and the bin identify the buttons for a reader who cannot
+separate green from red, and the labels are unchanged.
+
+### The hint in the section corner
+
+Every section head carries its hint at the **right edge**, set as a
+**right-aligned paragraph**: both lines end on the same edge, the English gloss
+under the Indonesian included. A right-edge block of prose whose lines start flush
+left inside its own box reads as a fragment that lost its column.
+
+Below 56rem the head stacks and the same hint becomes a paragraph under the title,
+so the alignment goes back to the left edge. Right-alignment is earned by being in
+the corner, not by being a hint.
+
+### The docked elicitation panel
+
+The AI trigger that opens the elicitation panel sits in the **panel head, top
+right** — beside the hint, not under the fields. The button belongs to the
+section, and the section is what the panel splits.
+
+Opening it turns the section *body* into a **50/50 split**: the form keeps the
+left column, the conversation takes the right. The head stays full width, so
+`title | hint | ✦ AI` reads as one line and the button is at the top-right corner
+in the literal sense, not merely the last thing in the panel.
+
+Four rules make the split read as one section rather than two:
+
+- **Equal columns.** A narrower chat column would make the proposal list the
+  cramped one, and the proposals are the part that gets read carefully.
+- **The split exists only while the panel is open.** It is a class the open state
+  adds, not a permanent grid with a gap in it. A closed panel must not leave an
+  empty half column, and the form must not be permanently narrowed by a feature
+  nobody opened.
+- **Width-gated at 72rem**, which is also the work column's cap: at that width
+  each column is still ~22rem, which is a form. Below it the chat stacks under
+  the option rows — where the trigger used to live — because two 11rem columns
+  are worse than one 22rem column above a scrolled conversation.
+- **The trigger hides while the panel is open.** The panel's own `Tutup` is the
+  way back; two controls for one state is one too many.
+
+The panel is only docked in the **Options** stage. The bias panel keeps its
+trigger at the foot of its fields, where it is a footer under the thing it
+explains.
+
+### The colophon at the foot of the rail
+
+The rail is a full-height column, so a short list of decisions leaves a fixed void
+under the *Keputusan baru* button — on every screen, not only the empty one. That
+void is not space waiting to be filled with content; it is a column whose foot has
+nothing to rest on, which reads as unfinished rather than as generous.
+
+So the foot carries a **colophon**: the version and the licence, pinned with
+`margin-top: auto` and closed by the same hairline the new-decision button uses.
+The slack above it reads as a margin.
+
+Two reasons this and not something else:
+
+- **It cannot go stale.** A tip, a checklist or a quote is content that ages. The
+  version is injected from `package.json` rather than written into the markup, so
+  it cannot drift from the manifest.
+- **It is not decoration.** The `Overview` above says this is an instrument, and
+  bans the product-page moves. An illustration or a tip card in that corner is
+  exactly what it bans.
+
+The colophon says **where the app keeps its data only by not claiming otherwise**.
+A sentence stating that decisions stay in the browser was tried and removed: the
+app never sends one anywhere, so the line promised the absence of a feature and
+took the corner of every screen to do it. A statement of a non-event is not
+information.
+
+It is **not** pinned below 56rem: the rail is a horizontal band there, not a tall
+column, so the colophon follows the button in normal flow and drops the hairline.
+
+**The contrast was measured, not inherited.** The rail sits on `surface-sunken`
+(#f2f0e9), darker than paper, and the 5.23:1 figure recorded for `ink-gloss` was
+measured *against paper*. Against the rail, `ink-faint` (#75736b) measures
+**4.17:1 — below AA**. The colophon therefore uses `ink-soft` (#5f5e56), which
+measures 5.72:1 there. A token that passes on one background is not a token that
+passes on the next.
+
+### The workspace head
+
+The head is the decision's title block on the left and *Cetak* / *Hapus* on the
+right. Two alignments are deliberate:
+
+- **The actions are centred against the title block, not top-aligned.** The
+  buttons are 44px and the block is taller, so top alignment left 24px above them
+  and 46.6px below. Centring splits the difference equally (37.3px each) at any
+  title length, without pinning either edge to a magic number.
+- **The kicker sits 8px above the title, against 24px above itself.** A label
+  belongs to the thing under it. At 4px the label was tighter to the title than
+  the title was to its own box, which read as a collision rather than a pairing.
+
+Stacked below 56rem the head is `flex-start`, so the actions share the left edge
+with the title and every panel under it.
 
 ## Language
 

@@ -8,6 +8,25 @@ All notable changes to this project are documented here. Format follows
 
 ### Added
 
+- **Colophon at the foot of the rail.** Where the data is kept, plus the version
+  and the licence, pinned to the bottom of the rail. The rail is a full-height
+  column, so a short list of decisions left a fixed void under the new-decision
+  button; the colophon closes the column, so the slack reads as a margin instead
+  of as a column that ran out of content. It also gives the privacy line a single
+  home: it previously sat in the empty state, which is unreachable once a decision
+  exists, so a user with decisions was never told where their work was stored.
+  Version and licence are injected from `package.json`, so the colophon cannot
+  claim a version the manifest does not carry.
+- **`package.json` gains `"license": "MIT"`**, so that licence line has a source
+  instead of being a literal in the markup.
+- **`src/vite-env.d.ts`** — declares the injected `__APP_VERSION__` and
+  `__APP_LICENSE__` globals. Without it `tsc --noEmit` fails; they are ambient
+  because `define` replaces them at build time.
+- **`PrintMark` and `TrashMark`** (`src/ui/icons.tsx`) — the printer and the bin on
+  the workspace's two corner actions. Both are drawn through one wrapper in that
+  module so their stroke weight cannot drift from `AiMark`'s: a printer drawn
+  heavier than the sparkle below it reads as a different product. Decorative, so
+  the button's label stays the whole accessible name.
 - **Bilingual interface, Indonesian first.** Every heading, field label and hint
   shows Indonesian with an English gloss underneath in a quieter colour. The app
   was already Indonesian (`index.html` sets `lang="id"`), but the panels were in
@@ -108,6 +127,41 @@ All notable changes to this project are documented here. Format follows
 
 ### Changed
 
+- **The hint in every section head is right-aligned.** It sits in the corner of
+  its section, and a two-line block whose lines started flush left inside the
+  right-hand corner read as a fragment that had lost its column. Both lines now
+  end on the same edge, the English gloss included. Below 56rem the head stacks
+  and the same hint is a paragraph under the title, so it goes back to the left
+  edge: the alignment is earned by the corner, not by being a hint.
+- **`Cetak` and `Hapus` are coloured buttons, and both carry a mark.** They were
+  two quiet grey words in the corner of the workspace, which made the only
+  irreversible action in the app look exactly like the harmless one beside it.
+  `Cetak` is the accent green, `Hapus` the danger red, and each carries a printer
+  or a bin. Colour is the second cue and never the only one: the labels are
+  unchanged, so a reader who cannot separate green from red still has two named
+  buttons. `DESIGN.md`'s danger rule said fatal risk only and so read as a
+  contradiction the moment a destructive button used it; the rule now names both
+  uses and keeps the limit honest.
+- **The options AI trigger moved to the top-right of the section head, and the
+  panel it opens is docked beside the fields.** The button was at the foot of the
+  option rows, which put the control on the far side of the panel it opened; the
+  panel then pushed the rows off the top of the screen. The section body now
+  splits 50/50 while the panel is open — form left, conversation right — and the
+  head stays full width with the trigger in its corner. The split is a class the
+  open state adds, so a closed panel leaves no empty half column, and it is
+  width-gated at 72rem, below which the chat stacks under the rows where it used
+  to be. The trigger hides while the panel is open, because `Tutup` already
+  closes it. Same section, so the rows stay visible while you answer questions
+  about them.
+- **The options hint states the task instead of the rule.** It read "Minimal
+  tiga, satu di antaranya tidak melakukan apa-apa", which told the reader the
+  method before they had a chance to look at the form — and the form enforces
+  both clauses structurally, so the sentence could only be read as a requirement
+  to satisfy. It now asks "Dari posisimu sekarang, opsi apa saja yang tersedia?".
+  The locked baseline row explains itself underneath instead: it cannot be
+  removed, so the reader is owed the reason next to it rather than in a hint about
+  the section.
+
 - The share and export section is removed. It had no effect on the decision, and
   the URL-import path stays so a link that was already shared still opens.
 - **System One is replaced by the elicitation panel.** Its measurements still
@@ -128,6 +182,45 @@ All notable changes to this project are documented here. Format follows
 
 ### Fixed
 
+- **The workspace head is balanced.** *Cetak* and *Hapus* sat 24px below the top
+  of the page and 46.6px above the first panel, because the row was top-aligned
+  against a taller title block. It is centred now, so both gaps measure 37.3px.
+  The `KEPUTUSAN` kicker was 25px from the top and only 4px from the title; it is
+  8px from the title now, which is where a label belongs.
+- **The rail no longer states where the data is kept.** The sentence promised the
+  absence of a feature the app never had, and took the corner of every screen.
+- **The review date is stored, not discarded.** `Tinjau pada` was an unbound
+  `<input type="date">`: typing a date left the document unchanged, so the one
+  field that schedules a review did nothing. It is now bound to `reviewAt` and
+  survives a reload. The value stays `YYYY-MM-DD` rather than an ISO timestamp,
+  because round-tripping through `Date` shifts the day across a timezone.
+- **A failed save is reported.** `saveDecision` returns a boolean and all three
+  call sites dropped it, so a full quota or private mode looked like a successful
+  save. The workspace now raises an `alert` naming the failure. Everything in this
+  app lives in one browser, so a silent write failure is total data loss.
+- **Escape closes the elicitation panel**, so it is no longer mouse-only.
+- **The date field has a visible focus ring.** Chromium does not paint
+  `:focus-visible` on a date input while its inner editor holds focus; the ring is
+  drawn from `:focus-within` instead.
+- **Every interactive control is at least 44px tall.** The matrix cells were 34px,
+  the corner actions 36px, and `Tutup` 32px. Density comes from type size and
+  spacing, not from shrinking the box a finger has to hit.
+- **The rail's empty-state line passes AA.** It was `ink-faint` on
+  `surface-sunken`, which measures 4.17:1.
+- **Two em dashes removed from user-facing copy** (the rail lede and the Brier
+  sentence), per the antislop rule against them.
+- **`pnpm dev` now serves on port 5199, the port the docs have always named.**
+  `README.md` and `docs/how-to-use.md` both document `http://localhost:5199/`, and
+  the how-to hands the reader a share link to paste at that origin, but the port
+  was never configured: `pnpm dev` silently served 5173 instead. Because
+  `localStorage` is origin-scoped, a draft saved at one origin was invisible at the
+  other, and the documented link could not find it. The port is set for `server`
+  and `preview` with `strictPort`, so a port already in use fails loudly rather
+  than drifting to one the docs do not point at.
+- **The rail's privacy line was set in a colour that fails AA there.** The rail
+  sits on `surface-sunken`, and the 5.23:1 figure recorded for `ink-faint` was
+  measured against paper; on the rail it measures 4.17:1. The colophon uses
+  `ink-soft` (5.72:1). Measured, not inherited — see `DESIGN.md`.
 - Accepting several suggested options gave them all the same id, which React
   reported as duplicate keys and which would have made an edit land on the wrong
   row. Found in a browser run, not by a test.

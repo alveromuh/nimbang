@@ -35,8 +35,8 @@ export const copy = {
     en: 'What are you trying to achieve, before you list options?',
   },
   optionsHint: {
-    id: 'Minimal tiga, satu di antaranya tidak melakukan apa-apa.',
-    en: 'At least three, one of which is doing nothing.',
+    id: 'Dari posisimu sekarang, opsi apa saja yang tersedia?',
+    en: 'From where you stand, what options are available?',
   },
   weightsHint: {
     id: 'Seberapa penting opsi bergerak dari terburuk ke terbaik di sini?',
@@ -58,6 +58,17 @@ export const copy = {
   // Fields
   optionLabel: { id: 'Opsi', en: 'Option' },
   baseline: { id: 'pembanding', en: 'baseline' },
+  /**
+   * Why the first row exists and cannot be removed.
+   *
+   * The hint used to carry this, and it read as a rule about the *method* rather
+   * than an explanation of the row in front of the reader. The row is locked, so
+   * the explanation belongs beside it.
+   */
+  baselineNote: {
+    id: 'Pembanding: keadaan kalau kamu tidak memilih apa pun. Barisnya selalu ada, sebagai titik ukur.',
+    en: 'Baseline: what happens if you choose nothing. The row is always there, as the reference point.',
+  },
   sunkCost: { id: 'Biaya yang sudah keluar', en: 'Sunk cost already spent' },
   sunkNote: { id: 'Untuk apa', en: 'What it was for' },
   sunkWhy: {

@@ -1,8 +1,30 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { chatApi } from './server/chat';
 
+// Read rather than imported: `resolveJsonModule` is off, so a JSON import would
+// not type-check. One source for both values, so the rail's colophon cannot
+// claim a version or a licence the manifest does not have.
+const manifest = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+) as { version: string; license: string };
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(manifest.version),
+    __APP_LICENSE__: JSON.stringify(manifest.license),
+  },
+  server: {
+    // README.md and docs/how-to-use.md document the app at localhost:5199 and
+    // give a share link to paste there. Vite's 5173 default would silently
+    // contradict both, and drafts would land in a different localStorage origin.
+    port: 5199,
+    // Fail loudly rather than drifting to 5200, which would leave the running
+    // app somewhere the docs do not point.
+    strictPort: true,
+  },
+  preview: { port: 5199, strictPort: true },
   // The only server-side piece: it holds the gateway key, which a browser cannot.
   // See server/chat.ts for why it exists and what it refuses to do.
   plugins: [react(), chatApi()],

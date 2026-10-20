@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChatError, type TurnResult } from '../chat/client';
 import { openingMessage, systemPrompt } from '../chat/prompt';
 import { MAX_TURNS, type ChatState, type Scope } from '../chat/state';
@@ -189,6 +189,24 @@ export function ChatPanel({
     }
     onClose();
   }
+
+  /**
+   * Escape closes the panel.
+   *
+   * Bound to the document rather than to the panel because focus is not
+   * guaranteed to be inside it: the panel opens while the cursor is still in the
+   * form. The listener is removed on unmount so a closed panel cannot swallow a
+   * key press meant for the page.
+   */
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onClose]);
 
   return (
     <aside className="chat" aria-label={scope === 'bias' ? 'Asisten pemeriksaan bias' : 'Asisten opsi'}>

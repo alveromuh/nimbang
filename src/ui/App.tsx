@@ -51,6 +51,8 @@ export function App() {
     return listDecisions();
   });
   const [activeId, setActiveId] = useState<string | null>(null);
+  /** True once a write has been refused by storage, cleared on the next success. */
+  const [saveFailed, setSaveFailed] = useState(false);
 
   const active = useMemo(
     () => decisions.find((decision) => decision.id === activeId) ?? decisions[0] ?? null,
@@ -83,7 +85,7 @@ export function App() {
           <h1>Nimbang</h1>
         </div>
         <p className="rail__lede">
-          Tujuan dulu, baru opsi — dan catatan apa yang kamu harapkan.
+          Tujuan dulu, baru opsi, dan catatan apa yang kamu harapkan.
         </p>
 
         {decisions.length === 0 ? (
@@ -114,6 +116,17 @@ export function App() {
             Keputusan baru
           </button>
         </div>
+
+        {/*
+          The colophon closes the rail. `margin-top: auto` pins it to the foot of
+          the full-height column, so the slack under a short list of decisions
+          reads as a margin rather than as a column that ran out of content.
+        */}
+        <footer className="rail__foot">
+          <p className="rail__foot-stamp">
+            {__APP_VERSION__} · {__APP_LICENSE__}
+          </p>
+        </footer>
       </nav>
 
       <main className="work">
@@ -124,16 +137,16 @@ export function App() {
               Bukan dari opsinya. Keputusan yang dimulai dari daftar pilihan sudah melepas
               kesempatan menemukan pilihan yang lebih baik.
             </p>
-            <p className="empty__aside">
-              Semua keputusanmu disimpan di browser ini, tidak di mana pun lagi.
-            </p>
           </div>
         ) : (
           <DecisionWorkspace
             key={active.id}
             decision={active}
+            saveFailed={saveFailed}
             onSaved={(saved) => {
-              saveDecision(saved);
+              // The boolean is the only signal that the write happened. Discarding
+              // it made a full quota look like a successful save.
+              setSaveFailed(!saveDecision(saved));
               setDecisions((current) =>
                 current.map((entry) => (entry.id === saved.id ? saved : entry)),
               );

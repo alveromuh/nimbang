@@ -34,6 +34,11 @@ export const ClaimSchema = z.object({
 export const PredictionSchema = z.object({
   claimId: z.string(),
   probability: z.number().min(0).max(1),
+  /**
+   * The claim as the user wrote it. `claimId` is derived from this text and is
+   * not readable, so the commit table would otherwise show a slug.
+   */
+  text: z.string().optional(),
 });
 
 export const SunkCostSchema = z.object({

@@ -175,7 +175,9 @@ a {
 
 .rail__empty {
   font-size: 0.8125rem;
-  color: var(--ink-faint);
+  /* ink-soft, not ink-faint: the rail is surface-sunken, where ink-faint measures
+     4.17:1 and fails AA. See the colophon rule below. */
+  color: var(--ink-soft);
   padding: var(--s-sm);
 }
 
@@ -193,6 +195,26 @@ a {
   flex: 0 0 auto;
 }
 
+/* The colophon is the one thing in the rail that IS pinned to the bottom, and it
+   is what closes the column: `margin-top: auto` absorbs the slack under a short
+   list, so the space below reads as a margin rather than as a gap. */
+.rail__foot {
+  margin-top: auto;
+  padding-top: var(--s-md);
+  border-top: 1px solid var(--line);
+}
+
+/* `--ink-soft`, not `--ink-faint`. The rail sits on `surface-sunken`, which is
+   darker than paper, and the 5.23:1 figure in DESIGN.md was measured against
+   paper. Against the rail, `--ink-faint` measures 4.17:1 — below AA — while
+   this token measures 5.72:1. */
+.rail__foot-stamp {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
 .work {
   padding: var(--s-lg) var(--s-xl) var(--s-xl);
   min-width: 0;
@@ -204,7 +226,10 @@ a {
 
 .work__head {
   display: flex;
-  align-items: flex-start;
+  /* Centred, not flex-start. The actions are 44px and the title block is taller,
+     so top-alignment left 24px of space above the buttons and 46.6px below them.
+     Centring splits the difference equally at any title length. */
+  align-items: center;
   justify-content: space-between;
   gap: var(--s-md);
   margin-bottom: var(--s-lg);
@@ -223,7 +248,9 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  margin: 0 0 var(--s-xs);
+  /* Was 4px, which set the label tight against the title while the top of the
+     page gave it 24px. A label needs more room under it than over it, not less. */
+  margin: 0 0 var(--s-sm);
 }
 
 .work__head-main {
@@ -243,7 +270,9 @@ a {
   letter-spacing: -0.02em;
   line-height: 1.2;
   color: var(--ink);
-  min-height: 0;
+  /* Inherits the 44px touch minimum from the base input rule. At 2rem the line
+     box alone is 38.4px, so it needs that floor to stay a legal target. */
+  min-height: 44px;
 }
 
 .work__title-input:hover {
@@ -283,10 +312,21 @@ a {
   border-bottom: 1px solid var(--line);
 }
 
-/* The hint sits at the right edge, but its two lines stay left-aligned inside
-   themselves: right-aligned prose of uneven length is harder to scan. */
-.panel__head > .panel__hint .bi {
+/* Hint and, when present, the trigger that opens the elicitation panel. Grouped
+   so the hint keeps its own line alignment and the button lands in the corner. */
+.panel__head-end {
+  display: flex;
   align-items: flex-start;
+  gap: var(--s-md);
+}
+
+/* The hint is a paragraph in the far corner of the section, so its text is
+   right-aligned and both lines end on the same edge. That includes the English
+   gloss: a gloss that kept starting at the left edge under a right-aligned
+   sentence reads as two unrelated fragments. */
+.panel__head .panel__hint .bi {
+  align-items: flex-end;
+  text-align: right;
 }
 
 .panel__title {
@@ -307,11 +347,41 @@ a {
   color: var(--ink-gloss);
 }
 
+/* Right-aligned because of where it sits, not because hints are right-aligned:
+   the rule is scoped to the head's corner. Stacked below 56rem, the same hint is
+   a paragraph under the title and goes back to the left edge. */
 .panel__hint {
   font-size: 0.8125rem;
   color: var(--ink-faint);
   margin: 0;
   max-width: none;
+  text-align: right;
+}
+
+/* The elicitation panel, docked beside the fields it fills.
+   Two equal columns, so the form keeps half the section and the panel takes the
+   other half. `start` and not the default `stretch`: the chat is an instrument
+   with its own height, not a container that grows with the form next to it. */
+.panel__split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-lg);
+  align-items: start;
+}
+
+/* The chat carries a top margin for the stacked case; docked, the grid gap is the
+   spacing and the margin would push the panel below the fields it sits beside. */
+.panel__split > .chat {
+  margin-top: 0;
+}
+
+/* In the head the trigger is a control in a row, not a footer. The dashed rule
+   and the padding existed to separate it from the fields above, and here there is
+   nothing above it to separate from. */
+.panel__head-end .suggest {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 /* ---------- bilingual text ---------- */
@@ -366,6 +436,13 @@ a {
   flex: none;
   margin-right: 0.35em;
   vertical-align: -0.15em;
+}
+
+/* The printer and the bin, on a filled button beside a one-line label. Unlike the
+   sparkle they need no baseline nudge: with one line of text to sit beside, the
+   button's own centring is the right alignment. */
+.mark {
+  flex: none;
 }
 
 /* The one button that asks a model for help. It reads as an action, not as a
@@ -430,7 +507,9 @@ textarea {
   background: var(--surface);
   border: 1px solid var(--line-strong);
   border-radius: var(--r-md);
-  min-height: 40px;
+  /* 44px, the minimum touch target. Density comes from type size and spacing,
+     not from shrinking the box a finger has to hit. */
+  min-height: 44px;
 }
 
 input::placeholder,
@@ -460,7 +539,9 @@ textarea {
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-button:focus-visible {
+button:focus-visible,
+input[type='date']:focus-visible,
+input[type='time']:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -483,7 +564,16 @@ button:focus-visible {
   text-transform: none;
   color: var(--ink-soft);
   margin: var(--s-xs) 0 0;
-  min-height: 32px;
+  min-height: 44px;
+}
+
+/* A date field is an interactive control, but Chromium will not paint the
+   `:focus-visible` outline on it while its inner editor has focus. The ring is
+   drawn on the container instead, from `:focus-within`, so the control is never
+   focused without a visible indicator. */
+input[type='date']:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 button {
@@ -492,7 +582,7 @@ button {
   font-weight: 500;
   letter-spacing: 0.02em;
   padding: 0.5rem 0.875rem;
-  min-height: 40px;
+  min-height: 44px;
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line-strong);
@@ -532,8 +622,48 @@ button:disabled {
   color: var(--ink);
 }
 
+/* The two corner actions of the workspace. Both are coloured and both carry a
+   mark, because colour on its own is not a label: a reader who cannot separate
+   the red from the green still has a printer and a bin, in words that have not
+   changed.
+
+   Deliberately not `.btn-primary`. That class is the one action the user must
+   take next, and it belongs to the verdict. Filling these two the same way would
+   put three identical-looking buttons on one screen and leave the corner of the
+   page shouting louder than the answer in it. The hue carries the meaning
+   instead: green prints, red destroys. */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  min-height: 44px;
+  font-size: 0.8125rem;
+}
+
+.btn-print {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+/* Hover goes to ink, the same as `button-primary`: in this system a filled button
+   settles to a neutral when the pointer is on it rather than shifting to a second
+   colour. The hue is there to be found at a glance, and by hover it has been. */
+.btn-print:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
 .btn-icon {
-  min-height: 32px;
+  min-height: 44px;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
 }
@@ -769,7 +899,7 @@ button:disabled {
 
 .item input,
 .item select {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0.3rem 0.45rem;
   font-size: 0.875rem;
 }
@@ -1080,13 +1210,17 @@ button:disabled {
   color: var(--ink-soft);
 }
 
-.empty__aside {
-  font-size: 0.8125rem;
-  color: var(--ink-faint);
-  margin-top: var(--s-md);
-}
-
 /* ---------- responsive ---------- */
+
+/* A 50/50 split needs two columns that are each still a form. The work column is
+   capped at 72rem, and panel content is the viewport minus the rail and both
+   paddings, so below this the columns fall under ~22rem each. The chat goes
+   underneath the option rows instead, where the trigger used to live. */
+@media (max-width: 72rem) {
+  .panel__split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 
 @media (max-width: 56rem) {
   .shell {
@@ -1107,6 +1241,15 @@ button:disabled {
   }
 
   .rail__footer {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  /* The rail is a horizontal band here, so the colophon is no longer a foot of a
+     tall column: it drops the hairline and the auto margin, and follows the new
+     decision button in normal flow. */
+  .rail__foot {
+    margin-top: var(--s-sm);
     border-top: 0;
     padding-top: 0;
   }
@@ -1135,12 +1278,24 @@ button:disabled {
 
   .work__head {
     flex-direction: column;
+    /* Stacked, `center` would centre the action row and the title; both should
+       share the left edge with every panel below them. */
+    align-items: flex-start;
   }
 
   .panel__head {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--s-xs);
+  }
+
+  /* Stacked, the hint is a paragraph under the title, not a note in the corner. */
+  .panel__hint {
+    text-align: left;
+  }
+
+  .panel__head .panel__hint .bi {
+    align-items: flex-start;
   }
 
   .panel {

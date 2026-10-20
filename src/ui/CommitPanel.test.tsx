@@ -8,18 +8,23 @@ import type { Prediction } from '../core';
 function Harness({
   predictions,
   outcomes,
+  initialReviewAt = '',
 }: {
   predictions: Prediction[];
   outcomes: Record<string, boolean>;
+  initialReviewAt?: string;
 }) {
   const [p, setP] = useState(predictions);
   const [o, setO] = useState(outcomes);
+  const [reviewAt, setReviewAt] = useState(initialReviewAt);
   return (
     <CommitPanel
       predictions={p}
       outcomes={o}
+      reviewAt={reviewAt}
       onChangePredictions={setP}
       onChangeOutcomes={setO}
+      onChangeReviewAt={setReviewAt}
     />
   );
 }
@@ -29,6 +34,32 @@ describe('CommitPanel', () => {
     render(<Harness predictions={[]} outcomes={{}} />);
     expect(screen.getByLabelText(/prediksi/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/tinjau pada/i)).toBeInTheDocument();
+  });
+
+  it('keeps the review date the user typed, instead of discarding it', async () => {
+    const user = userEvent.setup();
+    render(<Harness predictions={[]} outcomes={{}} />);
+
+    // This input shipped unbound: typing a date left the document unchanged, so
+    // the one field that schedules the review did nothing.
+    const field = screen.getByLabelText(/tinjau pada/i);
+    await user.type(field, '2027-01-31');
+
+    expect(field).toHaveValue('2027-01-31');
+  });
+
+  it('shows the prediction as written, not as a slug', () => {
+    render(
+      <Harness
+        predictions={[
+          { claimId: 'gaji-naik-dalam-6-bulan', probability: 0.7, text: 'Gaji naik dalam 6 bulan' },
+        ]}
+        outcomes={{}}
+      />,
+    );
+
+    expect(screen.getByText('Gaji naik dalam 6 bulan')).toBeInTheDocument();
+    expect(screen.queryByText('gaji-naik-dalam-6-bulan')).not.toBeInTheDocument();
   });
 
   it('records a prediction with a probability', async () => {

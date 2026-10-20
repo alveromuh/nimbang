@@ -19,6 +19,7 @@ import { Result } from './Result';
 import { ChatPanel } from './ChatPanel';
 import { AiTrigger } from './AiTrigger';
 import { Bi } from './Bi';
+import { PrintMark, TrashMark } from './icons';
 import { copy } from './i18n';
 import { fillOptionSlots } from './fillOptions';
 import { divergeMessage, frameMessage } from './messages';
@@ -29,6 +30,12 @@ interface DecisionWorkspaceProps {
   decision: Decision;
   onSaved: (decision: Decision) => void;
   onDelete: () => void;
+  /**
+   * False when the draft could not be written to storage. The workspace shows it
+   * rather than letting a failed write look like a successful one: everything in
+   * this app lives in one browser, so a silent failure is total data loss.
+   */
+  saveFailed?: boolean;
 }
 
 const EMPTY_GATE: GateInputs = {
@@ -57,7 +64,12 @@ const GATE_FIELDS = [
  * that produced it, in pipeline order, so any number can be traced to the field
  * it came from.
  */
-export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorkspaceProps) {
+export function DecisionWorkspace({
+  decision,
+  onSaved,
+  onDelete,
+  saveFailed = false,
+}: DecisionWorkspaceProps) {
   const [title, setTitle] = useState(decision.title);
   const [objectives, setObjectives] = useState<Objective[]>(decision.objectives);
   const [options, setOptions] = useState<Option[]>(decision.options);
@@ -68,6 +80,14 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
   const [gate, setGate] = useState<GateInputs>(decision.gate ?? EMPTY_GATE);
   const [predictions, setPredictions] = useState<Prediction[]>(decision.predictions ?? []);
   const [outcomes, setOutcomes] = useState<Record<string, boolean>>(decision.outcomes ?? {});
+  /**
+   * The date the user will check this decision against reality.
+   *
+   * Stored as a plain `YYYY-MM-DD` from the date input rather than an ISO
+   * timestamp: the input reads and writes exactly this shape, so round-tripping
+   * through `Date` would shift the day across a timezone.
+   */
+  const [reviewAt, setReviewAt] = useState(decision.reviewAt ?? '');
   /**
    * Which elicitation panel is open, if any.
    *
@@ -86,8 +106,11 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
       swingPoints,
       predictions,
       outcomes,
+      // An empty date input is the absence of a review date, not an empty string
+      // in the document: the schema calls the field optional.
+      reviewAt: reviewAt === '' ? undefined : reviewAt,
     }),
-    [decision, title, objectives, options, items, swingPoints, predictions, outcomes],
+    [decision, title, objectives, options, items, swingPoints, predictions, outcomes, reviewAt],
   );
 
   // Save on a short debounce: typing a title should not write to storage on every
@@ -182,6 +205,13 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
 
   return (
     <>
+      {saveFailed && (
+        <p className="alert" role="alert">
+          Perubahan terakhir belum tersimpan. Penyimpanan browser menolak tulisan, biasanya karena
+          ruangnya penuh atau mode privat. Jangan tutup tab ini sebelum masalahnya beres.
+        </p>
+      )}
+
       <header className="work__head">
         <div className="work__head-main">
           <p className="work__kicker">Keputusan</p>
@@ -193,11 +223,19 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
             onChange={(event) => setTitle(event.target.value)}
           />
         </div>
+        {/* The two corner actions. Both are coloured and both carry a mark, so the
+            colour is never the only thing telling them apart. */}
         <div className="work__actions">
-          <button type="button" className="btn-quiet" onClick={() => window.print()}>
+          <button
+            type="button"
+            className="btn-action btn-print"
+            onClick={() => window.print()}
+          >
+            <PrintMark />
             Cetak
           </button>
-          <button type="button" className="btn-quiet" onClick={onDelete}>
+          <button type="button" className="btn-action btn-danger" onClick={onDelete}>
+            <TrashMark />
             Hapus
           </button>
         </div>
@@ -268,62 +306,86 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
           <h2 className="panel__title" id="diverge-heading">
             <Bi text={copy.options} />
           </h2>
-          <p className="panel__hint">
-            <Bi text={copy.optionsHint} />
-          </p>
+          {/* The trigger sits in the head, in the corner, because the panel it
+              opens takes the right half of this section: a button at the foot
+              would be a control on the far side of the thing it just opened. */}
+          <div className="panel__head-end">
+            <p className="panel__hint">
+              <Bi text={copy.optionsHint} />
+            </p>
+            {chat !== 'options' && (
+              <AiTrigger scope="options" onOpen={() => setChat('options')} />
+            )}
+          </div>
         </div>
 
-        {options.map((option, index) => (
-          <div key={option.id} className="field">
-            <label htmlFor={`option-${index}`}>
-              Opsi {index + 1}
-              {option.isBaseline ? ` · ${copy.baseline.id}` : ''}
-            </label>
-            <div className="row-actions">
-              <input
-                id={`option-${index}`}
-                value={option.label}
-                placeholder={
-                  option.isBaseline ? 'Tidak melakukan apa-apa' : 'Beri nama opsi ini'
-                }
-                onChange={(event) =>
-                  setOptions(replaceAt(options, index, { ...option, label: event.target.value }))
-                }
-              />
-              <button
-                type="button"
-                className="btn-icon"
-                aria-label={`Remove option ${index + 1}`}
-                disabled={option.isBaseline || options.length <= 3}
-                onClick={() => removeOption(option.id)}
-              >
-                Hapus
-              </button>
-            </div>
+        {/* Two columns while the panel is open, one otherwise: a closed panel
+            must not leave an empty half behind, so the split is a class the open
+            state adds rather than a permanent grid with a gap in it. */}
+        <div className={chat === 'options' ? 'panel__split' : undefined}>
+          <div>
+            {options.map((option, index) => (
+              <div key={option.id} className="field">
+                <label htmlFor={`option-${index}`}>
+                  Opsi {index + 1}
+                  {option.isBaseline ? ` · ${copy.baseline.id}` : ''}
+                </label>
+                <div className="row-actions">
+                  <input
+                    id={`option-${index}`}
+                    value={option.label}
+                    placeholder={
+                      option.isBaseline ? 'Tidak melakukan apa-apa' : 'Beri nama opsi ini'
+                    }
+                    onChange={(event) =>
+                      setOptions(
+                        replaceAt(options, index, { ...option, label: event.target.value }),
+                      )
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="btn-icon"
+                    aria-label={`Remove option ${index + 1}`}
+                    disabled={option.isBaseline || options.length <= 3}
+                    onClick={() => removeOption(option.id)}
+                  >
+                    Hapus
+                  </button>
+                </div>
+
+                {/* The row cannot be removed, so the reason belongs beside it
+                    rather than in the hint above, where it read as a rule about
+                    the method. */}
+                {option.isBaseline && (
+                  <p className="note">
+                    <Bi text={copy.baselineNote} />
+                  </p>
+                )}
+              </div>
+            ))}
+
+            {divergeMessage(diverge, options) !== null && (
+              <p className="note note--warn">{divergeMessage(diverge, options)}</p>
+            )}
+            <button type="button" onClick={addOption}>
+              Tambah opsi
+            </button>
           </div>
-        ))}
 
-        {divergeMessage(diverge, options) !== null && (
-          <p className="note note--warn">{divergeMessage(diverge, options)}</p>
-        )}
-        <button type="button" onClick={addOption}>
-          Tambah opsi
-        </button>
-
-        {chat === 'options' ? (
-          <ChatPanel
-            scope="options"
-            title={title}
-            objectives={objectives.map((objective) => objective.statement)}
-            existingOptions={options.map((option) => option.label)}
-            onSend={sendTurn}
-            onAccept={acceptSuggestedOptions}
-            onAddObjective={addSuggestedObjective}
-            onClose={() => setChat(null)}
-          />
-        ) : (
-          <AiTrigger scope="options" onOpen={() => setChat('options')} />
-        )}
+          {chat === 'options' && (
+            <ChatPanel
+              scope="options"
+              title={title}
+              objectives={objectives.map((objective) => objective.statement)}
+              existingOptions={options.map((option) => option.label)}
+              onSend={sendTurn}
+              onAccept={acceptSuggestedOptions}
+              onAddObjective={addSuggestedObjective}
+              onClose={() => setChat(null)}
+            />
+          )}
+        </div>
       </section>
 
       <section className="panel" aria-labelledby="weigh-heading">
@@ -391,8 +453,10 @@ export function DecisionWorkspace({ decision, onSaved, onDelete }: DecisionWorks
       <CommitPanel
         predictions={predictions}
         outcomes={outcomes}
+        reviewAt={reviewAt}
         onChangePredictions={setPredictions}
         onChangeOutcomes={setOutcomes}
+        onChangeReviewAt={setReviewAt}
       />
     </>
   );

@@ -53,7 +53,33 @@ describe('App', () => {
   it('opens on an empty dashboard that explains where to start', () => {
     render(<App />);
     expect(screen.getByRole('heading', { name: /mulai dari tujuan/i })).toBeInTheDocument();
-    expect(screen.getByText(/disimpan di browser ini/i)).toBeInTheDocument();
+  });
+
+  it('keeps the colophon at the foot of the rail once a decision is open', async () => {
+    render(<App />);
+    await startDecision();
+
+    const foot = document.querySelector('.rail__foot');
+    expect(foot).not.toBeNull();
+    // The version and licence are injected from package.json, so the colophon
+    // cannot claim a version the manifest does not carry.
+    expect(foot?.textContent).toMatch(/\d+\.\d+\.\d+/);
+    expect(foot?.textContent).toMatch(/MIT/);
+  });
+
+  it('does not restate where the data lives', () => {
+    // The rail carried a sentence saying decisions stay in this browser. It was
+    // removed: the app never sends a decision anywhere, so the line was a promise
+    // about the absence of a feature, taking up the corner of every screen.
+    render(<App />);
+    expect(screen.queryByText(/disimpan di browser ini/i)).not.toBeInTheDocument();
+  });
+
+  it('shows the version the manifest declares, not a literal in the JSX', () => {
+    render(<App />);
+    const foot = document.querySelector('.rail__foot');
+    expect(foot?.textContent).toContain(__APP_VERSION__);
+    expect(foot?.textContent).toContain(__APP_LICENSE__);
   });
 
   it('creates a decision and shows the workspace', async () => {
