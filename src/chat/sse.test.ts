@@ -28,6 +28,22 @@ describe('SSE accumulator', () => {
     expect(sse.push(chunk(':1}\n\n'))).toEqual([{ data: '{"a":1}' }]);
   });
 
+  it('preserves a UTF-8 character split across network chunks', () => {
+    const sse = new SseAccumulator();
+    const bytes = new TextEncoder().encode('data: {"text":"é"}\n\n');
+    const split = bytes.indexOf(0xc3) + 1;
+
+    expect(sse.push(bytes.slice(0, split))).toEqual([]);
+    expect(sse.push(bytes.slice(split))).toEqual([{ data: '{"text":"é"}' }]);
+  });
+
+  it('accepts CRLF-delimited events', () => {
+    const sse = new SseAccumulator();
+    expect(sse.push(chunk('event: message\r\ndata: {"a":1}\r\n\r\n'))).toEqual([
+      { event: 'message', data: '{"a":1}' },
+    ]);
+  });
+
   it('parses several events from one chunk', () => {
     const sse = new SseAccumulator();
     const events = sse.push(chunk('data: {"n":1}\n\ndata: {"n":2}\n\n'));

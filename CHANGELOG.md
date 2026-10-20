@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-20
+
+### Fixed
+
+- The SSE decoder now persists across network chunks and recognizes both LF and
+  CRLF frame boundaries. Previously, a UTF-8 character split across chunks could
+  be corrupted, and CRLF-delimited gateway events were never dispatched.
+
 ### Added
 
 - **Colophon at the foot of the rail.** Where the data is kept, plus the version

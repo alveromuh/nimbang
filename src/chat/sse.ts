@@ -15,6 +15,7 @@ export interface SseEvent {
 
 export class SseAccumulator {
   private buffer = '';
+  private readonly decoder = new TextDecoder();
 
   /**
    * Feeds a network chunk and returns whatever complete frames it finished.
@@ -22,21 +23,21 @@ export class SseAccumulator {
    * is not mangled.
    */
   push(chunk: Uint8Array): SseEvent[] {
-    this.buffer += new TextDecoder().decode(chunk, { stream: true });
+    this.buffer += this.decoder.decode(chunk, { stream: true });
 
     const events: SseEvent[] = [];
-    let boundary = this.buffer.indexOf('\n\n');
+    let boundary = /\r?\n\r?\n/.exec(this.buffer);
 
-    while (boundary !== -1) {
-      const frame = this.buffer.slice(0, boundary);
-      this.buffer = this.buffer.slice(boundary + 2);
+    while (boundary !== null) {
+      const frame = this.buffer.slice(0, boundary.index);
+      this.buffer = this.buffer.slice(boundary.index + boundary[0].length);
 
       const parsed = parseFrame(frame);
       if (parsed !== null) {
         events.push(parsed);
       }
 
-      boundary = this.buffer.indexOf('\n\n');
+      boundary = /\r?\n\r?\n/.exec(this.buffer);
     }
 
     return events;
@@ -49,7 +50,7 @@ export class SseAccumulator {
 }
 
 function parseFrame(frame: string): SseEvent | null {
-  const lines = frame.split('\n');
+  const lines = frame.split(/\r\n|\r|\n/);
   const dataLines: string[] = [];
   let event: string | undefined;
 

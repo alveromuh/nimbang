@@ -89,7 +89,7 @@ tools/vision/               research tooling: page photo -> text
 
 ```bash
 pnpm install
-pnpm test        # 125 tests: core engine, UI, integration
+pnpm test        # core engine, UI, and integration tests
 pnpm build       # tsc --noEmit, then a production bundle
 pnpm dev         # the app, at http://localhost:5199
 git config core.hooksPath .githooks   # one time per clone; blocks page photos
