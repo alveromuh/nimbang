@@ -2,30 +2,25 @@
 
 A decision-making framework, implemented as software.
 
-Nimbang takes the machinery of structured decision-making — objectives before
-options, explicit value trade-offs, probability-weighted outcomes, sensitivity
-analysis, and a record of what you predicted so you can learn from it — and puts
-it in one guided pipeline instead of eight disconnected worksheets.
+Nimbang guides a decision through objectives, options, trade-offs, uncertainty,
+sensitivity analysis, and a record of predictions for later review.
 
-> **Status: v1 engine and app working.** The core engine (`src/core/`) is
-> implemented test-first and covers all nine stages; a minimal React form in
-> `src/ui/` runs the pipeline end to end.
+> **Status: v0.1.0 released.** The core engine (`src/core/`) implements all
+> nine stages, with a React interface in `src/ui/`.
 
 ## Why not just a pros/cons calculator
 
-Any list can rank options. Two things make this different:
+Nimbang adds two things to a basic option list:
 
 - **It tells you when the answer is fragile.** A ranking built on subjective
   scores is only as good as its inputs. Nimbang reports which input, if wrong,
-  flips the decision — so the output is "go find out X" rather than a false
-  precision.
+  flips the decision, helping show which uncertainty is worth investigating.
 - **It closes the loop.** Decisions are recorded with their predicted
-  probabilities and reviewed later, producing a calibration score. The point is
-  not one good decision; it is getting better at judging.
+  probabilities and reviewed later with a calibration score.
 
 ## The pipeline
 
-Derived from the decision-analysis literature, not from any single popular book.
+Based on decision-analysis literature.
 
 | Stage | What happens | Grounded in |
 |---|---|---|
@@ -57,15 +52,12 @@ Every citation behind the pipeline is in [`docs/references.md`](docs/references.
 
 ## Structured input
 
-Turning a messy human description into the fields the engine needs is handled by a
-bounded **elicitation panel**, not a chatbot that runs the decision: it asks what
-you are already considering, and proposes options for you to accept. Off-topic
-remarks are re-framed rather than rejected, because they usually reveal an
-objective you had not written down.
+The optional **elicitation panel** helps turn a description into structured
+fields. It asks what you are considering and proposes options for you to accept.
+It does not make the decision.
 
-The dividing line is absolute: **the model fills fields, the engine computes.**
-The panel never sees a score, a weight, or a probability, so no model output can
-become a ranking or a winner. It works with any OpenAI-compatible gateway —
+**The model fills fields; the engine computes.** The panel does not receive
+scores, weights, or probabilities. It works with any OpenAI-compatible gateway —
 see [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## Repository layout
@@ -100,23 +92,24 @@ example with a share link you can paste in.
 
 ### AI suggestions (optional)
 
-The app works fully without this. The panel that helps you articulate options
-needs a chat model with tool calling, and any OpenAI-compatible gateway will do.
+The app works without a model. To enable suggestions, configure a chat model with
+tool calling through any OpenAI-compatible gateway:
 
 ```bash
-cp .env.example .env    # then fill in LLM_API_KEY
+cp .env.example .env    # set LLM_BASE_URL and LLM_API_KEY for your gateway
 pnpm dev
 ```
 
-```bash
-LLM_BASE_URL=https://kenari.id/v1
-LLM_API_KEY=...
-LLM_MODEL=            # optional; discovered when blank
-```
+`LLM_BASE_URL` is the gateway's API base URL, including its version path (for
+example, `https://api.openai.com/v1` or `https://api.groq.com/openai/v1`). It
+does not have to be Kenari. Set `LLM_API_KEY` to the matching key; leave
+`LLM_MODEL` blank to try model discovery. The Kenari-specific
+`KENARI_API_KEY` is an optional fallback that uses Kenari's URL when the explicit
+`LLM_BASE_URL`/`LLM_API_KEY` pair is not configured.
 
 Without a key the endpoint returns `503 not_configured` and the panel says so —
-it does not silently do nothing. Settings for Kenari, OpenAI, Groq, OpenRouter,
-Ollama and others: [`docs/llm-providers.md`](docs/llm-providers.md).
+the panel does not silently do nothing. Provider examples and gateway-specific
+settings: [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## License
 
