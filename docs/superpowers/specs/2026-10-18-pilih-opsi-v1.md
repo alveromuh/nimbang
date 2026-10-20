@@ -47,7 +47,7 @@ See [`../../framework.md`](../../framework.md) for stage definitions and formula
 - No accounts.
 - No chat.
 - No mobile app.
-- No model integration in v1 (System One is M6).
+- No model integration in v1.
 
 ## Open questions
 

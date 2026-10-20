@@ -141,19 +141,15 @@ Output: every probability must name a reference class.
 probability: {
   value: 0..1,
   referenceClass: string,   // "How do similar cases usually turn out?"
-  basis: 'data' | 'judgement' | 'model',   // deferred: see note
 }
 ```
 
 Rule: no probability is accepted without a reference class.
 
-`basis` is **not** in `ItemSchema` for v1, and that is deliberate: every
-probability in v1 is typed by the user, so the only honest value would be
-`'judgement'`, and a field that can only hold one value is a lie about how much
-the engine knows. It becomes load-bearing in M6, when a model can fill a
-probability field and the value has to be labelled as model-derived and
-overridable. It is recorded here so the deferral is visible rather than
-forgotten.
+`basis` is **not** in `ItemSchema`: probabilities are typed by the user, so the
+only honest value would be `'judgement'`, and a field that can only hold one
+value would overstate what the engine knows. Model-derived probabilities are
+outside the current scope.
 
 ### Stress
 
