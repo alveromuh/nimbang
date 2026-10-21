@@ -14,7 +14,7 @@ Nine stages, three phases. The first phase fixes the question before any number
 exists; the second computes an answer; the third tests whether that answer
 survives being wrong and records it for later.
 
-![Nimbang pipeline: Frame, Diverge, Tag, Weigh, Score, Probabilify, Stress, Gate, Commit](docs/images/pipeline.svg)
+![Nimbang pipeline: Frame, Diverge, Tag, Weigh, Score, Probability, Stress, Gate, Commit](docs/images/pipeline.svg)
 
 **Why the order matters.** Each stage removes a way the decision can be wrong,
 and most of them are cheap:
@@ -26,7 +26,7 @@ and most of them are cheap:
 | 03 | **Tag** | An opinion written down in the grammar of a fact |
 | 04 | **Weigh** | Treating every objective as equally important |
 | 05 | **Score** | Winning by having more items listed, rather than better ones |
-| 06 | **Probabilify** | A probability that names no reference class, a feeling with a decimal point |
+| 06 | **Probability** | A probability that names no reference class, a feeling with a decimal point |
 | 07 | **Stress** | Trusting a ranking that one wrong input would reverse |
 | 08 | **Gate** | Skipping the reflection questions, because they are never required |
 | 09 | **Commit** | Never finding out whether the reasoning was any good |
@@ -60,11 +60,11 @@ citations are in [`docs/references.md`](docs/references.md).
 | Stage | What happens | Grounded in |
 |---|---|---|
 | Frame | State objectives before listing options | Keeney, *Value-Focused Thinking* |
-| Diverge | Require at least three options, including "do nothing" | against false dichotomy |
+| Diverge | Current options to get the objective | against false dichotomy |
 | Tag | Mark every claim as fact or preference | Hume's is–ought gap |
 | Weigh | Weight objectives by swing, not by "importance" | MAVT / swing weighting |
 | Score | Value each option on each named attribute, normalised 0–1 | additive value function |
-| Probabilify | Attach probabilities and reference classes | expected value |
+| Probability | Attach probabilities and reference classes | expected value |
 | Stress | Tornado, break-even, Monte Carlo | sensitivity analysis |
 | Gate | Reflection prompts that target specific biases | Klein, Flyvbjerg, Arkes |
 | Commit | Lock the decision and its predictions; review on schedule | Brier score |
