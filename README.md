@@ -38,7 +38,7 @@ to choose something else.
 A pros-and-cons list counts points, but does not show which points matter more
 or how sure you are about them.
 
-![A pros/cons list beside a Nimbang result: the list shows 2 versus 1, Nimbang shows a 0.04 margin and names the input that would reverse it](docs/images/why-nimbang.svg)
+![The Nimbang framework from end to end: set up a decision, compare choices, then check, decide, and learn across nine stages](docs/images/why-nimbang.svg)
 
 Nimbang helps in three ways:
 

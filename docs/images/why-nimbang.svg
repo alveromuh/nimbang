@@ -1,61 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" role="img" aria-labelledby="whyTitle whyDesc" width="900" height="380">
-  <title id="whyTitle">A pros/cons list beside a Nimbang result</title>
-  <desc id="whyDesc">A pros and cons list adds items and cannot say how sure it is. Nimbang shows the margin and names the single input that would reverse the ranking.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="whyTitle whyDesc" width="900" height="620">
+  <title id="whyTitle">The Nimbang decision framework from goal to review</title>
+  <desc id="whyDesc">Nine stages in three phases: define what you want, compare choices using goals and evidence, then test, reflect, decide, and learn from what happens.</desc>
 
   <style>
     .bg { fill: #faf9f5; }
-    .label { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: #5f5e56; }
-    .box { fill: #ffffff; stroke: #e2dfd5; stroke-width: 2; }
-    .box-accent { fill: #ffffff; stroke: #2f5d50; stroke-width: 2; }
-    .h { font-family: Inter, system-ui, sans-serif; font-size: 20px; font-weight: 600; fill: #1a1a17; }
-    .t { font-family: Inter, system-ui, sans-serif; font-size: 16px; fill: #5f5e56; }
-    .plus { font-family: Inter, system-ui, sans-serif; font-size: 17px; font-weight: 600; fill: #2f5d50; }
-    .minus { font-family: Inter, system-ui, sans-serif; font-size: 17px; font-weight: 600; fill: #8a3b2e; }
-    .bar { fill: #2f5d50; }
-    .bar-bg { fill: #eceae2; }
-    .bar-warn { fill: #8a5a1e; }
-    .note { font-family: Inter, system-ui, sans-serif; font-size: 15px; fill: #6b6960; }
-    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 15px; fill: #1a1a17; }
-    .warn { fill: #8a3b2e; }
+    .phase { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: #5f5e56; }
+    .phase-sub { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #5f5e56; }
+    .node { fill: #ffffff; stroke: #c9c5b8; stroke-width: 2; }
+    .node-accent { fill: #e6efe9; stroke: #2f5d50; stroke-width: 2; }
+    .num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #5f5e56; }
+    .num-accent { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #2f5d50; }
+    .name { font-family: Inter, system-ui, sans-serif; font-size: 22px; font-weight: 600; fill: #1a1a17; }
+    .what { font-family: Inter, system-ui, sans-serif; font-size: 15px; fill: #5f5e56; }
+    .arrow { stroke: #c9c5b8; stroke-width: 2.5; fill: none; }
+    .arrow-head { fill: #c9c5b8; }
+    .drop { stroke: #c9c5b8; stroke-width: 2; fill: none; stroke-dasharray: 5 6; }
+    .drop-head { fill: #c9c5b8; }
   </style>
 
-  <rect class="bg" width="900" height="380"/>
+  <rect class="bg" width="900" height="620"/>
 
-  <!-- Left: pros/cons -->
-  <text class="label" x="40" y="46">Pros / cons list</text>
-  <rect class="box" x="40" y="62" width="380" height="286" rx="10"/>
+  <text class="phase" x="40" y="44">1 · Set up the decision</text>
+  <text class="phase-sub" x="40" y="68">Name your goal, choices, and what you know.</text>
 
-  <text class="plus" x="64" y="102">+</text>
-  <text class="t" x="88" y="102">Gaji lebih besar</text>
-  <text class="plus" x="64" y="132">+</text>
-  <text class="t" x="88" y="132">Lebih dekat rumah</text>
-  <text class="minus" x="64" y="162">−</text>
-  <text class="t" x="88" y="162">Jam kerja lebih panjang</text>
+  <rect class="node" x="40" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="60" y="117">01</text>
+  <text class="name" x="60" y="146">Frame</text>
+  <text class="what" x="60" y="168">What do you want?</text>
 
-  <text class="note" x="64" y="206">Menambah baris tidak mengubah bobot.</text>
-  <text class="note" x="64" y="232">Tidak ada cara tahu mana yang</text>
-  <text class="note" x="64" y="254">menentukan.</text>
-  <text class="note" x="64" y="280">Tidak ada jawaban untuk</text>
-  <text class="note" x="64" y="302">“seberapa yakin?”.</text>
-  <text class="note warn" x="64" y="330">Hasil: 2 lawan 1.</text>
+  <rect class="node" x="330" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="350" y="117">02</text>
+  <text class="name" x="350" y="146">Diverge</text>
+  <text class="what" x="350" y="168">What are your choices?</text>
 
-  <!-- Right: nimbang -->
-  <text class="label" x="480" y="46">Nimbang</text>
-  <rect class="box-accent" x="480" y="62" width="380" height="286" rx="10"/>
+  <rect class="node" x="620" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="640" y="117">03</text>
+  <text class="name" x="640" y="146">Tag</text>
+  <text class="what" x="640" y="168">Fact, estimate, or preference?</text>
 
-  <text class="h" x="504" y="102">Tetap, negosiasi batas jam</text>
-  <text class="t" x="504" y="128">Unggul 0,04 dari pindah remote</text>
+  <path class="arrow" d="M282 134 L318 134"/>
+  <polygon class="arrow-head" points="328,134 317,128 317,140"/>
+  <path class="arrow" d="M572 134 L608 134"/>
+  <polygon class="arrow-head" points="618,134 607,128 607,140"/>
+  <path class="drop" d="M450 178 L450 202 L40 202 L40 228"/>
+  <polygon class="drop-head" points="40,238 33,226 47,226"/>
 
-  <rect class="bar-bg" x="504" y="150" width="332" height="12" rx="6"/>
-  <rect class="bar" x="504" y="150" width="332" height="12" rx="6"/>
-  <text class="note" x="504" y="182">Jam dengan keluarga — paling menentukan</text>
+  <text class="phase" x="40" y="272">2 · Compare the choices</text>
+  <text class="phase-sub" x="40" y="296">Focus on what matters and what may happen.</text>
 
-  <rect class="bar-bg" x="504" y="198" width="332" height="12" rx="6"/>
-  <rect class="bar" x="504" y="198" width="262" height="12" rx="6"/>
-  <text class="note" x="504" y="230">Gaji bersih</text>
+  <rect class="node" x="40" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="60" y="345">04</text>
+  <text class="name" x="60" y="374">Weigh</text>
+  <text class="what" x="60" y="396">What matters most?</text>
 
-  <rect class="bar-bg" x="504" y="246" width="332" height="12" rx="6"/>
-  <rect class="bar-warn" x="504" y="246" width="96" height="12" rx="6"/>
-  <text class="note" x="504" y="278">Selisih hanya 0,04 — rapuh</text>
-  <text class="mono" x="504" y="312">ubah 1 nilai → urutan berbalik</text>
+  <rect class="node" x="330" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="350" y="345">05</text>
+  <text class="name" x="350" y="374">Score</text>
+  <text class="what" x="350" y="396">How does each choice compare?</text>
+
+  <rect class="node" x="620" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="640" y="345">06</text>
+  <text class="name" x="640" y="374">Probabilify</text>
+  <text class="what" x="640" y="396">How likely are key outcomes?</text>
+
+  <path class="arrow" d="M282 362 L318 362"/>
+  <polygon class="arrow-head" points="328,362 317,356 317,368"/>
+  <path class="arrow" d="M572 362 L608 362"/>
+  <polygon class="arrow-head" points="618,362 607,356 607,368"/>
+  <path class="drop" d="M450 406 L450 430 L40 430 L40 456"/>
+  <polygon class="drop-head" points="40,466 33,454 47,454"/>
+
+  <text class="phase" x="40" y="500">3 · Check, decide, and learn</text>
+  <text class="phase-sub" x="40" y="524">Test your choice, then review what happened.</text>
+
+  <rect class="node-accent" x="40" y="546" width="240" height="56" rx="8"/>
+  <text class="num-accent" x="60" y="570">07</text>
+  <text class="name" x="100" y="583" style="font-size:19px">Stress</text>
+
+  <rect class="node" x="330" y="546" width="240" height="56" rx="8"/>
+  <text class="num" x="350" y="570">08</text>
+  <text class="name" x="390" y="583" style="font-size:19px">Gate</text>
+
+  <rect class="node" x="620" y="546" width="240" height="56" rx="8"/>
+  <text class="num" x="640" y="570">09</text>
+  <text class="name" x="680" y="583" style="font-size:19px">Commit</text>
+
+  <path class="arrow" d="M282 574 L318 574"/>
+  <polygon class="arrow-head" points="328,574 317,568 317,580"/>
+  <path class="arrow" d="M572 574 L608 574"/>
+  <polygon class="arrow-head" points="618,574 607,568 607,580"/>
 </svg>
