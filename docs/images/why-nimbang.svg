@@ -96,7 +96,8 @@
   <rect class="winner" x="592" y="414" width="238" height="56" rx="7"/>
   <text class="ink small strong" x="606" y="437">Highest in this example</text>
   <text class="ink small" x="606" y="456">Cheaper rental nearby</text>
-  <text class="muted tiny" x="596" y="500">Weights reflect the example’s stated priorities.</text>
+  <text class="muted tiny" x="596" y="488">Weights reflect the example’s</text>
+  <text class="muted tiny" x="596" y="502">stated priorities.</text>
 
   <!-- Connector -->
   <path d="M853 301h20" stroke="#b9b5a9" stroke-width="2"/>
