@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="pipelineTitle pipelineDesc" width="900" height="620">
+  <title id="pipelineTitle">Nimbang pipeline: nine stages in three phases</title>
+  <desc id="pipelineDesc">Phase one establishes the question: Frame, Diverge, Tag. Phase two computes the answer: Weigh, Score, Probabilify. Phase three tests and records it: Stress, Gate, Commit.</desc>
+
+  <style>
+    .bg { fill: #faf9f5; }
+    .phase { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: #5f5e56; }
+    .phase-sub { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #6b6960; }
+    .node { fill: #ffffff; stroke: #c9c5b8; stroke-width: 2; }
+    .node-accent { fill: #e6efe9; stroke: #2f5d50; stroke-width: 2; }
+    .num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #75736b; }
+    .num-accent { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #2f5d50; }
+    .name { font-family: Inter, system-ui, sans-serif; font-size: 22px; font-weight: 600; fill: #1a1a17; }
+    .what { font-family: Inter, system-ui, sans-serif; font-size: 15px; fill: #5f5e56; }
+    .arrow { stroke: #c9c5b8; stroke-width: 2.5; fill: none; }
+    .arrow-head { fill: #c9c5b8; }
+    .drop { stroke: #c9c5b8; stroke-width: 2; fill: none; stroke-dasharray: 5 6; }
+    .drop-head { fill: #c9c5b8; }
+  </style>
+
+  <rect class="bg" width="900" height="620"/>
+
+  <!-- ── Phase 1 ─────────────────────────────────────────── -->
+  <text class="phase" x="40" y="44">1 · Establish the question</text>
+  <text class="phase-sub" x="40" y="68">Before any number exists.</text>
+
+  <rect class="node" x="40" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="60" y="117">01</text>
+  <text class="name" x="60" y="146">Frame</text>
+  <text class="what" x="60" y="168">Name the objective first.</text>
+
+  <rect class="node" x="330" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="350" y="117">02</text>
+  <text class="name" x="350" y="146">Diverge</text>
+  <text class="what" x="350" y="168">Three options, one “do nothing”.</text>
+
+  <rect class="node" x="620" y="90" width="240" height="88" rx="8"/>
+  <text class="num" x="640" y="117">03</text>
+  <text class="name" x="640" y="146">Tag</text>
+  <text class="what" x="640" y="168">Fact or preference + source.</text>
+
+  <path class="arrow" d="M282 134 L318 134"/>
+  <polygon class="arrow-head" points="328,134 317,128 317,140"/>
+  <path class="arrow" d="M572 134 L608 134"/>
+  <polygon class="arrow-head" points="618,134 607,128 607,140"/>
+
+  <!-- drop to phase 2 -->
+  <path class="drop" d="M450 178 L450 202 L40 202 L40 228"/>
+  <polygon class="drop-head" points="40,238 33,226 47,226"/>
+
+  <!-- ── Phase 2 ─────────────────────────────────────────── -->
+  <text class="phase" x="40" y="272">2 · Compute the answer</text>
+  <text class="phase-sub" x="40" y="296">Deterministic, in the browser.</text>
+
+  <rect class="node" x="40" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="60" y="345">04</text>
+  <text class="name" x="60" y="374">Weigh</text>
+  <text class="what" x="60" y="396">Swing weights.</text>
+
+  <rect class="node" x="330" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="350" y="345">05</text>
+  <text class="name" x="350" y="374">Score</text>
+  <text class="what" x="350" y="396">0–1 per attribute.</text>
+
+  <rect class="node" x="620" y="318" width="240" height="88" rx="8"/>
+  <text class="num" x="640" y="345">06</text>
+  <text class="name" x="640" y="374">Probabilify</text>
+  <text class="what" x="640" y="396">With reference classes.</text>
+
+  <path class="arrow" d="M282 362 L318 362"/>
+  <polygon class="arrow-head" points="328,362 317,356 317,368"/>
+  <path class="arrow" d="M572 362 L608 362"/>
+  <polygon class="arrow-head" points="618,362 607,356 607,368"/>
+
+  <!-- drop to phase 3 -->
+  <path class="drop" d="M450 406 L450 430 L40 430 L40 456"/>
+  <polygon class="drop-head" points="40,466 33,454 47,454"/>
+
+  <!-- ── Phase 3 ─────────────────────────────────────────── -->
+  <text class="phase" x="40" y="500">3 · Test and record</text>
+  <text class="phase-sub" x="40" y="524">Where the answer can still change.</text>
+
+  <rect class="node-accent" x="40" y="546" width="240" height="56" rx="8"/>
+  <text class="num-accent" x="60" y="570">07</text>
+  <text class="name" x="60" y="592" style="font-size:19px">Stress</text>
+
+  <rect class="node" x="330" y="546" width="240" height="56" rx="8"/>
+  <text class="num" x="350" y="570">08</text>
+  <text class="name" x="350" y="592" style="font-size:19px">Gate</text>
+
+  <rect class="node" x="620" y="546" width="240" height="56" rx="8"/>
+  <text class="num" x="640" y="570">09</text>
+  <text class="name" x="640" y="592" style="font-size:19px">Commit</text>
+
+  <path class="arrow" d="M282 574 L318 574"/>
+  <polygon class="arrow-head" points="328,574 317,568 317,580"/>
+  <path class="arrow" d="M572 574 L608 574"/>
+  <polygon class="arrow-head" points="618,574 607,568 607,580"/>
+</svg>

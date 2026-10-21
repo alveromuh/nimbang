@@ -36,8 +36,11 @@ export default defineConfig({
           name: 'core',
           environment: 'node',
           // src/*.test.ts is the integration test. Without it here, the file
-          // matches no project and silently never runs.
-          include: ['src/core/**/*.test.ts', 'src/*.test.ts'],
+          // matches no project and silently never runs. The examples test is
+          // here too: it is a plain data check on the engine, and the example
+          // itself stays outside the TS project so `node --experimental-strip-types`
+          // can run it.
+          include: ['src/core/**/*.test.ts', 'src/*.test.ts', 'examples/**/*.test.ts'],
         },
       },
       {

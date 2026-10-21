@@ -8,35 +8,70 @@ sensitivity analysis, and a record of predictions for later review.
 > **Status: v0.1.0 released.** The core engine (`src/core/`) implements all
 > nine stages, with a React interface in `src/ui/`.
 
+## How it works, in one picture
+
+Nine stages, three phases. The first phase fixes the question before any number
+exists; the second computes an answer; the third tests whether that answer
+survives being wrong and records it for later.
+
+![Nimbang pipeline: Frame, Diverge, Tag, Weigh, Score, Probabilify, Stress, Gate, Commit](docs/images/pipeline.svg)
+
+**Why the order matters.** Each stage removes a way the decision can be wrong,
+and most of them are cheap:
+
+| # | Stage | The mistake it prevents |
+|---|---|---|
+| 01 | **Frame** | Choosing between options before knowing what you want |
+| 02 | **Diverge** | A false choice between two options, with "do nothing" never considered |
+| 03 | **Tag** | An opinion written down in the grammar of a fact |
+| 04 | **Weigh** | Treating every objective as equally important |
+| 05 | **Score** | Winning by having more items listed, rather than better ones |
+| 06 | **Probabilify** | A probability that names no reference class — a feeling with a decimal point |
+| 07 | **Stress** | Trusting a ranking that one wrong input would reverse |
+| 08 | **Gate** | Skipping the reflection questions, because they are never required |
+| 09 | **Commit** | Never finding out whether the reasoning was any good |
+
 ## Why not just a pros/cons calculator
 
-Nimbang adds two things to a basic option list:
+A pros/cons list counts. It cannot tell you how much each line matters, and it
+cannot tell you how confident to be in the total.
 
+![A pros/cons list beside a Nimbang result: the list shows 2 versus 1, Nimbang shows a 0.04 margin and names the input that would reverse it](docs/images/why-nimbang.svg)
+
+Nimbang adds three things:
+
+- **Weights that mean something.** Objectives are compared by *swing* — how much
+  it matters to move from the worst option to the best on that objective — not by
+  asking "how important is this", a question everyone answers 5.
 - **It tells you when the answer is fragile.** A ranking built on subjective
-  scores is only as good as its inputs. Nimbang reports which input, if wrong,
-  flips the decision, helping show which uncertainty is worth investigating.
+  scores is only as good as its inputs. Nimbang reports which single input, if
+  wrong, flips the decision — so you know which uncertainty is worth
+  investigating first.
 - **It closes the loop.** Decisions are recorded with their predicted
-  probabilities and reviewed later with a calibration score.
+  probabilities and reviewed later with a calibration score. Being wrong on
+  schedule is how the next decision gets better.
 
-## The pipeline
+## The pipeline in detail
 
-Based on decision-analysis literature.
+Every stage is a pure function over plain data. The formal definitions, formulas,
+and the source behind each method are in [`docs/framework.md`](docs/framework.md);
+citations are in [`docs/references.md`](docs/references.md).
 
 | Stage | What happens | Grounded in |
 |---|---|---|
 | Frame | State objectives before listing options | Keeney, *Value-Focused Thinking* |
-| Weigh | Weight objectives by swing, not by "importance" | MAVT / swing weighting |
 | Diverge | Require at least three options, including "do nothing" | against false dichotomy |
 | Tag | Mark every claim as fact or preference | Hume's is–ought gap |
-| Score | Value each option against each objective, normalized 0–1 | additive value function |
+| Weigh | Weight objectives by swing, not by "importance" | MAVT / swing weighting |
+| Score | Value each option on each named attribute, normalised 0–1 | additive value function |
 | Probabilify | Attach probabilities and reference classes | expected value |
 | Stress | Tornado, break-even, Monte Carlo | sensitivity analysis |
-| Gate | Bias checks that target specific biases with specific techniques | Klein, Flyvbjerg, Arkes |
+| Gate | Reflection prompts that target specific biases | Klein, Flyvbjerg, Arkes |
 | Commit | Lock the decision and its predictions; review on schedule | Brier score |
 
-The framework document, with formal definitions and citations, is
-[`docs/framework.md`](docs/framework.md) *(written after source extraction)*.
-Every citation behind the pipeline is in [`docs/references.md`](docs/references.md).
+A recommendation is withheld until the inputs are complete: every claim tagged,
+every probability carrying a reference class, and every option assessed on every
+attribute. A blank cell counts as unassessed, not as zero.
 
 ## Design constraints
 
@@ -68,13 +103,17 @@ docs/
   references.md             verified sources for every method the engine uses
   core-engine-scope.md      what ships, what is excluded, and why
   llm-providers.md          configuring the panel for any OpenAI-compatible gateway
+  how-to-use.md             a worked example with a share link
+  images/                   the diagrams in this README, as SVG
   sources/                  extracted notes (page photos are never committed)
   superpowers/specs/        design documents
   superpowers/plans/        implementation plans
 DESIGN.md                   design tokens and rationale (Google DESIGN.md spec)
+examples/                   two complete decisions, runnable as share links
 src/core/                   pure decision engine, no UI imports
 src/ui/                     dashboard, workspace, panels, stylesheet
 tools/vision/               research tooling: page photo -> text
+tools/eval/                 browser checks for the built app (not in CI)
 ```
 
 ## Local setup

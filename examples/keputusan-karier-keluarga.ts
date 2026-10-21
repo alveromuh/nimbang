@@ -21,10 +21,10 @@ export const decision: Decision = {
     { id: 'side-income', label: 'Tetap bekerja sambil menguji usaha sampingan kecil selama 6 bulan', isBaseline: false },
   ],
   items: [
-    { id: 'stay-income', optionId: 'stay', objectiveId: 'income', kind: 'benefit', value: 3, probability: 1, risk: 'ordinary' },
-    { id: 'stay-family', optionId: 'stay', objectiveId: 'family', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary' },
-    { id: 'stay-health', optionId: 'stay', objectiveId: 'health', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary' },
-    { id: 'stay-growth', optionId: 'stay', objectiveId: 'growth', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary' },
+    { id: 'stay-income', optionId: 'stay', objectiveId: 'income', kind: 'benefit', value: 3, probability: 1, risk: 'ordinary', referenceClass: 'Gaji bersih berjalan sekarang, sudah tetap dua tahun; tidak ada kenaikan yang dijanjikan.' },
+    { id: 'stay-family', optionId: 'stay', objectiveId: 'family', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary', referenceClass: 'Jam pulang kerja saat ini; makan malam bersama keluarga terjadi sekitar dua kali seminggu.' },
+    { id: 'stay-health', optionId: 'stay', objectiveId: 'health', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary', referenceClass: 'Tidur rata-rata enam jam dan sakit kepala hampir tiap minggu selama tiga bulan terakhir.' },
+    { id: 'stay-growth', optionId: 'stay', objectiveId: 'growth', kind: 'benefit', value: 2, probability: 1, risk: 'ordinary', referenceClass: 'Tidak ada proyek baru atau pelatihan dalam dua tahun; jalur promosi belum jelas.' },
 
     { id: 'boundaries-income', optionId: 'boundaries', objectiveId: 'income', kind: 'benefit', value: 4, probability: 0.55, risk: 'ordinary', referenceClass: 'Perkiraan kasar dari dua pembicaraan kenaikan gaji sebelumnya; perlu cek kebijakan perusahaan dan kisaran pasar.' },
     { id: 'boundaries-family', optionId: 'boundaries', objectiveId: 'family', kind: 'benefit', value: 4, probability: 0.65, risk: 'ordinary', referenceClass: 'Jam lembur berkurang jika atasan menyetujui batas jam; uji selama 8 minggu.' },

@@ -30,6 +30,7 @@ objective: {
   id: string,
   statement: string,           // "Pindah kerja ke media fashion"
   kind: 'hygiene' | 'motivation', // Herzberg: remove a pain, or reach a good
+  attributes?: { id: string, name: string }[], // named dimensions; see Score
 }
 ```
 
@@ -70,6 +71,12 @@ claim: {
 Rule: a fact must name its source or check; a preference must name whose
 preference it is.
 
+Gate: Tag validation is required before a recommendation can be shown. Every
+claim present on the decision must meet its domain-specific requirement. An
+empty claim list is valid; this rule does not require inventing claims. A claim
+row that has been added but not written into is not yet a claim, so it does not
+block the recommendation.
+
 ### Weigh
 
 Input: objectives.
@@ -89,31 +96,48 @@ weight_i = swing_points_i / Σ_j swing_points_j
 
 Input: objectives, options, claims tagged as benefit or cost.
 
-Output: per option, per objective, a normalised score.
+Output: per option, per objective, a normalised score built from named attributes.
 
 ```
 item: {
   id: string,
   optionId: string,
   objectiveId: string,
+  attributeId: string,    // same attribute compared across options
   kind: 'benefit' | 'cost',
   value: 1..5,           // subjective magnitude
   probability: 0..1,     // how likely it happens
   risk: 'ordinary' | 'fatal',  // fatal = blocks recommendation
 }
 
-// normalise per objective across the option set
-v_i = (value_i - min_o) / (max_o - min_o)   // min-max to [0, 1]
-// if max_o == min_o, all options tie on this objective: v_i = 0 for all
+// For each objective and attribute, normalise across options that have that
+// attribute. If max == min, all compared options tie: v = 0.
+v_{o,a,x} = (value_{o,a,x} - min_x) / (max_x - min_x)
 
-// weighted sum
-net(option) = Σ_objectives w_o * ( Σ_benefit (v * p) − Σ_cost (v * p) )_o
+// Each distinct attribute shares its objective's weight equally.
+net(option) = Σ_objectives w_o / |A_o| *
+              Σ_attributes ( Σ_benefit (v * p) − Σ_cost (v * p) )_{o,a}
 ```
 
-The anchors `min_o`, `max_o` are **computed once, over the option set, and
-carried in the result**. Stress needs them to solve for a break-even without
-re-normalising, and re-normalising per perturbation would make every score
-scale-invariant — no change to a single value could ever flip the ranking.
+`A_o` is the set of distinct attribute IDs defined for objective `o`; every
+option compares the same named attribute. Attributes are not additional
+objectives: adding one divides that objective's weight across more attributes.
+An absent assessment is not an assessed zero; completeness and its effect on a
+result must be made visible by the product.
+
+Each `(option, attribute)` pair takes exactly one assessment. This is what makes
+the normalisation neutral to how many items were written down: an option cannot
+gain by splitting one judgement into two rows.
+
+The anchors `min_a`, `max_a` are **computed once per attribute, over the option
+set, and carried in the result**. Stress needs them to solve for a break-even
+without re-normalising, and re-normalising per perturbation would make every
+score scale-invariant — no change to a single value could ever flip the ranking.
+
+Attribute IDs must be unique across the whole decision, not merely within an
+objective: the anchor table is keyed by attribute ID, so two objectives sharing
+one would silently normalise against each other's range. The engine treats that
+as a data error and refuses to score.
 
 Output:
 
@@ -121,7 +145,7 @@ Output:
 ScoreResult: {
   net: Record<optionId, number>,
   ranking: optionId[],              // best first, ties broken by array order
-  anchors: Record<objectiveId, { min: number, max: number }>,
+  anchors: Record<attributeId, { min: number, max: number }>,
   fatal: optionId[],                // options carrying any risk = 'fatal'
   recommendation: optionId | null,  // null if the leader is in `fatal`
 }
@@ -144,7 +168,8 @@ probability: {
 }
 ```
 
-Rule: no probability is accepted without a reference class.
+Rule: no probability is accepted without a reference class. A recommendation is
+withheld until every scored item has a non-empty reference class.
 
 `basis` is **not** in `ItemSchema`: probabilities are typed by the user, so the
 only honest value would be `'judgement'`, and a field that can only hold one

@@ -35,11 +35,18 @@ See [`../../framework.md`](../../framework.md) for stage definitions and formula
 1. A decision document can be created, saved, loaded, and exported as JSON.
 2. A decision with fewer than 3 options cannot be scored.
 3. A decision with no objective cannot be scored.
-4. Scores are normalised per objective across the option set.
-5. Sensitivity report shows which input, if changed, flips the top two options.
-6. Fatal risk blocks the recommendation and shows a flag instead.
-7. Sunk cost is recorded but excluded from the arithmetic.
-8. Brier score is computed from resolved predictions.
+4. Scores are normalised per named attribute across options; each objective's
+   weight is divided equally among its distinct attributes.
+5. Attributes have stable IDs and are compared only with the same attribute on
+   other options. An unassessed cell is not interpreted as zero.
+6. A recommendation is withheld until every option has an assessment for every
+   attribute; the UI shows matrix coverage.
+7. Every recorded claim passes Tag validation and every scored item has a
+   reference class before a recommendation is shown. An empty claim list is valid.
+8. Sensitivity report shows which input, if changed, flips the top two options.
+9. Fatal risk blocks the recommendation and shows a flag instead.
+10. Sunk cost is recorded but excluded from the arithmetic.
+11. Brier score is computed from resolved predictions.
 
 ## Non-goals
 

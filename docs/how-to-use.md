@@ -6,25 +6,33 @@ Run the app with `pnpm dev`, then open <http://localhost:5199/>.
 
 ## Load the complete example
 
-The example is a common personal decision: improve household income without
-trading away family time, health, or future career options. It includes four
-objectives, four options, sixteen scored comparisons, probability reference
-classes, fact/preference claims, all bias checks, and predictions with a review
-date. Its inputs are illustrative, not advice; replace them with your own
-evidence before using the result.
+Two examples ship with the repo. Both include four options, a scored cell for
+every option-and-attribute pair, a reference class on every probability,
+fact/preference claims, all bias checks, and predictions with a review date.
+Their inputs are illustrative, not advice; replace them with your own evidence
+before using the result.
+
+| Example | What it demonstrates |
+|---|---|
+| [`keputusan-pindah-kota.ts`](../examples/keputusan-pindah-kota.ts) | Two named attributes on one objective — salary and cost of living — so the matrix shows which of the two moves the answer. A non-zero sunk cost that the arithmetic ignores. |
+| [`keputusan-karier-keluarga.ts`](../examples/keputusan-karier-keluarga.ts) | One attribute per objective, the simplest shape a complete decision can take. |
 
 Generate the full local link:
 
 ```bash
-node --experimental-strip-types examples/keputusan-karier-keluarga.ts
+node --experimental-strip-types examples/keputusan-pindah-kota.ts
 ```
 
 Copy the printed URL into the browser where the app is running. The app imports
 the decision into its local library and shows the computed result above the
 filled sections.
 
-The source record is
+The source records are
+[`examples/keputusan-pindah-kota.ts`](../examples/keputusan-pindah-kota.ts) and
 [`examples/keputusan-karier-keluarga.ts`](../examples/keputusan-karier-keluarga.ts).
+Both are covered by `examples/keputusan-karier-keluarga.test.ts`, which runs them
+through the same gates and arithmetic as any user document — an example that no
+longer produces a recommendation fails the suite.
 
 ## The order the app asks for things
 

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" role="img" aria-labelledby="whyTitle whyDesc" width="900" height="380">
+  <title id="whyTitle">A pros/cons list beside a Nimbang result</title>
+  <desc id="whyDesc">A pros and cons list adds items and cannot say how sure it is. Nimbang shows the margin and names the single input that would reverse the ranking.</desc>
+
+  <style>
+    .bg { fill: #faf9f5; }
+    .label { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: #5f5e56; }
+    .box { fill: #ffffff; stroke: #e2dfd5; stroke-width: 2; }
+    .box-accent { fill: #ffffff; stroke: #2f5d50; stroke-width: 2; }
+    .h { font-family: Inter, system-ui, sans-serif; font-size: 20px; font-weight: 600; fill: #1a1a17; }
+    .t { font-family: Inter, system-ui, sans-serif; font-size: 16px; fill: #5f5e56; }
+    .plus { font-family: Inter, system-ui, sans-serif; font-size: 17px; font-weight: 600; fill: #2f5d50; }
+    .minus { font-family: Inter, system-ui, sans-serif; font-size: 17px; font-weight: 600; fill: #8a3b2e; }
+    .bar { fill: #2f5d50; }
+    .bar-bg { fill: #eceae2; }
+    .bar-warn { fill: #8a5a1e; }
+    .note { font-family: Inter, system-ui, sans-serif; font-size: 15px; fill: #6b6960; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 15px; fill: #1a1a17; }
+    .warn { fill: #8a3b2e; }
+  </style>
+
+  <rect class="bg" width="900" height="380"/>
+
+  <!-- Left: pros/cons -->
+  <text class="label" x="40" y="46">Pros / cons list</text>
+  <rect class="box" x="40" y="62" width="380" height="286" rx="10"/>
+
+  <text class="plus" x="64" y="102">+</text>
+  <text class="t" x="88" y="102">Gaji lebih besar</text>
+  <text class="plus" x="64" y="132">+</text>
+  <text class="t" x="88" y="132">Lebih dekat rumah</text>
+  <text class="minus" x="64" y="162">−</text>
+  <text class="t" x="88" y="162">Jam kerja lebih panjang</text>
+
+  <text class="note" x="64" y="206">Menambah baris tidak mengubah bobot.</text>
+  <text class="note" x="64" y="232">Tidak ada cara tahu mana yang</text>
+  <text class="note" x="64" y="254">menentukan.</text>
+  <text class="note" x="64" y="280">Tidak ada jawaban untuk</text>
+  <text class="note" x="64" y="302">“seberapa yakin?”.</text>
+  <text class="note warn" x="64" y="330">Hasil: 2 lawan 1.</text>
+
+  <!-- Right: nimbang -->
+  <text class="label" x="480" y="46">Nimbang</text>
+  <rect class="box-accent" x="480" y="62" width="380" height="286" rx="10"/>
+
+  <text class="h" x="504" y="102">Tetap, negosiasi batas jam</text>
+  <text class="t" x="504" y="128">Unggul 0,04 dari pindah remote</text>
+
+  <rect class="bar-bg" x="504" y="150" width="332" height="12" rx="6"/>
+  <rect class="bar" x="504" y="150" width="332" height="12" rx="6"/>
+  <text class="note" x="504" y="182">Jam dengan keluarga — paling menentukan</text>
+
+  <rect class="bar-bg" x="504" y="198" width="332" height="12" rx="6"/>
+  <rect class="bar" x="504" y="198" width="262" height="12" rx="6"/>
+  <text class="note" x="504" y="230">Gaji bersih</text>
+
+  <rect class="bar-bg" x="504" y="246" width="332" height="12" rx="6"/>
+  <rect class="bar-warn" x="504" y="246" width="96" height="12" rx="6"/>
+  <text class="note" x="504" y="278">Selisih hanya 0,04 — rapuh</text>
+  <text class="mono" x="504" y="312">ubah 1 nilai → urutan berbalik</text>
+</svg>

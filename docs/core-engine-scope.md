@@ -40,13 +40,17 @@ aim. Asking which one it is changes what counts as a benefit later.
 
 Every claim attached to a decision carries a domain tag.
 
-| Tag | Requirement before the decision can be committed |
+| Tag | Requirement before a recommendation can be shown |
 |---|---|
 | `fact` | a source or a stated check |
 | `preference` | whose preference it is |
 
 This is the highest value-per-line-of-code item in the whole project. No
 computation, no model, and it dissolves a class of confused decisions.
+The UI must provide a way to enter and complete claims: without one the
+validator only ever sees an empty list and enforces nothing. An empty claim list
+is valid; all claims that do exist must pass the validator. A row added but not
+written into is not yet a claim.
 
 ### E3. Threshold filter (Bab 4)
 
@@ -71,23 +75,44 @@ mechanical rather than rhetorical.
 
 ### E5. Value scoring (Bab 4)
 
-Per option, per objective, per item:
+Per option, per objective, per named attribute. Each attribute has a stable ID
+and is compared only with the same attribute across options:
 
 ```
-item: { label, kind: benefit|cost, value: 1..5, probability: 0..1, risk: fatal|ordinary }
+item: { attributeId, kind: benefit|cost, value: 1..5, probability: 0..1, risk: fatal|ordinary }
 ```
 
-The book sums raw 1–5 values. **We do not.** Two corrections, both required:
+One cell — one option on one attribute — takes exactly one assessment. Two items
+on the same cell would add to the same normalised term, so an option could gain
+by being recorded twice; the engine treats that as a data error rather than
+summing it.
 
-1. **Normalise per objective** across the option set (0–1), so an option with
-   more listed items does not win by item count. This is the standard additive
-   value function.
-2. **One rule, not two.** The book divides cost by benefit in one example and
+The book sums raw 1–5 values. **We do not.** Three corrections, all required:
+
+1. **Normalise each attribute** across options (0–1), comparing only the same
+   named attribute.
+2. **Divide each objective's weight equally across its distinct attributes.**
+   Adding an attribute therefore does not increase that objective's total
+   weight. A missing assessment is not silently treated as zero.
+3. **One rule, not two.** The book divides cost by benefit in one example and
    subtracts in the rest. We use one: subtract, after normalisation.
 
 ```
-net(option) = Σ_objectives w_o * ( Σ_benefit v·p − Σ_cost v·p )_o
+net(option) = Σ_objectives w_o / |A_o| *
+              Σ_attributes ( Σ_benefit v·p − Σ_cost v·p )_{o,a}
 ```
+
+This is a product aggregation rule, not a claim that attributes are independent
+in reality. The UI must let the user identify matching attributes across
+options. Matrix completeness and the handling of absent assessments must be
+specified and displayed before an incomplete score is presented as a result.
+
+**Completeness rule:** a recommendation is withheld until every option has an
+assessment for every defined attribute. The UI reports assessed cells over
+required cells. An omitted assessment is visibly incomplete, not silently
+neutral. Attribute IDs must be unique across the decision: the anchor table is
+keyed by attribute ID, so a shared ID would make two dimensions normalise
+against each other's range.
 
 ### E6. Objective weights (Bab 4 + MAVT)
 
@@ -145,7 +170,7 @@ Each bias becomes one required input, not one paragraph:
 | Hasty generalisation | required field: "how many cases does this rest on?" |
 | Causation | required field: "cause, or coincidence in time?" |
 | False comparison | required field: "what differs between your case and the comparison?" |
-| Miscalibrated P | every probability must name a reference class |
+| Miscalibrated P | every scored probability must name a reference class before a recommendation is shown |
 
 Only E4 and sunk cost are structural. The rest are required text fields whose
 value is that they cannot be skipped.
