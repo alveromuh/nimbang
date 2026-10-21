@@ -1,78 +1,75 @@
 # Nimbang
 
-A decision-making framework, implemented as software.
+A simple way to think through a decision, built as software.
 
-Nimbang guides a decision through objectives, options, trade-offs, uncertainty,
-sensitivity analysis, and a record of predictions for later review.
+Nimbang helps you decide what matters, compare your choices, see what could
+change your mind, and check later whether your expectations were right.
 
 > **Status: v0.1.0 released.** The core engine (`src/core/`) implements all
 > nine stages, with a React interface in `src/ui/`.
 
 ## How it works, in one picture
 
-Nine stages, three phases. Start by naming the objective and the options
-currently available to achieve it. Then compare those options, test how robust
-the result is, and record the decision so its predictions can be reviewed later.
+First, say what you want and list the choices you have now. Next, compare them
+and choose one. Finally, check what could change your choice and write down
+what you expect to happen, so you can learn from it later.
 
 ![Nimbang pipeline: Frame, Diverge, Tag, Weigh, Score, Probability, Stress, Gate, Commit](docs/images/pipeline.svg)
 
-**Why the order matters.** Clarify what you want before comparing what you
-could do. Then make assumptions explicit, assess each option against the same
-objectives, and test the result before committing:
+**Why follow this order?** It is easier to compare choices when you know what
+you want. Writing down what you know and what you are unsure about helps make a
+fair comparison. A final check can show whether a small change would lead you
+to choose something else.
 
-| # | Stage | The mistake it prevents |
+| # | Step | In simple terms |
 |---|---|---|
-| 01 | **Frame** | Choosing between options before knowing what you want |
-| 02 | **Diverge** | Comparing an incomplete set of current options for the objective |
-| 03 | **Tag** | An opinion written down in the grammar of a fact |
-| 04 | **Weigh** | Treating every objective as equally important |
-| 05 | **Score** | Winning by having more items listed, rather than better ones |
-| 06 | **Probability** | Treating an unsupported probability as certainty |
-| 07 | **Stress** | Trusting a ranking that one wrong input would reverse |
-| 08 | **Gate** | Skipping the reflection questions, because they are never required |
-| 09 | **Commit** | Never finding out whether the reasoning was any good |
+| 01 | **Frame** | Say what you want to achieve |
+| 02 | **Diverge** | List the choices you have now |
+| 03 | **Tag** | Tell facts apart from opinions |
+| 04 | **Weigh** | Decide what matters most |
+| 05 | **Score** | Rate each choice on what matters |
+| 06 | **Probability** | Say how likely important events are |
+| 07 | **Stress** | Check what could change your choice |
+| 08 | **Gate** | Pause and think it over |
+| 09 | **Commit** | Record your choice and check back later |
 
 ## Why not just a pros/cons calculator
 
-A pros/cons list counts. It cannot tell you how much each line matters, and it
-cannot tell you how confident to be in the total.
+A pros-and-cons list counts points, but does not show which points matter more
+or how sure you are about them.
 
 ![A pros/cons list beside a Nimbang result: the list shows 2 versus 1, Nimbang shows a 0.04 margin and names the input that would reverse it](docs/images/why-nimbang.svg)
 
-Nimbang adds three things:
+Nimbang helps in three ways:
 
-- **Weights that mean something.** Objectives are compared by *swing*: how much
-  it matters to move from the worst option to the best on that objective, not by
-  asking "how important is this", a question everyone answers 5.
-- **It tells you when the answer is fragile.** A ranking built on subjective
-  scores is only as good as its inputs. Nimbang reports which single input, if
-  wrong, flips the decision, so you know which uncertainty is worth
-  investigating first.
-- **It closes the loop.** Decisions are recorded with their predicted
-  probabilities and reviewed later with a calibration score. Being wrong on
-  schedule is how the next decision gets better.
+- **Focus on what matters.** Compare how much each choice changes the things
+  you care about, instead of treating every item as equally important.
+- **See what could change your choice.** Nimbang points out which estimate, if
+  different, would make another choice look better.
+- **Learn from past choices.** Write down what you expect, then check later what
+  happened. This helps you make better estimates next time.
 
 ## The pipeline in detail
 
-Every stage is a pure function over plain data. The formal definitions, formulas,
-and the source behind each method are in [`docs/framework.md`](docs/framework.md);
-citations are in [`docs/references.md`](docs/references.md).
+Here is what happens at each step. The detailed rules and research behind them
+are in [`docs/framework.md`](docs/framework.md) and
+[`docs/references.md`](docs/references.md).
 
-| Stage | What happens | Grounded in |
+| Step | What you do | Based on |
 |---|---|---|
-| Frame | State objectives before listing options | Keeney, *Value-Focused Thinking* |
-| Diverge | Current options to get the objective | against false dichotomy |
-| Tag | Mark every claim as fact or preference | Hume's is–ought gap |
-| Weigh | Weight objectives by swing, not by "importance" | MAVT / swing weighting |
-| Score | Value each option on each named attribute, normalised 0–1 | additive value function |
-| Probability | Attach probabilities and reference classes | expected value |
-| Stress | Tornado, break-even, Monte Carlo | sensitivity analysis |
-| Gate | Reflection prompts that target specific biases | Klein, Flyvbjerg, Arkes |
-| Commit | Lock the decision and its predictions; review on schedule | Brier score |
+| Frame | Name what you want to achieve | Keeney, *Value-Focused Thinking* |
+| Diverge | List the choices you have now | Avoiding false either-or choices |
+| Tag | Mark what is a fact and what is an opinion | Hume's is–ought gap |
+| Weigh | Decide which goals matter most | MAVT / swing weighting |
+| Score | Rate each choice against each goal | Additive value function |
+| Probability | Estimate how likely things are, using similar past cases | Expected value |
+| Stress | See how changes to your estimates affect the result | Sensitivity analysis |
+| Gate | Pause to ask questions that may change your view | Klein, Flyvbjerg, Arkes |
+| Commit | Record your choice and what you expect to happen | Brier score |
 
-A recommendation is withheld until the inputs are complete: every claim tagged,
-every probability carrying a reference class, and every option assessed on every
-attribute. A blank cell counts as unassessed, not as zero.
+A recommendation appears only when the comparison is filled in: facts and
+opinions are marked, estimates explain what they are based on, and every choice
+has been rated against every goal. A blank rating means “not rated,” not zero.
 
 ## Design constraints
 

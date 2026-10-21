@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="pipelineTitle pipelineDesc" width="900" height="620">
   <title id="pipelineTitle">Nimbang pipeline: nine stages in three phases</title>
-  <desc id="pipelineDesc">Phase one establishes the question: Frame, Diverge, Tag. Phase two computes the answer: Weigh, Score, Probability. Phase three tests and records it: Stress, Gate, Commit.</desc>
+  <desc id="pipelineDesc">First, decide what you want and list your choices. Then compare them. Finally, check your choice and write down what you expect to happen.</desc>
 
   <style>
     .bg { fill: #faf9f5; }
@@ -21,23 +21,23 @@
   <rect class="bg" width="900" height="620"/>
 
   <!-- ── Phase 1 ─────────────────────────────────────────── -->
-  <text class="phase" x="40" y="44">1 · Establish the question</text>
-  <text class="phase-sub" x="40" y="68">Before any number exists.</text>
+  <text class="phase" x="40" y="44">1 · Decide what you want</text>
+  <text class="phase-sub" x="40" y="68">Start with your goal and choices.</text>
 
   <rect class="node" x="40" y="90" width="240" height="88" rx="8"/>
   <text class="num" x="60" y="117">01</text>
   <text class="name" x="60" y="146">Frame</text>
-  <text class="what" x="60" y="168">Name the objective first.</text>
+  <text class="what" x="60" y="168">What do you want?</text>
 
   <rect class="node" x="330" y="90" width="240" height="88" rx="8"/>
   <text class="num" x="350" y="117">02</text>
   <text class="name" x="350" y="146">Diverge</text>
-  <text class="what" x="350" y="168">Current options for the objective.</text>
+  <text class="what" x="350" y="168">What can you do now?</text>
 
   <rect class="node" x="620" y="90" width="240" height="88" rx="8"/>
   <text class="num" x="640" y="117">03</text>
   <text class="name" x="640" y="146">Tag</text>
-  <text class="what" x="640" y="168">Fact or preference + source.</text>
+  <text class="what" x="640" y="168">What do you know for sure?</text>
 
   <path class="arrow" d="M282 134 L318 134"/>
   <polygon class="arrow-head" points="328,134 317,128 317,140"/>
@@ -49,23 +49,23 @@
   <polygon class="drop-head" points="40,238 33,226 47,226"/>
 
   <!-- ── Phase 2 ─────────────────────────────────────────── -->
-  <text class="phase" x="40" y="272">2 · Compute the answer</text>
-  <text class="phase-sub" x="40" y="296">Deterministic, in the browser.</text>
+  <text class="phase" x="40" y="272">2 · Compare your choices</text>
+  <text class="phase-sub" x="40" y="296">Look at what matters to you.</text>
 
   <rect class="node" x="40" y="318" width="240" height="88" rx="8"/>
   <text class="num" x="60" y="345">04</text>
   <text class="name" x="60" y="374">Weigh</text>
-  <text class="what" x="60" y="396">Swing weights.</text>
+  <text class="what" x="60" y="396">What matters most?</text>
 
   <rect class="node" x="330" y="318" width="240" height="88" rx="8"/>
   <text class="num" x="350" y="345">05</text>
   <text class="name" x="350" y="374">Score</text>
-  <text class="what" x="350" y="396">0–1 per attribute.</text>
+  <text class="what" x="350" y="396">How does each choice compare?</text>
 
   <rect class="node" x="620" y="318" width="240" height="88" rx="8"/>
   <text class="num" x="640" y="345">06</text>
   <text class="name" x="640" y="374">Probability</text>
-  <text class="what" x="640" y="396">With reference classes.</text>
+  <text class="what" x="640" y="396">How likely is each outcome?</text>
 
   <path class="arrow" d="M282 362 L318 362"/>
   <polygon class="arrow-head" points="328,362 317,356 317,368"/>
@@ -77,8 +77,8 @@
   <polygon class="drop-head" points="40,466 33,454 47,454"/>
 
   <!-- ── Phase 3 ─────────────────────────────────────────── -->
-  <text class="phase" x="40" y="500">3 · Test and record</text>
-  <text class="phase-sub" x="40" y="524">Where the answer can still change.</text>
+  <text class="phase" x="40" y="500">3 · Check and remember</text>
+  <text class="phase-sub" x="40" y="524">Could something change your choice?</text>
 
   <rect class="node-accent" x="40" y="546" width="240" height="56" rx="8"/>
   <text class="num-accent" x="60" y="570">07</text>
