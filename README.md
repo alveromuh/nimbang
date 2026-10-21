@@ -10,23 +10,24 @@ sensitivity analysis, and a record of predictions for later review.
 
 ## How it works, in one picture
 
-Nine stages, three phases. The first phase fixes the question before any number
-exists; the second computes an answer; the third tests whether that answer
-survives being wrong and records it for later.
+Nine stages, three phases. Start by naming the objective and the options
+currently available to achieve it. Then compare those options, test how robust
+the result is, and record the decision so its predictions can be reviewed later.
 
 ![Nimbang pipeline: Frame, Diverge, Tag, Weigh, Score, Probability, Stress, Gate, Commit](docs/images/pipeline.svg)
 
-**Why the order matters.** Each stage removes a way the decision can be wrong,
-and most of them are cheap:
+**Why the order matters.** Clarify what you want before comparing what you
+could do. Then make assumptions explicit, assess each option against the same
+objectives, and test the result before committing:
 
 | # | Stage | The mistake it prevents |
 |---|---|---|
 | 01 | **Frame** | Choosing between options before knowing what you want |
-| 02 | **Diverge** | A false choice between two options, with "do nothing" never considered |
+| 02 | **Diverge** | Comparing an incomplete set of current options for the objective |
 | 03 | **Tag** | An opinion written down in the grammar of a fact |
 | 04 | **Weigh** | Treating every objective as equally important |
 | 05 | **Score** | Winning by having more items listed, rather than better ones |
-| 06 | **Probability** | A probability that names no reference class, a feeling with a decimal point |
+| 06 | **Probability** | Treating an unsupported probability as certainty |
 | 07 | **Stress** | Trusting a ranking that one wrong input would reverse |
 | 08 | **Gate** | Skipping the reflection questions, because they are never required |
 | 09 | **Commit** | Never finding out whether the reasoning was any good |

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="pipelineTitle pipelineDesc" width="900" height="620">
   <title id="pipelineTitle">Nimbang pipeline: nine stages in three phases</title>
-  <desc id="pipelineDesc">Phase one establishes the question: Frame, Diverge, Tag. Phase two computes the answer: Weigh, Score, Probabilify. Phase three tests and records it: Stress, Gate, Commit.</desc>
+  <desc id="pipelineDesc">Phase one establishes the question: Frame, Diverge, Tag. Phase two computes the answer: Weigh, Score, Probability. Phase three tests and records it: Stress, Gate, Commit.</desc>
 
   <style>
     .bg { fill: #faf9f5; }
@@ -32,7 +32,7 @@
   <rect class="node" x="330" y="90" width="240" height="88" rx="8"/>
   <text class="num" x="350" y="117">02</text>
   <text class="name" x="350" y="146">Diverge</text>
-  <text class="what" x="350" y="168">Three options, one “do nothing”.</text>
+  <text class="what" x="350" y="168">Current options for the objective.</text>
 
   <rect class="node" x="620" y="90" width="240" height="88" rx="8"/>
   <text class="num" x="640" y="117">03</text>
@@ -64,7 +64,7 @@
 
   <rect class="node" x="620" y="318" width="240" height="88" rx="8"/>
   <text class="num" x="640" y="345">06</text>
-  <text class="name" x="640" y="374">Probabilify</text>
+  <text class="name" x="640" y="374">Probability</text>
   <text class="what" x="640" y="396">With reference classes.</text>
 
   <path class="arrow" d="M282 362 L318 362"/>
