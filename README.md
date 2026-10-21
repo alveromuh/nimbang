@@ -26,7 +26,7 @@ and most of them are cheap:
 | 03 | **Tag** | An opinion written down in the grammar of a fact |
 | 04 | **Weigh** | Treating every objective as equally important |
 | 05 | **Score** | Winning by having more items listed, rather than better ones |
-| 06 | **Probabilify** | A probability that names no reference class — a feeling with a decimal point |
+| 06 | **Probabilify** | A probability that names no reference class, a feeling with a decimal point |
 | 07 | **Stress** | Trusting a ranking that one wrong input would reverse |
 | 08 | **Gate** | Skipping the reflection questions, because they are never required |
 | 09 | **Commit** | Never finding out whether the reasoning was any good |
@@ -40,12 +40,12 @@ cannot tell you how confident to be in the total.
 
 Nimbang adds three things:
 
-- **Weights that mean something.** Objectives are compared by *swing* — how much
-  it matters to move from the worst option to the best on that objective — not by
+- **Weights that mean something.** Objectives are compared by *swing*: how much
+  it matters to move from the worst option to the best on that objective, not by
   asking "how important is this", a question everyone answers 5.
 - **It tells you when the answer is fragile.** A ranking built on subjective
   scores is only as good as its inputs. Nimbang reports which single input, if
-  wrong, flips the decision — so you know which uncertainty is worth
+  wrong, flips the decision, so you know which uncertainty is worth
   investigating first.
 - **It closes the loop.** Decisions are recorded with their predicted
   probabilities and reviewed later with a calibration score. Being wrong on
@@ -76,7 +76,7 @@ attribute. A blank cell counts as unassessed, not as zero.
 ## Design constraints
 
 - **Deterministic core, thin optional backend.** All scoring, sensitivity, and
-  calibration run in the browser on plain data — `src/core/` is pure and needs
+  calibration run in the browser on plain data. `src/core/` is pure and needs
   no server. A backend exists for exactly one reason: a model API key cannot
   live in a browser. That backend is one endpoint, not a service.
 - **The engine is pure.** `src/core/` holds functions with no framework imports,
@@ -92,7 +92,7 @@ fields. It asks what you are considering and proposes options for you to accept.
 It does not make the decision.
 
 **The model fills fields; the engine computes.** The panel does not receive
-scores, weights, or probabilities. It works with any OpenAI-compatible gateway —
+scores, weights, or probabilities. It works with any OpenAI-compatible gateway;
 see [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## Repository layout
@@ -146,8 +146,8 @@ does not have to be Kenari. Set `LLM_API_KEY` to the matching key; leave
 `KENARI_API_KEY` is an optional fallback that uses Kenari's URL when the explicit
 `LLM_BASE_URL`/`LLM_API_KEY` pair is not configured.
 
-Without a key the endpoint returns `503 not_configured` and the panel says so —
-the panel does not silently do nothing. Provider examples and gateway-specific
+Without a key the endpoint returns `503 not_configured` and the panel says so.
+The panel does not silently do nothing. Provider examples and gateway-specific
 settings: [`docs/llm-providers.md`](docs/llm-providers.md).
 
 ## License

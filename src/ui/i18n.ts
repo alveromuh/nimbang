@@ -167,7 +167,7 @@ export const copy = {
   /** What the numbers on this screen are, and are not. */
   netScale: {
     id: 'Skor bersih itu perbandingan, bukan ukuran. Tiap atribut dinormalkan ke 0–1 menurut opsi yang kamu masukkan, lalu ditimbang. Nol berarti tidak lebih baik dari opsi terburuk di atribut itu, bukan berarti tidak ada dampak.',
-    en: 'A net score is a comparison, not a measurement. Each attribute is normalised to 0–1 across the options you entered, then weighted. Zero means no better than the worst option on that attribute — not that there is no effect.',
+    en: 'A net score is a comparison, not a measurement. Each attribute is normalised to 0–1 across the options you entered, then weighted. Zero means no better than the worst option on that attribute, not that there is no effect.',
   },
   netDepends: {
     id: 'Karena itu menambah atau menghapus opsi bisa mengubah skor semua opsi lain. Angka di sini hanya bisa dibandingkan satu sama lain.',
