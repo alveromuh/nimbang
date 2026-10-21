@@ -82,17 +82,20 @@
   <circle class="step" cx="601" cy="115" r="13"/><text class="step-text" x="597.5" y="119">2</text>
   <text class="ink title" x="624" y="121">Compare</text>
   <text class="muted small" x="596" y="166">Swing weights</text>
-  <text class="muted tiny" x="596" y="187">Money</text><rect x="656" y="176" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="176" width="61" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="187" text-anchor="end">41%</text>
-  <text class="muted tiny" x="596" y="215">Family time</text><rect x="656" y="204" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="204" width="55" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="215" text-anchor="end">37%</text>
-  <text class="muted tiny" x="596" y="243">Work</text><rect x="656" y="232" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="232" width="34" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="243" text-anchor="end">22%</text>
-  <path class="line" d="M592 263h238"/>
-  <text class="ink copy strong" x="596" y="291">Same options, side by side</text>
-  <text class="muted small" x="596" y="317">Ratings are read with their</text>
-  <text class="muted small" x="596" y="337">benefit or cost direction, then</text>
-  <text class="muted small" x="596" y="357">combined using these weights.</text>
-  <rect class="winner" x="592" y="383" width="238" height="67" rx="7"/>
-  <text class="ink small strong" x="606" y="407">Highest in this example</text>
-  <text class="ink small" x="606" y="429">Cheaper rental nearby</text>
+  <text class="muted tiny" x="596" y="190">Money</text><text class="mono tiny" x="816" y="190" text-anchor="end">41%</text>
+  <rect x="596" y="198" width="234" height="10" rx="5" fill="#e9e6dd"/><rect x="596" y="198" width="96" height="10" rx="5" fill="#849b8b"/>
+  <text class="muted tiny" x="596" y="229">Family time</text><text class="mono tiny" x="816" y="229" text-anchor="end">37%</text>
+  <rect x="596" y="237" width="234" height="10" rx="5" fill="#e9e6dd"/><rect x="596" y="237" width="86" height="10" rx="5" fill="#849b8b"/>
+  <text class="muted tiny" x="596" y="268">Work</text><text class="mono tiny" x="816" y="268" text-anchor="end">22%</text>
+  <rect x="596" y="276" width="234" height="10" rx="5" fill="#e9e6dd"/><rect x="596" y="276" width="51" height="10" rx="5" fill="#849b8b"/>
+  <path class="line" d="M592 300h238"/>
+  <text class="ink copy strong" x="596" y="328">Same options, side by side</text>
+  <text class="muted small" x="596" y="354">Ratings are read with their</text>
+  <text class="muted small" x="596" y="374">benefit or cost direction, then</text>
+  <text class="muted small" x="596" y="394">combined using these weights.</text>
+  <rect class="winner" x="592" y="414" width="238" height="56" rx="7"/>
+  <text class="ink small strong" x="606" y="437">Highest in this example</text>
+  <text class="ink small" x="606" y="456">Cheaper rental nearby</text>
   <text class="muted tiny" x="596" y="488">Weights reflect the example’s stated priorities.</text>
 
   <!-- Connector -->
