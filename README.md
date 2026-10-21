@@ -38,7 +38,7 @@ to choose something else.
 A pros-and-cons list counts points, but does not show which points matter more
 or how sure you are about them.
 
-![The Nimbang framework from end to end: set up a decision, compare choices, then check, decide, and learn across nine stages](docs/images/why-nimbang.svg)
+![Illustrative Nimbang UI walkthrough: score options in a side-by-side matrix, compare them using swing weights, then review the ranked options and recommendation](docs/images/why-nimbang.svg)
 
 Nimbang helps in three ways:
 

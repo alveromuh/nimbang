@@ -1,92 +1,125 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-labelledby="whyTitle whyDesc" width="900" height="620">
-  <title id="whyTitle">The Nimbang decision framework from goal to review</title>
-  <desc id="whyDesc">Nine stages in three phases: define what you want, compare choices using goals and evidence, then test, reflect, decide, and learn from what happens.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 590" role="img" aria-labelledby="whyTitle whyDesc" width="1200" height="590">
+  <title id="whyTitle">A Nimbang decision, from scoring to recommendation</title>
+  <desc id="whyDesc">An illustrative walkthrough of the Nimbang interface. First, score options from one to five in a side-by-side matrix. Next, compare the scores for salary, living costs, family time, and job opportunities. Finally, review the ranked options and recommendation: stay in the current city but move to a cheaper rental. Scores and the result come from the sample decision and are not advice.</desc>
 
   <style>
     .bg { fill: #faf9f5; }
-    .phase { font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: #5f5e56; }
-    .phase-sub { font-family: Inter, system-ui, sans-serif; font-size: 14px; fill: #5f5e56; }
-    .node { fill: #ffffff; stroke: #c9c5b8; stroke-width: 2; }
-    .node-accent { fill: #e6efe9; stroke: #2f5d50; stroke-width: 2; }
-    .num { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #5f5e56; }
-    .num-accent { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; fill: #2f5d50; }
-    .name { font-family: Inter, system-ui, sans-serif; font-size: 22px; font-weight: 600; fill: #1a1a17; }
-    .what { font-family: Inter, system-ui, sans-serif; font-size: 15px; fill: #5f5e56; }
-    .arrow { stroke: #c9c5b8; stroke-width: 2.5; fill: none; }
-    .arrow-head { fill: #c9c5b8; }
-    .drop { stroke: #c9c5b8; stroke-width: 2; fill: none; stroke-dasharray: 5 6; }
-    .drop-head { fill: #c9c5b8; }
+    .panel { fill: #fff; stroke: #d5d1c5; stroke-width: 1.5; }
+    .head { fill: #f3f1e9; }
+    .ink { fill: #24241f; font-family: Inter, system-ui, sans-serif; }
+    .muted { fill: #6d6a60; font-family: Inter, system-ui, sans-serif; }
+    .mono { fill: #37372f; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .kicker { font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+    .title { font-size: 20px; font-weight: 650; }
+    .copy { font-size: 14px; }
+    .small { font-size: 12px; }
+    .tiny { font-size: 11px; }
+    .strong { font-weight: 650; }
+    .line { stroke: #dedbd1; stroke-width: 1; }
+    .cell { fill: #f7f6f1; stroke: #e2dfd6; stroke-width: 1; }
+    .winner { fill: #e7efe9; }
+    .accent { fill: #315c4d; }
+    .badge { fill: #dce9df; }
+    .step { fill: #315c4d; }
+    .step-text { fill: #fff; font: 700 12px Inter, system-ui, sans-serif; }
   </style>
 
-  <rect class="bg" width="900" height="620"/>
+  <rect class="bg" width="1200" height="590" rx="12"/>
+  <text class="ink kicker" x="32" y="38">A DECISION, IN THE PRODUCT</text>
+  <text class="muted copy" x="32" y="62">Illustrative sample · score side by side, compare, then review the recommendation.</text>
 
-  <text class="phase" x="40" y="44">1 · Set up the decision</text>
-  <text class="phase-sub" x="40" y="68">Name your goal, choices, and what you know.</text>
+  <!-- Stage 1: dense scoring matrix, matching the product's option-by-attribute grid. -->
+  <rect class="panel" x="32" y="88" width="505" height="430" rx="10"/>
+  <path class="head" d="M42 88h485a10 10 0 0 1 10 10v47H32V98a10 10 0 0 1 10-10z"/>
+  <circle class="step" cx="57" cy="115" r="13"/><text class="step-text" x="53.5" y="119">1</text>
+  <text class="ink title" x="80" y="121">Scores</text>
+  <text class="muted small" x="80" y="139">Value 1–5 per cell · Benefit adds, cost subtracts</text>
 
-  <rect class="node" x="40" y="90" width="240" height="88" rx="8"/>
-  <text class="num" x="60" y="117">01</text>
-  <text class="name" x="60" y="146">Frame</text>
-  <text class="what" x="60" y="168">What do you want?</text>
+  <text class="muted tiny strong" x="50" y="169">OPTION</text>
+  <text class="muted tiny strong" x="235" y="169" text-anchor="middle">SALARY</text>
+  <text class="muted tiny strong" x="319" y="169" text-anchor="middle">LIVING COST</text>
+  <text class="muted tiny strong" x="405" y="169" text-anchor="middle">FAMILY TIME</text>
+  <text class="muted tiny strong" x="489" y="169" text-anchor="middle">JOB OPTIONS</text>
+  <path class="line" d="M48 180h473"/>
 
-  <rect class="node" x="330" y="90" width="240" height="88" rx="8"/>
-  <text class="num" x="350" y="117">02</text>
-  <text class="name" x="350" y="146">Diverge</text>
-  <text class="what" x="350" y="168">What are your choices?</text>
+  <text class="ink small strong" x="50" y="205">Stay as is</text>
+  <rect class="cell" x="204" y="185" width="62" height="31" rx="5"/><text class="mono copy" x="235" y="206" text-anchor="middle">4</text>
+  <rect class="cell" x="288" y="185" width="62" height="31" rx="5"/><text class="mono copy" x="319" y="206" text-anchor="middle">5</text>
+  <rect class="cell" x="374" y="185" width="62" height="31" rx="5"/><text class="mono copy" x="405" y="206" text-anchor="middle">5</text>
+  <rect class="cell" x="458" y="185" width="62" height="31" rx="5"/><text class="mono copy" x="489" y="206" text-anchor="middle">4</text>
 
-  <rect class="node" x="620" y="90" width="240" height="88" rx="8"/>
-  <text class="num" x="640" y="117">03</text>
-  <text class="name" x="640" y="146">Tag</text>
-  <text class="what" x="640" y="168">Fact, estimate, or preference?</text>
+  <text class="ink small strong" x="50" y="252">Negotiate remote</text>
+  <rect class="cell" x="204" y="232" width="62" height="31" rx="5"/><text class="mono copy" x="235" y="253" text-anchor="middle">4</text>
+  <rect class="cell" x="288" y="232" width="62" height="31" rx="5"/><text class="mono copy" x="319" y="253" text-anchor="middle">2</text>
+  <rect class="cell" x="374" y="232" width="62" height="31" rx="5"/><text class="mono copy" x="405" y="253" text-anchor="middle">4</text>
+  <rect class="cell" x="458" y="232" width="62" height="31" rx="5"/><text class="mono copy" x="489" y="253" text-anchor="middle">3</text>
 
-  <path class="arrow" d="M282 134 L318 134"/>
-  <polygon class="arrow-head" points="328,134 317,128 317,140"/>
-  <path class="arrow" d="M572 134 L608 134"/>
-  <polygon class="arrow-head" points="618,134 607,128 607,140"/>
-  <path class="drop" d="M450 178 L450 202 L40 202 L40 228"/>
-  <polygon class="drop-head" points="40,238 33,226 47,226"/>
+  <text class="ink small strong" x="50" y="299">Move, local job</text>
+  <rect class="cell" x="204" y="279" width="62" height="31" rx="5"/><text class="mono copy" x="235" y="300" text-anchor="middle">3</text>
+  <rect class="cell" x="288" y="279" width="62" height="31" rx="5"/><text class="mono copy" x="319" y="300" text-anchor="middle">2</text>
+  <rect class="cell" x="374" y="279" width="62" height="31" rx="5"/><text class="mono copy" x="405" y="300" text-anchor="middle">5</text>
+  <rect class="cell" x="458" y="279" width="62" height="31" rx="5"/><text class="mono copy" x="489" y="300" text-anchor="middle">4</text>
 
-  <text class="phase" x="40" y="272">2 · Compare the choices</text>
-  <text class="phase-sub" x="40" y="296">Focus on what matters and what may happen.</text>
+  <rect class="winner" x="42" y="320" width="485" height="47" rx="6"/>
+  <text class="ink small strong" x="50" y="347">Cheaper rental nearby</text>
+  <rect class="cell" x="204" y="328" width="62" height="31" rx="5"/><text class="mono copy" x="235" y="349" text-anchor="middle">4</text>
+  <rect class="cell" x="288" y="328" width="62" height="31" rx="5"/><text class="mono copy" x="319" y="349" text-anchor="middle">3</text>
+  <rect class="cell" x="374" y="328" width="62" height="31" rx="5"/><text class="mono copy" x="405" y="349" text-anchor="middle">3</text>
+  <rect class="cell" x="458" y="328" width="62" height="31" rx="5"/><text class="mono copy" x="489" y="349" text-anchor="middle">4</text>
 
-  <rect class="node" x="40" y="318" width="240" height="88" rx="8"/>
-  <text class="num" x="60" y="345">04</text>
-  <text class="name" x="60" y="374">Weigh</text>
-  <text class="what" x="60" y="396">What matters most?</text>
+  <path class="line" d="M48 383h473"/>
+  <text class="muted small" x="50" y="409">One option per row · one named attribute per column</text>
+  <text class="muted small" x="50" y="432">Blank cells mean unassessed, not zero.</text>
+  <text class="muted tiny" x="50" y="488">Sample values shown; probabilities and evidence are tracked in details.</text>
 
-  <rect class="node" x="330" y="318" width="240" height="88" rx="8"/>
-  <text class="num" x="350" y="345">05</text>
-  <text class="name" x="350" y="374">Score</text>
-  <text class="what" x="350" y="396">How does each choice compare?</text>
+  <!-- Connector -->
+  <path d="M544 301h20" stroke="#b9b5a9" stroke-width="2"/>
+  <path d="m560 295 9 6-9 6" fill="none" stroke="#b9b5a9" stroke-width="2"/>
 
-  <rect class="node" x="620" y="318" width="240" height="88" rx="8"/>
-  <text class="num" x="640" y="345">06</text>
-  <text class="name" x="640" y="374">Probabilify</text>
-  <text class="what" x="640" y="396">How likely are key outcomes?</text>
+  <!-- Stage 2: the matrix meaning is comparative, not a list of isolated ratings. -->
+  <rect class="panel" x="576" y="88" width="270" height="430" rx="10"/>
+  <path class="head" d="M586 88h250a10 10 0 0 1 10 10v47H576V98a10 10 0 0 1 10-10z"/>
+  <circle class="step" cx="601" cy="115" r="13"/><text class="step-text" x="597.5" y="119">2</text>
+  <text class="ink title" x="624" y="121">Compare</text>
+  <text class="muted small" x="596" y="166">Swing weights</text>
+  <text class="muted tiny" x="596" y="187">Money</text><rect x="656" y="176" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="176" width="61" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="187" text-anchor="end">41%</text>
+  <text class="muted tiny" x="596" y="215">Family time</text><rect x="656" y="204" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="204" width="55" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="215" text-anchor="end">37%</text>
+  <text class="muted tiny" x="596" y="243">Work</text><rect x="656" y="232" width="150" height="12" rx="6" fill="#e9e6dd"/><rect x="656" y="232" width="34" height="12" rx="6" fill="#849b8b"/><text class="mono tiny" x="816" y="243" text-anchor="end">22%</text>
+  <path class="line" d="M592 263h238"/>
+  <text class="ink copy strong" x="596" y="291">Same options, side by side</text>
+  <text class="muted small" x="596" y="317">Ratings are read with their</text>
+  <text class="muted small" x="596" y="337">benefit or cost direction, then</text>
+  <text class="muted small" x="596" y="357">combined using these weights.</text>
+  <rect class="winner" x="592" y="383" width="238" height="67" rx="7"/>
+  <text class="ink small strong" x="606" y="407">Highest in this example</text>
+  <text class="ink small" x="606" y="429">Cheaper rental nearby</text>
+  <text class="muted tiny" x="596" y="488">Weights reflect the example’s stated priorities.</text>
 
-  <path class="arrow" d="M282 362 L318 362"/>
-  <polygon class="arrow-head" points="328,362 317,356 317,368"/>
-  <path class="arrow" d="M572 362 L608 362"/>
-  <polygon class="arrow-head" points="618,362 607,356 607,368"/>
-  <path class="drop" d="M450 406 L450 430 L40 430 L40 456"/>
-  <polygon class="drop-head" points="40,466 33,454 47,454"/>
+  <!-- Connector -->
+  <path d="M853 301h20" stroke="#b9b5a9" stroke-width="2"/>
+  <path d="m869 295 9 6-9 6" fill="none" stroke="#b9b5a9" stroke-width="2"/>
 
-  <text class="phase" x="40" y="500">3 · Check, decide, and learn</text>
-  <text class="phase-sub" x="40" y="524">Test your choice, then review what happened.</text>
+  <!-- Stage 3: verdict first, traceable ranking underneath, like Result.tsx. -->
+  <rect class="panel" x="885" y="88" width="283" height="430" rx="10"/>
+  <path class="head" d="M895 88h263a10 10 0 0 1 10 10v47H885V98a10 10 0 0 1 10-10z"/>
+  <circle class="step" cx="910" cy="115" r="13"/><text class="step-text" x="906.5" y="119">3</text>
+  <text class="ink title" x="933" y="121">Verdict</text>
+  <text class="muted kicker" x="905" y="169">RECOMMENDATION</text>
+  <text class="ink copy strong" x="905" y="194">Stay in the current city,</text>
+  <text class="ink copy strong" x="905" y="214">but move to cheaper rental</text>
+  <text class="muted small" x="905" y="237">Leads by 0.04 over negotiate remote</text>
+  <path class="line" d="M901 253h251"/>
+  <text class="muted tiny strong" x="905" y="276">RANK</text>
+  <text class="muted tiny strong" x="936" y="276">OPTION</text>
+  <text class="muted tiny strong" x="1135" y="276" text-anchor="end">NET</text>
+  <rect class="winner" x="899" y="285" width="255" height="38" rx="5"/>
+  <text class="mono small" x="909" y="309">1</text><text class="ink tiny strong" x="936" y="309">Cheaper rental nearby</text><text class="mono small" x="1135" y="309" text-anchor="end">0.33</text>
+  <text class="mono small" x="909" y="347">2</text><text class="ink tiny" x="936" y="347">Negotiate remote work</text><text class="mono small" x="1135" y="347" text-anchor="end">0.29</text>
+  <text class="mono small" x="909" y="377">3</text><text class="ink tiny" x="936" y="377">Move, find local job</text><text class="mono small" x="1135" y="377" text-anchor="end">0.13</text>
+  <text class="mono small" x="909" y="407">4</text><text class="ink tiny" x="936" y="407">Stay as is</text><text class="mono small" x="1135" y="407" text-anchor="end">−0.18</text>
+  <rect class="badge" x="905" y="432" width="95" height="24" rx="12"/>
+  <text class="accent tiny strong" x="952.5" y="448" text-anchor="middle">TOP RANKED</text>
+  <text class="muted tiny" x="905" y="488">Illustrative result, not personal advice.</text>
 
-  <rect class="node-accent" x="40" y="546" width="240" height="56" rx="8"/>
-  <text class="num-accent" x="60" y="570">07</text>
-  <text class="name" x="100" y="583" style="font-size:19px">Stress</text>
-
-  <rect class="node" x="330" y="546" width="240" height="56" rx="8"/>
-  <text class="num" x="350" y="570">08</text>
-  <text class="name" x="390" y="583" style="font-size:19px">Gate</text>
-
-  <rect class="node" x="620" y="546" width="240" height="56" rx="8"/>
-  <text class="num" x="640" y="570">09</text>
-  <text class="name" x="680" y="583" style="font-size:19px">Commit</text>
-
-  <path class="arrow" d="M282 574 L318 574"/>
-  <polygon class="arrow-head" points="328,574 317,568 317,580"/>
-  <path class="arrow" d="M572 574 L608 574"/>
-  <polygon class="arrow-head" points="618,574 607,568 607,580"/>
+  <text class="muted tiny" x="32" y="552">Sample: “Pindah ke kota lebih kecil demi biaya hidup dan waktu bersama” · Scores depend on the options, evidence, and priorities entered.</text>
 </svg>
