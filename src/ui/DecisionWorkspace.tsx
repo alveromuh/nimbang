@@ -593,35 +593,35 @@ export function DecisionWorkspace({
             <a href="https://doi.org/10.2307/j.ctv322v4g7" target="_blank" rel="noreferrer">
               Keeney (1992), <em>Value-Focused Thinking</em>
             </a>
-            <span>— merumuskan tujuan sebelum menghasilkan alternatif.</span>
+            <span>: merumuskan tujuan sebelum menghasilkan alternatif.</span>
           </li>
           <li>
             <a href="https://doi.org/10.1017/9781108235594" target="_blank" rel="noreferrer">
               Boardman et al. (2018), <em>Cost-Benefit Analysis</em>
             </a>
-            <span>— kerangka manfaat, biaya, dan siapa yang terdampak.</span>
+            <span>: kerangka manfaat, biaya, dan siapa yang terdampak.</span>
           </li>
           <li>
             <a href="https://www.cambridge.org/core/books/decision-analysis-and-behavioral-research/" target="_blank" rel="noreferrer">
               von Winterfeldt &amp; Edwards (1986), <em>Decision Analysis and Behavioral Research</em>
             </a>
-            <span>— fungsi nilai aditif, normalisasi, dan swing weighting.</span>
+            <span>: fungsi nilai aditif, normalisasi, dan swing weighting.</span>
           </li>
           <li>
             <a href="https://doi.org/10.1109/TSSC.1966.300074" target="_blank" rel="noreferrer">
               Howard (1966), “Information Value Theory”
             </a>
-            <span>— nilai informasi dan keputusan di bawah ketidakpastian.</span>
+            <span>: nilai informasi dan keputusan di bawah ketidakpastian.</span>
           </li>
           <li>
             <span className="reference__citation">Saltelli et al., sensitivitas global berbasis varians</span>
-            <span>— dasar analisis sensitivitas; lihat catatan tentang aditivitas.</span>
+            <span>: dasar analisis sensitivitas; lihat catatan tentang aditivitas.</span>
           </li>
           <li>
             <a href="https://doi.org/10.2307/1914185" target="_blank" rel="noreferrer">
               Kahneman &amp; Tversky (1979), “Prospect Theory”
             </a>
-            <span>— alasan risiko fatal ditandai terpisah dari skor biasa.</span>
+            <span>: alasan risiko fatal ditandai terpisah dari skor biasa.</span>
           </li>
         </ul>
         <p className="reference__note">
